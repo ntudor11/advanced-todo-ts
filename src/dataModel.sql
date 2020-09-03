@@ -1,6 +1,7 @@
 create table users (
   id integer not null primary key,
-  email text not null,
+  name text,
+  email text not null unique,
   password text not null,
   image text
 );
@@ -37,7 +38,7 @@ insert into users (
   image
 ) values (
   "abc@abc.com",
-  "password",
+  "XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=",
   "https://cnaca.ca/wp-content/uploads/2018/10/user-icon-image-placeholder.jpg"
 );
 
@@ -55,7 +56,7 @@ insert into users (
   image
 ) values (
   "ab@ab.com",
-  "password",
+  "XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=",
   "https://cnaca.ca/wp-content/uploads/2018/10/user-icon-image-placeholder.jpg"
 );
 
