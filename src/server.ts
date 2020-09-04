@@ -368,6 +368,10 @@ app.post("/deleteTag", withAuth(), (req, res) => {
   res.send({ error: "tag is used, you cannot delete it" });
 });
 
+app.get("/checkToken", withAuth(), (req, res) => {
+  res.send({ userId: (<any>req).userId, image: (<any>req).image });
+});
+
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 });

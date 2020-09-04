@@ -4,6 +4,11 @@
     "module": "esnext",
     "rootDir": "./",
     "outDir": "./build",
+    "typeRoots": [
+      "node_modules/koa-body",
+      "node_modules/@types",
+      "src/typings"
+    ],
     "esModuleInterop": true,
     "strict": true,
     "lib": ["dom", "dom.iterable", "esnext"],
