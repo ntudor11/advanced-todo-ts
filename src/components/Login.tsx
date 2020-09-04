@@ -24,12 +24,14 @@ class Login extends Component<any, any> {
     const { history } = this.props;
     const { email, password } = this.state;
 
-    login({ email, password }).then(({ data }: { data: any }) => {
+    const user = { email, password };
+
+    login(user).then(({ data }: { data: any }) => {
       if (data.success) {
         const { setLoggedIn } = this.props;
         setLoggedIn(true);
         console.log("success");
-        // history.push("/");
+        history.push("/todos");
         // window.location.reload();
       } else {
         this.setState({});

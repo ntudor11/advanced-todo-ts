@@ -143,28 +143,16 @@ app.post("/login", (req, res) => {
     return res.status(401).send({ success: false, errType: "user_not_found" });
   }
 
-  const {
-    id: userId,
-    name,
-    email: emailAddress,
-    image,
-    password: dbPasswordHash,
-  } = dbRow;
+  const { id: userId, email: emailAddress, password: dbPasswordHash } = dbRow;
 
   if (hashedPass !== dbPasswordHash) {
     return res.status(401).send({ success: false, errType: "WRONG_PASSWORD" });
   }
 
-  const token = jwt.sign(
-    { userId, emailAddress, image, hashedPass, name },
-    secret,
-    {
-      expiresIn: "3h",
-    }
-  );
+  const token = jwt.sign({ userId, emailAddress }, secret, { expiresIn: "1h" });
   return res
     .cookie("token", token, { httpOnly: true })
-    .send({ success: true, userId, image, name });
+    .send({ success: true, userId });
 });
 
 app.post("/register", (req, res) => {

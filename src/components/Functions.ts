@@ -10,3 +10,5 @@ export const login = (existingUser: ExistingUser) =>
     email: existingUser.email,
     password: existingUser.password,
   });
+
+export const logout = () => axios.post("/logout");

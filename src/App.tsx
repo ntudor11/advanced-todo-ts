@@ -2,17 +2,28 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./components/Login";
 import MyTodos from "./components/MyTodos";
+import NavBar from "./components/NavBar";
+import { NotFound, Unauthorised } from "./components/NotFound";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState<Boolean>(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isDark, setDark] = useState(false);
 
   useEffect(() => {
     fetch("/checkToken").then(
       ({ status }) => status === 200 && setLoggedIn(true)
     );
+  }, []);
+
+  useEffect(() => {
+    console.log(document.body.classList);
+    if (document.body.classList.contains("dark-mode")) {
+      setDark(true);
+      console.log(true);
+    }
   }, []);
 
   const PrivateRoute: any = ({ comp: MyComponent, ...rest }: { comp: any }) => (
@@ -28,10 +39,19 @@ const App = () => {
     />
   );
 
+  // const PrivateRoute: any = ({ comp: Component, ...rest }: { comp: any }) => (
+  //   <Route
+  //     {...rest}
+  //     render={(props) =>
+  //       loggedIn === true ? <Component {...props} /> : <Unauthorised />
+  //     }
+  //   />
+  // );
+
   return (
     <Router>
       <div className="App">
-        {/* <Navbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} /> */}
+        <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} isDark={isDark} />
         <Switch>
           <PrivateRoute exact path="/" comp={MyTodos} />
           {/* <Route
