@@ -143,8 +143,6 @@ app.post("/login", (req, res) => {
     return res.status(401).send({ success: false, errType: "user_not_found" });
   }
 
-  console.log(dbRow);
-
   const {
     id: userId,
     name,

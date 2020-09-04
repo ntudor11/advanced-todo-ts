@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-// import { login } from './AdminFunctions';
+import { login } from "./Functions";
 
-class Login extends Component<{}, any> {
+class Login extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -14,24 +14,27 @@ class Login extends Component<{}, any> {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onChange(e: any) {
+  onChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  onSubmit(e: any) {
+  onSubmit(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
 
-    // login(this.state).then(({ data }) => {
-    //   if (data.success) {
-    //     const { setLoggedIn } = this.props;
-    //     setLoggedIn(true);
-    //     console.log('success');
-    //     history.push(`/`);
-    //     // window.location.reload();
-    //   } else {
-    //     this.setState({});
-    //   }
-    // });
+    const { history } = this.props;
+    const { email, password } = this.state;
+
+    login({ email, password }).then(({ data }: { data: any }) => {
+      if (data.success) {
+        const { setLoggedIn } = this.props;
+        setLoggedIn(true);
+        console.log("success");
+        // history.push("/");
+        // window.location.reload();
+      } else {
+        this.setState({});
+      }
+    });
   }
 
   render() {
