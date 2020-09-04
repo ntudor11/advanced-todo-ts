@@ -19,10 +19,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log(document.body.classList);
     if (document.body.classList.contains("dark-mode")) {
       setDark(true);
-      console.log(true);
     }
   }, []);
 
@@ -54,13 +52,14 @@ const App = () => {
         <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} isDark={isDark} />
         <Switch>
           <PrivateRoute exact path="/" comp={MyTodos} />
-          {/* <Route
+
+          <Route
             exact
             path="/login"
             render={(props: any) => (
               <Login {...props} setLoggedIn={setLoggedIn} />
             )}
-          /> */}
+          />
         </Switch>
       </div>
     </Router>

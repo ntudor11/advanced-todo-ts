@@ -1,5 +1,6 @@
 import express from "express";
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const Database = require("better-sqlite3");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 const hashPass = (password: string) => {
   const sha256 = crypto.createHash("sha256");
@@ -28,9 +30,6 @@ const withAuth = (requiredLevel?: string) => (
   res: any,
   next: any
 ) => {
-  req.cookies = {
-    token: undefined,
-  };
   const { token } = req.cookies;
   if (!token) {
     res.status(401).send({ error: "Unauthorized: No token provided" });
@@ -149,7 +148,7 @@ app.post("/login", (req, res) => {
     return res.status(401).send({ success: false, errType: "WRONG_PASSWORD" });
   }
 
-  const token = jwt.sign({ userId, emailAddress }, secret, { expiresIn: "1h" });
+  const token = jwt.sign({ userId }, secret, { expiresIn: "3h" });
   return res
     .cookie("token", token, { httpOnly: true })
     .send({ success: true, userId });

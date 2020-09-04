@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React, { Component } from "react";
 import { withRouter } from "react-router";
 import { Link, NavLink } from "react-router-dom";
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
@@ -35,8 +35,6 @@ class NavBar extends Component<any, any> {
   render() {
     const { isScrolled, loggedInUser, image } = this.state;
     const { loggedIn, isDark } = this.props;
-
-    console.log(isDark);
 
     const loginRegLink = (
       <Navbar
