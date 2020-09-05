@@ -148,12 +148,14 @@ class MyTodos extends Component<{}, any> {
               variant="outline-info"
               onClick={() => {
                 const itemId = item.id;
-                deleteTodo({ itemId }).then((res) => {
+                deleteTodo({ itemId }).then((res: any) => {
                   if (res) {
                     try {
-                      fetch("/my-todos")
+                      fetch(`/my-todos`)
                         .then((data) => data.json())
-                        .then((todos) => this.setState({ todos }));
+                        .then((data) => {
+                          this.setState(data);
+                        });
                     } catch (e) {
                       console.log(`${e}`);
                     }
