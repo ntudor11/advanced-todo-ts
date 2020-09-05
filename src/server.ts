@@ -98,7 +98,7 @@ app.get("/my-todos", withAuth(), (req: any, res) => {
     const todoTags = db
       .prepare(
         `
-            select distinct tg.id, tg.name, tg.color
+            select distinct tg.id as tagId, tg.name as tagName, tg.color
               from tags tg
               join todos_tags tt
               on tg.id = tt.tag_id
@@ -112,7 +112,7 @@ app.get("/my-todos", withAuth(), (req: any, res) => {
     const todoStatus = db
       .prepare(
         `
-          select distinct s.id, s.name
+          select distinct s.id as statusId, s.name as statusName
             from status s
             join todos t
             on s.id = t.status_id
@@ -298,7 +298,7 @@ app.post(
   }
 );
 
-app.post("/deleteTodo", withAuth(), (req, res) => {
+app.post("/delete-todo", withAuth(), (req, res) => {
   const { itemId } = req.body;
   db.prepare(
     `

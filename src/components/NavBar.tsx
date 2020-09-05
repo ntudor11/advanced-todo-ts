@@ -64,7 +64,7 @@ class NavBar extends Component<any, any> {
       <Navbar
         bg={isDark ? "dark" : "light"}
         variant={isDark ? "dark" : "light"}
-        fixed="top"
+        // fixed="top"
         collapseOnSelect
         id={isScrolled ? "" : "navScrolled"}
         className={isScrolled ? "navUnscrolled" : "navScrolled"}
@@ -123,7 +123,7 @@ class NavBar extends Component<any, any> {
       <Navbar
         bg={isDark ? "dark" : "light"}
         variant={isDark ? "dark" : "light"}
-        fixed="top"
+        // fixed="top"
         collapseOnSelect
         className={isScrolled ? "navUnscrolled" : "navScrolled"}
         expand="md"

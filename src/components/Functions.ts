@@ -21,3 +21,5 @@ export const login = (existingUser: ExistingUser) =>
 export const logout = () => axios.post("/logout");
 
 export const register = (newUser: NewUser) => axios.post("/register", newUser);
+
+export const deleteTodo = (todo: any) => axios.post("/delete-todo", todo);

@@ -7,6 +7,10 @@
   pointer-events: none;
 }
 
+p {
+  margin-top: 1rem !important;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -37,6 +41,10 @@
   }
 }
 
+body {
+  margin-top:21em;
+}
+
 body.light-mode {
   background-color: #fff;
   color: #333;
@@ -47,6 +55,14 @@ body.dark-mode {
   color: #999;
 }
 
+body.dark-mode .table {
+  color: #999;
+}
+
+body.dark-mode .table tr:hover {
+  color: #ddd;
+}
+
 .navbar-usericon {
   width: 30px;
   border-radius: 50%;
@@ -54,4 +70,8 @@ body.dark-mode {
 
 a {
    outline: 0;
+}
+
+.todoItem {
+  border-bottom: 1px solid #ccc;
 }

@@ -1,0 +1,32 @@
+body.dark-mode {
+  background-color: #10171d;
+  color: #dfdfdf;
+
+  .dark-mode-toggle > button {
+    &:first-child {color: #999};
+    &:last-child {
+      color: lightblue;
+    }
+  }
+}
+
+.dark-mode-toggle {
+  margin: 0 auto;
+  margin-top:1em;
+  margin-bottom: 1em;
+  & > button {
+    font-size: 1.2em;
+    background: none;
+    border: none;
+    color: #ffe600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    &:last-child {
+      color: #666;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

@@ -1,13 +1,26 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
-// import { login } from './AdminFunctions';
+import { Container, Row, Col, Form, Button, Table } from "react-bootstrap";
+import InputRange from "react-input-range";
+import FlipMove from "react-flip-move";
+import "react-input-range/lib/css/index.css";
+import { deleteTodo } from "./Functions";
 
 class MyTodos extends Component<{}, any> {
   constructor(props: any) {
     super(props);
     this.state = {
       email: "",
-      password: "",
+      task: "",
+      description: "",
+      deadline: "",
+      priority: "",
+      tags: "",
+      status: {},
+      todos: [],
+      filterStr: "",
+      isActive: 0,
+      range: { min: 1, max: 21 },
+      sortBy: "",
     };
 
     this.onChange = this.onChange.bind(this);
@@ -20,22 +33,141 @@ class MyTodos extends Component<{}, any> {
 
   onSubmit(e: any) {
     e.preventDefault();
+  }
 
-    // login(this.state).then(({ data }) => {
-    //   if (data.success) {
-    //     const { setLoggedIn } = this.props;
-    //     setLoggedIn(true);
-    //     console.log('success');
-    //     history.push(`/`);
-    //     // window.location.reload();
-    //   } else {
-    //     this.setState({});
-    //   }
-    // });
+  componentDidMount() {
+    try {
+      fetch("/api/checkToken")
+        .then((data) => data.json())
+        .then(({ userId, type }) =>
+          this.setState({ loggedInUser: userId, loggedUserType: type })
+        );
+    } catch (e) {
+      console.log(`${e} not authenticated`);
+    }
+
+    fetch(`/my-todos`)
+      .then((data) => data.json())
+      .then((data) => {
+        this.setState(data);
+      });
   }
 
   render() {
-    const { email, password } = this.state;
+    const {
+      email,
+      task,
+      description,
+      deadline,
+      priority,
+      tags,
+      status,
+      todos,
+      filterStr,
+      isActive,
+      range,
+      sortBy,
+    } = this.state;
+
+    // const { task, description, deadline, priority, tags, status } = todos;
+    // const { statusId, statusName } = status;
+    // const { tagId, color, tagName } = tags;
+
+    console.log(this.state);
+
+    // const tasks = (arr: any[]) => arr.map(item );
+
+    const filteredElementsAll =
+      todos &&
+      todos.filter(
+        (item: any) =>
+          item.task.toLowerCase().includes(filterStr.toLowerCase()) ||
+          item.description.toLowerCase().includes(filterStr.toLowerCase()) ||
+          // item.deadline.toLowerCase().includes(filterStr.toLowerCase()) ||
+          item.priority.toLowerCase().includes(filterStr.toLowerCase())
+      );
+
+    const filterActive =
+      todos &&
+      filteredElementsAll.filter(
+        (item: any) =>
+          item.status.statusName !== "Done" &&
+          item.rating >= range.min &&
+          item.rating <= range.max
+      );
+
+    const sortedTodos = (arr: any) => {
+      switch (sortBy) {
+        case "task":
+          arr.sort((a: any, b: any) => a.task.localeCompare(b.task));
+        case "date":
+          arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline));
+      }
+    };
+
+    const todoItem = (array: any) =>
+      array.map((item: any) => (
+        <tr key={item.id} className="todoItem">
+          <th className="align-middle">
+            <div className="pretty p-icon p-round">
+              <input type="checkbox" />
+              <div className="state">
+                <i className="icon mdi mdi-check"></i>
+                <label />
+              </div>
+            </div>
+          </th>
+
+          <th>
+            <p>{item.priority}</p>
+          </th>
+
+          <th>
+            <p>{item.task}</p>
+          </th>
+
+          <th>
+            <p>
+              {item.tags.map((tag: any) => (
+                <span key={tag.tagId} style={{ backgroundColor: tag.color }}>
+                  {tag.tagName}
+                </span>
+              ))}
+            </p>
+          </th>
+
+          <th>
+            <p>{item.deadline}</p>
+          </th>
+
+          <th className="align-middle">
+            <Button
+              size="sm"
+              className="btnDefault"
+              type="submit"
+              variant="outline-info"
+              onClick={() => {
+                const itemId = item.id;
+                deleteTodo({ itemId }).then((res) => {
+                  if (res) {
+                    try {
+                      fetch("/my-todos")
+                        .then((data) => data.json())
+                        .then((todos) => this.setState({ todos }));
+                    } catch (e) {
+                      console.log(`${e}`);
+                    }
+                  }
+                });
+              }}
+            >
+              🗑
+            </Button>
+          </th>
+        </tr>
+      ));
+
+    // todo array of all dates
 
     return (
       <Container fluid className="body">
@@ -43,7 +175,45 @@ class MyTodos extends Component<{}, any> {
           id="row-login"
           className="justify-content-sm-center row-loginSignup"
         >
-          <Col xs={{ span: 12 }} sm={8}>
+          <Col xs={12} md={3} className="aside">
+            <h3>Search</h3>
+
+            <input
+              style={{ width: "100%" }}
+              type="text"
+              className="search-input-left"
+              value={filterStr}
+              placeholder="Search here"
+              onChange={(e) => this.setState({ filterStr: e.target.value })}
+            />
+
+            <h3>Filter</h3>
+
+            <div className="pretty p-default p-curve">
+              <input
+                type="checkbox"
+                name="isActive"
+                value={isActive}
+                onChange={this.onChange}
+              />
+              <div className="state p-info">
+                <label>Active</label>
+              </div>
+            </div>
+
+            <div>
+              <label>By Date</label>
+              <InputRange
+                maxValue={21}
+                minValue={1}
+                allowSameValues={true}
+                step={1}
+                value={this.state.range}
+                onChange={(range) => this.setState({ range })}
+              />
+            </div>
+          </Col>
+          <Col xs={{ span: 12 }} md={9}>
             <Row className="justify-content-sm-center">
               <Col sm={8} md={8} className="loginBlock">
                 <h2>My Todos</h2>
@@ -57,36 +227,45 @@ class MyTodos extends Component<{}, any> {
                   >
                     <br />
 
-                    <Form.Group controlId="formBasicEmail">
+                    <Form.Group controlId="formBasicTask">
                       <Form.Control
                         type="text"
-                        name="email"
-                        placeholder="Enter Email"
-                        value={email}
+                        name="task"
+                        placeholder="Enter Task"
+                        value={task}
                         onChange={this.onChange}
                       />
                     </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword">
-                      <Form.Control
-                        type="password"
-                        name="password"
-                        placeholder="Enter Password"
-                        value={password}
-                        onChange={this.onChange}
-                      />
-                    </Form.Group>
-
-                    <Button
-                      block
-                      className="btnDefault"
-                      type="submit"
-                      variant="dark"
-                    >
+                    <Button className="btnDefault" type="submit" variant="dark">
                       Login
                     </Button>
                   </Form.Group>
                 </Form>
+
+                {/* <ul id="todoListing">{todoItem(filteredElementsAll)}</ul> */}
+
+                <Table
+                  striped
+                  hover
+                  size="sm"
+                  responsive="xs"
+                  className="table"
+                >
+                  <thead>
+                    <tr>
+                      <th className="text-left">Status</th>
+                      <th className="text-left">Priority</th>
+                      <th className="text-left">Task</th>
+                      <th className="text-left">Tags</th>
+                      <th className="text-left">Deadline</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <FlipMove typeName="tbody" easing="ease">
+                    {todoItem(filteredElementsAll)}
+                  </FlipMove>
+                </Table>
               </Col>
             </Row>
           </Col>

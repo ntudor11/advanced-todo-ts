@@ -8,6 +8,7 @@ import { NotFound, Unauthorised } from "./components/NotFound";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import "./styles.scss";
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
