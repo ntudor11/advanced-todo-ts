@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import { login } from "./Functions";
+import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import { register } from "./Functions";
+import { SAFE_PASS } from "./Constants";
+// import { showAlert } from "./ShowAlert";
 
 class Register extends Component<any, any> {
   constructor(props: any) {
@@ -11,39 +13,79 @@ class Register extends Component<any, any> {
       password: "",
       confirm_password: "",
       image: "",
+      showAlert: false,
+      alertText: "",
+      isSuccess: null,
+      validationErrors: {},
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.showAlert = this.showAlert.bind(this);
+    this.validateAll = this.validateAll.bind(this);
+  }
+
+  showAlert(alertText: string, isSuccess: boolean) {
+    const { history } = this.props;
+
+    this.setState({ showAlert: true, alertText, isSuccess });
+    setTimeout(() => {
+      this.setState({ showAlert: false, alertText: "", isSuccess: null });
+      history.push("/login");
+    }, 2000);
   }
 
   onChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ [e.target.name]: e.target.value });
+    this.validateAll();
+  }
+
+  validateAll() {
+    const { email, name, password, confirm_password } = this.state;
+
+    // enable validation with formik!
+    this.setState({
+      validationErrors: {
+        vEmail:
+          email.length > 3 ? null : "Email must be longer than 3 characters.",
+        vPassword: password.match(SAFE_PASS)
+          ? null
+          : "Password must contain an uppercase character and a digit.",
+        vName: name.length > 1 ? null : "Name must have at least 2 characters",
+        vPasswordMatch:
+          password === confirm_password ? null : "The passwords do not match.",
+      },
+    });
   }
 
   onSubmit(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
-
-    const { history } = this.props;
     const { email, name, password, image } = this.state;
 
     const user = { email, name, password, image };
 
-    login(user).then(({ data }: { data: any }) => {
+    register(user).then(({ data }: { data: any }) => {
       if (data.success) {
-        const { setLoggedIn } = this.props;
-        setLoggedIn(true);
+        this.showAlert("Your new account has been created.", true);
         console.log("success");
-        history.push("/todos");
-        // window.location.reload();
       } else {
+        this.showAlert("The account could not be created.", false);
         this.setState({});
       }
     });
   }
 
   render() {
-    const { email, name, password, confirm_password, image } = this.state;
+    const {
+      email,
+      name,
+      password,
+      confirm_password,
+      image,
+      alertText,
+      isSuccess,
+      showAlert,
+    } = this.state;
 
     return (
       <Container fluid className="body">
@@ -55,6 +97,14 @@ class Register extends Component<any, any> {
             <Row className="justify-content-sm-center">
               <Col sm={8} md={8} className="loginBlock">
                 <h2>Register</h2>
+
+                <Alert
+                  show={showAlert}
+                  id="alert-register"
+                  variant={isSuccess ? "success" : "danger"}
+                >
+                  {alertText}
+                </Alert>
 
                 <Form noValidate onSubmit={this.onSubmit}>
                   <Form.Group
@@ -70,6 +120,7 @@ class Register extends Component<any, any> {
                         placeholder="Enter Email"
                         value={email}
                         onChange={this.onChange}
+                        onBlur={this.validateAll}
                       />
                     </Form.Group>
 
@@ -80,6 +131,7 @@ class Register extends Component<any, any> {
                         placeholder="Enter Name"
                         value={name}
                         onChange={this.onChange}
+                        onBlur={this.validateAll}
                       />
                     </Form.Group>
 
@@ -90,6 +142,7 @@ class Register extends Component<any, any> {
                         placeholder="Enter Password"
                         value={password}
                         onChange={this.onChange}
+                        onBlur={this.validateAll}
                       />
                     </Form.Group>
 
@@ -100,6 +153,7 @@ class Register extends Component<any, any> {
                         placeholder="Repeat Password"
                         value={confirm_password}
                         onChange={this.onChange}
+                        onBlur={this.validateAll}
                       />
                     </Form.Group>
 
@@ -110,6 +164,7 @@ class Register extends Component<any, any> {
                         placeholder="Enter Image URL"
                         value={image}
                         onChange={this.onChange}
+                        onBlur={this.validateAll}
                       />
                     </Form.Group>
 

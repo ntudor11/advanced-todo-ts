@@ -42,7 +42,7 @@ class NavBar extends Component<any, any> {
             this.setState({ loggedInUser: userId, image, name })
           );
       } catch (e) {
-        console.log(`${e} not authenticated`);
+        console.log(`not authenticated`);
       }
     }
   }

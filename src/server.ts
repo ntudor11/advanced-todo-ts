@@ -17,6 +17,7 @@ app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// TODO add salting possibility to hashing pass
 const hashPass = (password: string) => {
   const sha256 = crypto.createHash("sha256");
   const passHash = sha256.update(password).digest("base64");
@@ -190,7 +191,7 @@ app.post("/register", (req, res) => {
           (?, ?, ?, ?)
       `
     ).run(name, email, image, hashedPass);
-    res.send({ email });
+    res.send({ email, success: true });
     return;
   }
   res.send({ error: "email already exists" });
