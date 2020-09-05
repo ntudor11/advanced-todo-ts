@@ -33,6 +33,20 @@ class NavBar extends Component<any, any> {
     }
   }
 
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.loggedIn !== this.props.loggedIn) {
+      try {
+        fetch("/checkToken")
+          .then((data) => data.json())
+          .then(({ userId, image, name }) =>
+            this.setState({ loggedInUser: userId, image, name })
+          );
+      } catch (e) {
+        console.log(`${e} not authenticated`);
+      }
+    }
+  }
+
   logOut(e: any) {
     const { setLoggedIn } = this.props;
     e.preventDefault();
@@ -43,7 +57,7 @@ class NavBar extends Component<any, any> {
   }
 
   render() {
-    const { isScrolled, loggedInUser, image } = this.state;
+    const { isScrolled, image } = this.state;
     const { loggedIn, isDark } = this.props;
 
     const loginRegLink = (
@@ -90,27 +104,14 @@ class NavBar extends Component<any, any> {
             <NavLink
               // as={Link}
               exact
-              // eventkey="4"
               activeClassName="active"
-              to="/login"
-              className={`ml-auto nav-link underline-from-center ${
-                isScrolled ? "" : "navitem-scroll"
-              }`}
-            >
-              Login
-            </NavLink>
-
-            <NavLink
-              // as={Link}
-              exact
-              activeClassName="active"
-              to="/signup"
+              to="/register"
               // eventkey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
             >
-              Sign Up
+              Register
             </NavLink>
           </Nav>
         </Navbar.Collapse>
@@ -150,12 +151,38 @@ class NavBar extends Component<any, any> {
               exact
               activeClassName="active"
               to="/todos"
-              // eventkey="5"
+              // eventKey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
             >
-              Todos
+              Todo List
+            </NavLink>
+
+            <NavLink
+              // as={Link}
+              exact
+              activeClassName="active"
+              to="/kanban"
+              // eventKey="5"
+              className={`ml-auto nav-link underline-from-center ${
+                isScrolled ? "" : "navitem-scroll"
+              }`}
+            >
+              Kanban
+            </NavLink>
+
+            <NavLink
+              // as={Link}
+              exact
+              activeClassName="active"
+              to="/calendar"
+              // eventKey="5"
+              className={`ml-auto nav-link underline-from-center ${
+                isScrolled ? "" : "navitem-scroll"
+              }`}
+            >
+              Calendar
             </NavLink>
 
             <NavDropdown
@@ -167,9 +194,9 @@ class NavBar extends Component<any, any> {
               }
               id="basic-nav-dropdown"
             >
-              <NavDropdown.Item href={`/user/${loggedInUser}`}>
+              {/* <NavDropdown.Item href={`/user/${loggedInUser}`}>
                 My Profile
-              </NavDropdown.Item>
+              </NavDropdown.Item> */}
               <NavDropdown.Divider />
               <NavDropdown.Item href="" onClick={this.logOut}>
                 Log Out

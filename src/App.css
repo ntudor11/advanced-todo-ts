@@ -48,6 +48,10 @@ body.dark-mode {
 }
 
 .navbar-usericon {
-  width: 50px;
+  width: 30px;
   border-radius: 50%;
+}
+
+a {
+   outline: 0;
 }
