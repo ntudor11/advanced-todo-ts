@@ -21,6 +21,16 @@ class NavBar extends Component<any, any> {
         isScrolled: scroll,
       });
     });
+
+    try {
+      fetch("/checkToken")
+        .then((data) => data.json())
+        .then(({ userId, image, name }) =>
+          this.setState({ loggedInUser: userId, image, name })
+        );
+    } catch (e) {
+      console.log(`${e} not authenticated`);
+    }
   }
 
   logOut(e: any) {

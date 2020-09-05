@@ -46,3 +46,8 @@ body.dark-mode {
   background-color: #1a1919;
   color: #999;
 }
+
+.navbar-usericon {
+  width: 50px;
+  border-radius: 50%;
+}

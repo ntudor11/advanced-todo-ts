@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8000;
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 const hashPass = (password: string) => {
@@ -42,8 +42,8 @@ const withAuth = (requiredLevel?: string) => (
         res.status(401).send({ error: "Unauthorized: Invalid user type" });
       } else {
         req.userId = decoded.userId;
-        req.email = decoded.email;
-        req.type = decoded.type;
+        req.emailAddress = decoded.emailAddress;
+        req.name = decoded.name;
         req.image = decoded.image;
         next();
       }
@@ -64,35 +64,39 @@ app.get("/users", (req, res) => {
   res.send(users);
 });
 
-app.get(
-  "/user/:id",
-  /*withAuth(),*/ (req, res) => {
-    const { id } = req.params;
-    const user = db
-      .prepare(
-        `
+app.get("/user/:id", withAuth(), (req: any, res) => {
+  const { id } = req.params;
+  const user = db
+    .prepare(
+      `
       select id, name, email, image
       from users
       where id = ?
     `
-      )
-      .get(id);
+    )
+    .get(id);
 
-    const todos = db
-      .prepare(
-        `
+  res.send({ user });
+});
+
+app.get("/my-todos", withAuth(), (req: any, res) => {
+  const { userId } = req;
+
+  const todos = db
+    .prepare(
+      `
         select t.id, t.task, t.description, t.priority, t.deadline from todos t
           join users u
           on u.id = t.user_id
           where t.user_id = ?
       `
-      )
-      .all(id);
+    )
+    .all(userId);
 
-    todos.map((todo: any) => {
-      const todoTags = db
-        .prepare(
-          `
+  todos.map((todo: any) => {
+    const todoTags = db
+      .prepare(
+        `
             select distinct tg.id, tg.name, tg.color
               from tags tg
               join todos_tags tt
@@ -101,28 +105,27 @@ app.get(
               on t.id = tt.todo_id
               where t.id = ?;
           `
-        )
-        .all(todo.id);
+      )
+      .all(todo.id);
 
-      const todoStatus = db
-        .prepare(
-          `
+    const todoStatus = db
+      .prepare(
+        `
           select distinct s.id, s.name
             from status s
             join todos t
             on s.id = t.status_id
             where t.id = ?;
         `
-        )
-        .get(todo.id);
+      )
+      .get(todo.id);
 
-      todo.tags = todoTags;
-      todo.status = todoStatus;
-    });
+    todo.tags = todoTags;
+    todo.status = todoStatus;
+  });
 
-    res.send({ user, todos });
-  }
-);
+  res.send({ todos });
+});
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -142,13 +145,21 @@ app.post("/login", (req, res) => {
     return res.status(401).send({ success: false, errType: "user_not_found" });
   }
 
-  const { id: userId, email: emailAddress, password: dbPasswordHash } = dbRow;
+  const {
+    id: userId,
+    email: emailAddress,
+    name,
+    password: dbPasswordHash,
+    image,
+  } = dbRow;
 
   if (hashedPass !== dbPasswordHash) {
     return res.status(401).send({ success: false, errType: "WRONG_PASSWORD" });
   }
 
-  const token = jwt.sign({ userId }, secret, { expiresIn: "3h" });
+  const token = jwt.sign({ userId, emailAddress, name, image }, secret, {
+    expiresIn: "3h",
+  });
   return res
     .cookie("token", token, { httpOnly: true })
     .send({ success: true, userId });
@@ -354,7 +365,12 @@ app.post("/deleteTag", withAuth(), (req, res) => {
 });
 
 app.get("/checkToken", withAuth(), (req, res) => {
-  res.send({ userId: (<any>req).userId, image: (<any>req).image });
+  res.send({
+    userId: (<any>req).userId,
+    emailAddress: (<any>req).emailAddress,
+    name: (<any>req).name,
+    image: (<any>req).image,
+  });
 });
 
 app.listen(PORT, () => {
