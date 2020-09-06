@@ -19,12 +19,29 @@ class MyTodos extends Component<{}, any> {
       todos: [],
       filterStr: "",
       isActive: 1,
-      range: { min: 1, max: 21 },
-      sortBy: "",
+      range: { min: 1, max: 10 },
+      sortBy: "priority",
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  getDeadlines() {
+    const { todos } = this.state;
+    const arr: any = [];
+    todos.forEach((item: any) => {
+      arr.push(item.deadline);
+    });
+    return arr;
+  }
+
+  getMin(arr: any) {
+    return Math.min(...arr);
+  }
+
+  getMax(arr: any) {
+    return Math.max(...arr);
   }
 
   onChange(e: any) {
@@ -77,7 +94,6 @@ class MyTodos extends Component<{}, any> {
     // const { tagId, color, tagName } = tags;
 
     console.log(this.state);
-    console.log(isActive);
 
     const filteredElementsAll =
       todos &&
@@ -93,18 +109,17 @@ class MyTodos extends Component<{}, any> {
       todos &&
       filteredElementsAll.filter(
         (item: any) => item.status.statusId !== 4 // &&
-        // item.rating >= range.min &&
-        // item.rating <= range.max
+        // item.deadline >= range.min &&
+        // item.deadline <= range.max
       );
 
-    const sortedTodos = (arr: any) => {
-      switch (sortBy) {
-        case "task":
-          arr.sort((a: any, b: any) => a.task.localeCompare(b.task));
-        case "date":
-          arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline));
-      }
-    };
+    const sortedTodos = (arr: any) =>
+      (sortBy === "priority" &&
+        arr.sort((a: any, b: any) => a.priority.localeCompare(b.priority))) ||
+      (sortBy === "task" &&
+        arr.sort((a: any, b: any) => a.task.localeCompare(b.task))) ||
+      (sortBy === "date" &&
+        arr.sort((a: any, b: any) => b.deadline.localeCompare(a.deadline)));
 
     const todoItem = (array: any) =>
       array.map((item: any) => (
@@ -116,7 +131,7 @@ class MyTodos extends Component<{}, any> {
             <div className="pretty p-icon p-round p-bigger">
               <input
                 type="checkbox"
-                checked={item.status.statusId === 4}
+                defaultChecked={item.status.statusId === 4}
                 onClick={() => {
                   const statusId = item.status.statusId !== 4 ? 4 : 1;
                   const itemId = item.id;
@@ -202,8 +217,6 @@ class MyTodos extends Component<{}, any> {
         </tr>
       ));
 
-    // todo array of all dates
-
     return (
       <Container fluid className="body">
         <Row
@@ -240,7 +253,9 @@ class MyTodos extends Component<{}, any> {
             <div>
               <label>By Date</label>
               <InputRange
-                maxValue={21}
+                // maxValue={this.getMax(this.getDeadlines())}
+                // minValue={this.getMin(this.getDeadlines())}
+                maxValue={10}
                 minValue={1}
                 allowSameValues={true}
                 step={1}
@@ -248,13 +263,29 @@ class MyTodos extends Component<{}, any> {
                 onChange={(range) => this.setState({ range })}
               />
             </div>
+
+            <h3>Sort By</h3>
+
+            <div>
+              <Form.Control
+                as="select"
+                name="sortBy"
+                value={sortBy}
+                onChange={this.onChange}
+              >
+                <option value="" disabled>
+                  Choose Type
+                </option>
+                <option value="priority">Priority</option>
+                <option value="date">Date</option>
+                <option value="task">Task</option>
+              </Form.Control>
+            </div>
           </Col>
           <Col xs={{ span: 12 }} md={9}>
             <Row className="justify-content-sm-center">
               <Col sm={8} md={8} className="loginBlock">
                 <h2>My Todos</h2>
-
-                <p>Authorised access only.</p>
 
                 <Form noValidate onSubmit={this.onSubmit}>
                   <Form.Group
@@ -281,13 +312,7 @@ class MyTodos extends Component<{}, any> {
 
                 {/* <ul id="todoListing">{todoItem(filteredElementsAll)}</ul> */}
 
-                <Table
-                  striped
-                  hover
-                  size="sm"
-                  responsive="xs"
-                  className="table"
-                >
+                <Table hover size="sm" responsive="xs" className="table">
                   <thead>
                     <tr>
                       <th className="text-left">Status</th>
@@ -299,9 +324,15 @@ class MyTodos extends Component<{}, any> {
                     </tr>
                   </thead>
                   <FlipMove typeName="tbody" easing="ease">
-                    {isActive
-                      ? todoItem(filterActive)
-                      : todoItem(filteredElementsAll)}
+                    {isActive === 1
+                      ? todoItem(
+                          sortBy ? sortedTodos(filterActive) : filterActive
+                        )
+                      : todoItem(
+                          sortBy
+                            ? sortedTodos(filteredElementsAll)
+                            : filteredElementsAll
+                        )}
                   </FlipMove>
                 </Table>
               </Col>
