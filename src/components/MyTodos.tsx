@@ -3,7 +3,7 @@ import { Container, Row, Col, Form, Button, Table } from "react-bootstrap";
 import InputRange from "react-input-range";
 import FlipMove from "react-flip-move";
 import "react-input-range/lib/css/index.css";
-import { deleteTodo } from "./Functions";
+import { deleteTodo, updateTodoStatus } from "./Functions";
 
 class MyTodos extends Component<{}, any> {
   constructor(props: any) {
@@ -107,10 +107,32 @@ class MyTodos extends Component<{}, any> {
 
     const todoItem = (array: any) =>
       array.map((item: any) => (
-        <tr key={item.id} className="todoItem">
+        <tr
+          key={item.id}
+          className={`todoItem ${item.status.statusId === 4 && `doneItem`}`}
+        >
           <th className="align-middle">
-            <div className="pretty p-icon p-round">
-              <input type="checkbox" />
+            <div className="pretty p-icon p-round p-bigger">
+              <input
+                type="checkbox"
+                checked={item.status.statusId === 4}
+                onClick={() => {
+                  const statusId = item.status.statusId !== 4 ? 4 : 1;
+                  const itemId = item.id;
+                  updateTodoStatus({ itemId, statusId }).then((res: any) => {
+                    if (res) {
+                      try {
+                        fetch(`my-todos`)
+                          .then((data) => data.json())
+                          .then((data) => this.setState(data));
+                      } catch (e) {
+                        console.log(`${e}`);
+                      }
+                    }
+                  });
+                  console.log(item.status.statusId);
+                }}
+              />
               <div className="state">
                 <i className="icon mdi mdi-check"></i>
                 <label />
@@ -118,18 +140,29 @@ class MyTodos extends Component<{}, any> {
             </div>
           </th>
 
-          <th>
-            <p>{item.priority}</p>
+          <th className="text-left">
+            <p>
+              <span
+                className={`mdi mdi-arrow-up-thick ${
+                  item.priority === "Low" && `priorityLow`
+                } ${item.priority === "Medium" && `priorityMedium`}
+                ${item.priority === "High" && `priorityHigh`}`}
+              />
+            </p>
           </th>
 
-          <th>
+          <th className="text-left">
             <p>{item.task}</p>
           </th>
 
-          <th>
+          <th className="text-left tagsField">
             <p>
               {item.tags.map((tag: any) => (
-                <span key={tag.tagId} style={{ backgroundColor: tag.color }}>
+                <span
+                  key={tag.tagId}
+                  style={{ backgroundColor: tag.color }}
+                  className="tagSpan"
+                >
                   {tag.tagName}
                 </span>
               ))}
@@ -257,7 +290,7 @@ class MyTodos extends Component<{}, any> {
                   <thead>
                     <tr>
                       <th className="text-left">Status</th>
-                      <th className="text-left">Priority</th>
+                      <th className="text-left" />
                       <th className="text-left">Task</th>
                       <th className="text-left">Tags</th>
                       <th className="text-left">Deadline</th>

@@ -102,6 +102,34 @@ insert into todos (
   1
 );
 
+insert into todos (
+  task,
+  description,
+  priority,
+  status_id,
+  user_id
+) values (
+  "play conquistador",
+  "hello world",
+  "High",
+  2,
+  1
+);
+
+insert into todos (
+  task,
+  description,
+  priority,
+  status_id,
+  user_id
+) values (
+  "email Tudor",
+  "don't forget about this!",
+  "High",
+  4,
+  1
+);
+
 insert into tags (name, color) values (
   "work",
   "#ff0000"
@@ -138,4 +166,18 @@ insert into todos_tags (
   tag_id
 ) values (
   3, 2
+);
+
+insert into todos_tags (
+  todo_id,
+  tag_id
+) values (
+  4, 2
+);
+
+insert into todos_tags (
+  todo_id,
+  tag_id
+) values (
+  5, 1
 );

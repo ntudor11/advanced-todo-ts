@@ -22,4 +22,9 @@ export const logout = () => axios.post("/logout");
 
 export const register = (newUser: NewUser) => axios.post("/register", newUser);
 
+export const updateTodo = (todo: any) => axios.post("/update-todo", todo);
+
+export const updateTodoStatus = (todo: any) =>
+  axios.post("/update-todo-status", todo);
+
 export const deleteTodo = (todo: any) => axios.post("/delete-todo", todo);

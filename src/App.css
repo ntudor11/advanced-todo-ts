@@ -63,6 +63,11 @@ body.dark-mode .table tr:hover {
   color: #ddd;
 }
 
+.table th{
+  font-weight: 100;
+  font-size:11pt;
+}
+
 .navbar-usericon {
   width: 30px;
   border-radius: 50%;
@@ -74,4 +79,33 @@ a {
 
 .todoItem {
   border-bottom: 1px solid #ccc;
+}
+
+.priorityLow {
+  color: #17a2b8;
+}
+
+.priorityMedium {
+  color: #ffc107;
+}
+
+.priorityHigh {
+  color: #dc3545;
+}
+
+.tagSpan {
+  padding:5px;
+  border-radius:5px;
+  margin: 2px;
+  color: #fff;
+  font-size:10pt;
+}
+
+.tagsField {
+  max-width: 120px;
+}
+
+.doneItem {
+  text-decoration: line-through;
+  color: #ccc;
 }

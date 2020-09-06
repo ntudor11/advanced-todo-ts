@@ -241,62 +241,73 @@ app.post("/addTodo", withAuth(), (req, res) => {
   });
 });
 
-app.post(
-  "/updateTodo",
-  /* withAuth(), */ (req, res) => {
-    const {
-      task,
-      description,
-      deadline,
-      priority,
-      statusId,
-      tagsArr,
-      itemId,
-    } = req.body;
+app.post("/update-todo-status", withAuth(), (req, res) => {
+  const { itemId, statusId } = req.body;
 
-    db.prepare(
-      `
+  db.prepare(
+    `
+    update todos
+      set status_id = ?
+      where id = ?
+    `
+  ).run(statusId, itemId);
+
+  res.send("ok");
+});
+
+app.post("/update-todo", withAuth(), (req, res) => {
+  const {
+    task,
+    description,
+    deadline,
+    priority,
+    statusId,
+    tagsArr,
+    itemId,
+  } = req.body;
+
+  db.prepare(
+    `
     update todos
       set task = ?,
       description = ?,
       deadline = ?,
       priority = ?,
-      statusId = ?
+      status_id = ?
       where id = ?
     `
-    ).run(task, description, deadline, priority, statusId, itemId);
+  ).run(task, description, deadline, priority, statusId, itemId);
 
-    const insideTagsArr = db
-      .prepare(
-        `
+  const insideTagsArr = db
+    .prepare(
+      `
         select tag_id from todos_tags
         where todo_id = ?
       `
-      )
-      .run(itemId);
+    )
+    .all(itemId);
 
-    if (!_.isEqual(tagsArr, insideTagsArr)) {
-      db.prepare(
-        `
-          delete from todos_tags where
-            todo_id = ?
-        `
-      ).run(itemId);
+  // if (!_.isEqual(tagsArr, insideTagsArr)) {
+  //   db.prepare(
+  //     `
+  //       delete from todos_tags where
+  //         todo_id = ?
+  //     `
+  //   ).run(itemId);
+  //
+  //   tagsArr.forEach((tag: any) => {
+  //     const { tagId } = tag;
+  //     db.prepare(
+  //       `
+  //           insert into todos_tags(todo_id, tag_id)
+  //             values (?, ?)
+  //         `
+  //     ).run(itemId, tagId);
+  //   });
+  // }
 
-      tagsArr.forEach((tag: any) => {
-        const { tagId } = tag;
-        db.prepare(
-          `
-              insert into todos_tags(todo_id, tag_id)
-                values (?, ?)
-            `
-        ).run(itemId, tagId);
-      });
-    }
-
-    res.send("ok");
-  }
-);
+  res.send("ok");
+});
 
 app.post("/delete-todo", withAuth(), (req, res) => {
   const { itemId } = req.body;
