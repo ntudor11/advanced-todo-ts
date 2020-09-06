@@ -18,7 +18,7 @@ class MyTodos extends Component<{}, any> {
       status: {},
       todos: [],
       filterStr: "",
-      isActive: 0,
+      isActive: 1,
       range: { min: 1, max: 21 },
       sortBy: "",
     };
@@ -28,7 +28,10 @@ class MyTodos extends Component<{}, any> {
   }
 
   onChange(e: any) {
-    this.setState({ [e.target.name]: e.target.value });
+    const { target } = e;
+    const value =
+      target.type === "checkbox" ? (target.checked ? 1 : 0) : target.value;
+    this.setState({ [target.name]: value });
   }
 
   onSubmit(e: any) {
@@ -74,8 +77,7 @@ class MyTodos extends Component<{}, any> {
     // const { tagId, color, tagName } = tags;
 
     console.log(this.state);
-
-    // const tasks = (arr: any[]) => arr.map(item );
+    console.log(isActive);
 
     const filteredElementsAll =
       todos &&
@@ -90,10 +92,9 @@ class MyTodos extends Component<{}, any> {
     const filterActive =
       todos &&
       filteredElementsAll.filter(
-        (item: any) =>
-          item.status.statusName !== "Done" &&
-          item.rating >= range.min &&
-          item.rating <= range.max
+        (item: any) => item.status.statusId !== 4 // &&
+        // item.rating >= range.min &&
+        // item.rating <= range.max
       );
 
     const sortedTodos = (arr: any) => {
@@ -130,7 +131,6 @@ class MyTodos extends Component<{}, any> {
                       }
                     }
                   });
-                  console.log(item.status.statusId);
                 }}
               />
               <div className="state">
@@ -230,6 +230,7 @@ class MyTodos extends Component<{}, any> {
                 name="isActive"
                 value={isActive}
                 onChange={this.onChange}
+                checked={isActive}
               />
               <div className="state p-info">
                 <label>Active</label>
@@ -298,7 +299,9 @@ class MyTodos extends Component<{}, any> {
                     </tr>
                   </thead>
                   <FlipMove typeName="tbody" easing="ease">
-                    {todoItem(filteredElementsAll)}
+                    {isActive
+                      ? todoItem(filterActive)
+                      : todoItem(filteredElementsAll)}
                   </FlipMove>
                 </Table>
               </Col>
