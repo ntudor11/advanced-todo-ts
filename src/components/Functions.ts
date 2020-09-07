@@ -28,3 +28,6 @@ export const updateTodoStatus = (todo: any) =>
   axios.post("/update-todo-status", todo);
 
 export const deleteTodo = (todo: any) => axios.post("/delete-todo", todo);
+
+export const removeTagFromTask = (tag: any) =>
+  axios.post("/remove-tag-from-task", tag);

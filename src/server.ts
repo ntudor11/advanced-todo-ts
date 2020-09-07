@@ -352,7 +352,20 @@ app.post("/addTag", withAuth(), (req, res) => {
   res.send({ error: "tag already exists" });
 });
 
-app.post("/deleteTag", withAuth(), (req, res) => {
+app.post("/remove-tag-from-task", withAuth(), (req, res) => {
+  const { tagId, todoId } = req.body;
+
+  db.prepare(
+    `
+          delete from todos_tags where
+            tag_id = ? and todo_id = ?
+        `
+  ).run(tagId, todoId);
+
+  res.send("ok");
+});
+
+app.post("/delete-tag", withAuth(), (req, res) => {
   const { tagId } = req.body;
 
   const usedTagsArr = db

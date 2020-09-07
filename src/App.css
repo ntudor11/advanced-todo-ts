@@ -55,12 +55,28 @@ body.dark-mode {
   color: #999;
 }
 
+body.light-mode .modal-content {
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+body.dark-mode .modal-content {
+  background-color: #1a1919;
+  color: #999;
+}
+
 body.dark-mode .table {
   color: #999;
 }
 
 body.dark-mode .table tr:hover {
   color: #ddd;
+}
+
+.react-datetime-picker {
+  background-color: #fff;
+  margin-left:5px;
+  margin-right: 5px;
 }
 
 .table th{
@@ -108,4 +124,8 @@ a {
 .doneItem {
   text-decoration: line-through;
   color: #ccc;
+}
+
+.taskNameTh, .removeTagIcon {
+  cursor: pointer;
 }

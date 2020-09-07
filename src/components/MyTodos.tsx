@@ -4,6 +4,11 @@ import InputRange from "react-input-range";
 import FlipMove from "react-flip-move";
 import "react-input-range/lib/css/index.css";
 import { deleteTodo, updateTodoStatus } from "./Functions";
+import { ModalEditTask } from "../views/modals/ModalEditTask";
+
+const formIds = {
+  viewTask: "view-task",
+};
 
 class MyTodos extends Component<{}, any> {
   constructor(props: any) {
@@ -21,10 +26,20 @@ class MyTodos extends Component<{}, any> {
       isActive: 1,
       range: { min: 1, max: 10 },
       sortBy: "priority",
+      showModal: "",
+      editTodo: {},
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onChangeEditTodo = this.onChangeEditTodo.bind(this);
+    this.onSubmitEdit = this.onSubmitEdit.bind(this);
+    this.handleShow = this.handleShow.bind(this);
+    this.getDeadlines = this.getDeadlines.bind(this);
+    this.getMin = this.getMin.bind(this);
+    this.getMax = this.getMax.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.convertDate = this.convertDate.bind(this);
   }
 
   getDeadlines() {
@@ -37,11 +52,40 @@ class MyTodos extends Component<{}, any> {
   }
 
   getMin(arr: any) {
-    return Math.min(...arr);
+    // return Math.min(...arr);
+    if (!arr) {
+      return null;
+    }
+    var minV = arr[0];
+    arr.forEach((a: any) => {
+      if (a < minV) minV = a;
+    });
+    return minV;
   }
 
   getMax(arr: any) {
-    return Math.max(...arr);
+    // return Math.max(...arr);
+    if (!arr) {
+      return null;
+    }
+    var maxV = arr[0];
+    arr.forEach((a: any) => {
+      if (a > maxV) maxV = a;
+    });
+    return maxV;
+  }
+
+  getMinMax(arr: any) {
+    if (!arr) {
+      return null;
+    }
+    var minV = arr[0];
+    var maxV = arr[0];
+    arr.forEach((a: any) => {
+      if (a < minV) minV = a;
+      if (a > maxV) maxV = a;
+    });
+    return { minV, maxV };
   }
 
   onChange(e: any) {
@@ -51,8 +95,40 @@ class MyTodos extends Component<{}, any> {
     this.setState({ [target.name]: value });
   }
 
+  onChangeEditTodo(e: any) {
+    const { editTodo } = this.state;
+    this.setState({
+      editTodo: {
+        ...editTodo,
+        [e.target.name]: e.target.value,
+      },
+    });
+  }
+
+  convertDate(date: any) {
+    const { editTodo } = this.state;
+    this.setState({
+      editTodo: {
+        ...editTodo,
+        deadline: date.toISOString(),
+      },
+    });
+  }
+
   onSubmit(e: any) {
     e.preventDefault();
+  }
+
+  onSubmitEdit(e: any) {
+    e.preventDefault();
+  }
+
+  handleShow(id: string) {
+    this.setState({ showModal: id });
+  }
+
+  handleClose() {
+    this.setState({ showModal: null });
   }
 
   componentDidMount() {
@@ -87,6 +163,8 @@ class MyTodos extends Component<{}, any> {
       isActive,
       range,
       sortBy,
+      editTodo,
+      showModal,
     } = this.state;
 
     // const { task, description, deadline, priority, tags, status } = todos;
@@ -119,7 +197,7 @@ class MyTodos extends Component<{}, any> {
       (sortBy === "task" &&
         arr.sort((a: any, b: any) => a.task.localeCompare(b.task))) ||
       (sortBy === "date" &&
-        arr.sort((a: any, b: any) => b.deadline.localeCompare(a.deadline)));
+        arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline)));
 
     const todoItem = (array: any) =>
       array.map((item: any) => (
@@ -167,7 +245,29 @@ class MyTodos extends Component<{}, any> {
           </th>
 
           <th className="text-left">
-            <p>{item.task}</p>
+            <p
+              className="taskNameTh"
+              onClick={() => {
+                this.setState({
+                  editTodo: {
+                    ...editTodo,
+                    id: item.id,
+                    task: item.task,
+                    description: item.description,
+                    priority: item.priority,
+                    status: {
+                      statusId: item.status.statusId,
+                      statusName: item.status.statusName,
+                    },
+                    tags: item.tags.map((tag: any) => tag),
+                    deadline: item.deadline,
+                  },
+                });
+                this.handleShow(formIds.viewTask);
+              }}
+            >
+              {item.task}
+            </p>
           </th>
 
           <th className="text-left tagsField">
@@ -184,8 +284,8 @@ class MyTodos extends Component<{}, any> {
             </p>
           </th>
 
-          <th>
-            <p>{item.deadline}</p>
+          <th className="text-left">
+            <p>{new Date(item.deadline).toLocaleString()}</p>
           </th>
 
           <th className="align-middle">
@@ -313,7 +413,7 @@ class MyTodos extends Component<{}, any> {
                 {/* <ul id="todoListing">{todoItem(filteredElementsAll)}</ul> */}
 
                 <Table hover size="sm" responsive="xs" className="table">
-                  <thead>
+                  {/*<thead>
                     <tr>
                       <th className="text-left">Status</th>
                       <th className="text-left" />
@@ -322,7 +422,7 @@ class MyTodos extends Component<{}, any> {
                       <th className="text-left">Deadline</th>
                       <th />
                     </tr>
-                  </thead>
+                  </thead>*/}
                   <FlipMove typeName="tbody" easing="ease">
                     {isActive === 1
                       ? todoItem(
@@ -339,6 +439,37 @@ class MyTodos extends Component<{}, any> {
             </Row>
           </Col>
         </Row>
+
+        <ModalEditTask
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          taskObj={editTodo}
+          convertDate={this.convertDate}
+          onExit={() =>
+            this.setState({
+              editTodo: {},
+            })
+          }
+          onSubmit={async (payload: any) => {
+            try {
+              // await this.onSubmitInvest(payload);
+              // this.showAlert();
+              this.setState({
+                alertText: "You have successfully invested in the fund!",
+                isSuccess: true,
+              });
+            } catch (err) {
+              // this.showAlert();
+              this.setState({
+                alertText:
+                  "Your investment could not be processed. Please try again.",
+                isSuccess: false,
+              });
+            }
+          }}
+          onChangeEditTodo={this.onChangeEditTodo}
+        />
       </Container>
     );
   }
