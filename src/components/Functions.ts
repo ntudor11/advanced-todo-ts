@@ -32,6 +32,6 @@ export const deleteTodo = (todo: any) => axios.post("/delete-todo", todo);
 export const removeTagFromTask = (tag: any) =>
   axios.post("/remove-tag-from-task", tag);
 
-export const removeTag = (tag: any) => axios.post("/delete-tag", tag);
+export const removeTag = (tagId: any) => axios.post("/delete-tag", tagId);
 
 export const addNewTag = (newTag: any) => axios.post("/add-tag", newTag);

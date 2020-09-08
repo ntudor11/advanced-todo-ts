@@ -43,7 +43,7 @@ class MyTodos extends Component<{}, any> {
       sortBy: "priority",
       showModal: "",
       editTodo: {},
-      newTag: {},
+      newTag: { tagName: "", tagColor: "" },
       statuses: [],
       tags: [],
     };
@@ -138,20 +138,30 @@ class MyTodos extends Component<{}, any> {
   }
 
   delTag(tagId: any) {
-    removeTag(tagId).then((res: any) => {
-      if (res) {
-        // this.handleClose();
-        try {
-          fetch(`/tags`)
-            .then((data) => data.json())
-            .then((data) => {
-              this.setState({ tags: data });
-            });
-        } catch (e) {
-          console.log(`${e}`);
+    const { todos } = this.state;
+    const tagsArr: string[] = [];
+    todos.map((todo: any) =>
+      todo.tags.forEach((tag: any) => {
+        tagsArr.push(tag.tagId);
+      })
+    );
+    if (!tagsArr.includes(tagId.tagId)) {
+      removeTag(tagId).then((res: any) => {
+        if (res) {
+          try {
+            fetch(`/tags`)
+              .then((data) => data.json())
+              .then((data) => {
+                this.setState({ tags: data });
+              });
+          } catch (e) {
+            console.log(`${e}`);
+          }
         }
-      }
-    });
+      });
+    } else {
+      console.log("tag cannot be deleted");
+    }
   }
 
   onChangeNewTagColor(color: any) {
@@ -200,7 +210,10 @@ class MyTodos extends Component<{}, any> {
             fetch(`/tags`)
               .then((data) => data.json())
               .then((data) => {
-                this.setState({ tags: data });
+                this.setState({
+                  tags: data,
+                  newTag: { tagName: "", tagColor: "" },
+                });
               });
           } catch (e) {
             console.log(`${e}`);
@@ -208,7 +221,7 @@ class MyTodos extends Component<{}, any> {
         }
       });
     } else {
-      console.log("err");
+      console.log("This tag already exists!");
     }
   }
 
@@ -582,7 +595,7 @@ class MyTodos extends Component<{}, any> {
           onChangeNewTag={this.onChangeNewTag}
           onSubmitNewTag={this.onSubmitNewTag}
           activeColor={newTag.tagColor}
-          removeTag={this.delTag}
+          delTag={(tagId: any) => this.delTag(tagId)}
           onChangeNewTagColor={this.onChangeNewTagColor}
           onExit={() =>
             this.setState({

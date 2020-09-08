@@ -1,5 +1,4 @@
 /* eslint react/require-default-props: 0 */
-/* eslint react/forbid-prop-types: 0 */
 import React from "react";
 import { Button, Modal, Form, Badge } from "react-bootstrap";
 import { CompactPicker } from "react-color";
@@ -16,7 +15,7 @@ export const ModalNewTag = (props: any) => {
     tags,
     newTag,
     activeColor,
-    removeTag,
+    delTag,
   } = props;
 
   // delete tag on badge, directly import from functions
@@ -39,7 +38,7 @@ export const ModalNewTag = (props: any) => {
               <Form.Label>Tag Name</Form.Label>
               <Form.Control
                 name="tagName"
-                defaultValue=""
+                value={newTag.tagName}
                 type="text"
                 placeholder="Enter tag name"
                 isInvalid={
@@ -76,7 +75,8 @@ export const ModalNewTag = (props: any) => {
                   className="icon mdi mdi-close removeTagIcon"
                   onClick={() => {
                     const tagId = tag.tagId;
-                    removeTag(tagId);
+                    console.log(tagId);
+                    delTag({ tagId });
                   }}
                 ></i>
               </Badge>
@@ -93,7 +93,12 @@ export const ModalNewTag = (props: any) => {
           Close
         </Button>
 
-        <Button variant="dark" form="formNewTag" type="submit">
+        <Button
+          variant="dark"
+          form="formNewTag"
+          type="submit"
+          // disabled={newTag && newTag.tagName.length === 0}
+        >
           Add Tag
         </Button>
       </Modal.Footer>

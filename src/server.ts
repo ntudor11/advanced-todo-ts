@@ -399,17 +399,16 @@ app.post("/delete-tag", withAuth(), (req, res) => {
     )
     .all(tagId);
 
-  if (!usedTagsArr.includes(tagId)) {
-    db.prepare(
-      `
+  // if (!usedTagsArr.includes(tagId)) {
+  db.prepare(
+    `
           delete from tags where
             id = ?
         `
-    ).run(tagId);
-    res.send("ok");
-  }
-  console.log("tag can't be deleted");
-  res.send({ error: "tag is used, you cannot delete it" });
+  ).run(tagId);
+  res.send("ok");
+  // }
+  // res.send({ error: "tag is used, you cannot delete it" });
 });
 
 app.get("/checkToken", withAuth(), (req, res) => {
