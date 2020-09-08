@@ -125,7 +125,29 @@ app.get("/my-todos", withAuth(), (req: any, res) => {
     todo.status = todoStatus;
   });
 
-  res.send({ todos });
+  const statuses = db
+    .prepare(
+      `
+        select distinct s.id as statusId, s.name as statusName
+          from status s;
+      `
+    )
+    .all();
+
+  res.send({ todos, statuses });
+});
+
+app.get("/tags", withAuth(), (req: any, res) => {
+  const tags = db
+    .prepare(
+      `
+        select id as tagId, name as tagName, color as tagColor
+        from tags
+      `
+    )
+    .all();
+
+  res.send(tags);
 });
 
 app.post("/login", (req, res) => {
@@ -327,8 +349,8 @@ app.post("/delete-todo", withAuth(), (req, res) => {
   res.send("ok");
 });
 
-app.post("/addTag", withAuth(), (req, res) => {
-  const { name, color } = req.body;
+app.post("/add-tag", withAuth(), (req, res) => {
+  const { tagName, tagColor } = req.body;
 
   const insideTagsArr = db
     .prepare(
@@ -337,17 +359,17 @@ app.post("/addTag", withAuth(), (req, res) => {
         where name = ?
       `
     )
-    .run(name);
+    .all(tagName);
 
-  if (!insideTagsArr.includes(name)) {
+  if (!insideTagsArr.includes(tagName)) {
     db.prepare(
       `
           insert into tags
             (name, color)
             values (?, ?)
         `
-    ).run(name, color);
-    res.send(name);
+    ).run(tagName, tagColor);
+    res.send(tagName);
   }
   res.send({ error: "tag already exists" });
 });
@@ -375,7 +397,7 @@ app.post("/delete-tag", withAuth(), (req, res) => {
         where tag_id = ?
       `
     )
-    .run(tagId);
+    .all(tagId);
 
   if (!usedTagsArr.includes(tagId)) {
     db.prepare(
@@ -386,6 +408,7 @@ app.post("/delete-tag", withAuth(), (req, res) => {
     ).run(tagId);
     res.send("ok");
   }
+  console.log("tag can't be deleted");
   res.send({ error: "tag is used, you cannot delete it" });
 });
 

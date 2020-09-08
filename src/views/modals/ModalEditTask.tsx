@@ -1,7 +1,7 @@
 /* eslint react/require-default-props: 0 */
 /* eslint react/forbid-prop-types: 0 */
 import React from "react";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Badge } from "react-bootstrap";
 import { removeTagFromTask } from "../../components/Functions";
 
 export const ModalEditTask = (props: any) => {
@@ -16,7 +16,13 @@ export const ModalEditTask = (props: any) => {
     taskObj,
     convertDate,
     removeTag,
+    statuses,
   } = props;
+
+  const activeStatus = () =>
+    statuses.map((stat: any) =>
+      stat.statusName === taskObj.status.statusName ? stat.statusName : ""
+    );
 
   return (
     <Modal
@@ -25,6 +31,7 @@ export const ModalEditTask = (props: any) => {
       id={formIds.viewTask}
       onHide={handleClose}
       onExit={onExit}
+      dialogClassName="modal-90w"
     >
       <Modal.Header>Edit Task: {taskObj.task}</Modal.Header>
       <Modal.Body>
@@ -46,6 +53,23 @@ export const ModalEditTask = (props: any) => {
             </Form.Control>
           </Form.Group>
 
+          <Form.Group className="formTemplate" controlId="formEditStatus">
+            <Form.Label>Choose Status</Form.Label>
+            <Form.Control
+              as="select"
+              name="status"
+              defaultValue={taskObj.status}
+              onChange={onChangeEditTodo}
+            >
+              <option value="" disabled>
+                Choose Type
+              </option>
+              {statuses.map((status: any) => (
+                <option value={status.statusName}>{status.statusName}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+
           <Form.Group controlId="formBasicDeadline">
             <Form.Label>Deadline</Form.Label>
             <Form.Control
@@ -59,7 +83,7 @@ export const ModalEditTask = (props: any) => {
           <div>
             {taskObj.tags &&
               taskObj.tags.map((tag: any) => (
-                <span
+                <Badge
                   key={tag.tagId}
                   style={{ backgroundColor: tag.color }}
                   className="tagSpan"
@@ -73,9 +97,18 @@ export const ModalEditTask = (props: any) => {
                       removeTagFromTask({ tagId, todoId });
                     }}
                   ></i>
-                </span>
+                </Badge>
               ))}
           </div>
+
+          <span>Description</span>
+          <Form.Control
+            as="textarea"
+            rows={6}
+            name="description"
+            defaultValue={taskObj.description}
+            onChange={onChangeEditTodo}
+          />
         </Form>
       </Modal.Body>
       <Modal.Footer>
@@ -94,11 +127,9 @@ export const ModalEditTask = (props: any) => {
           form="formEditTask"
           type="submit"
         >
-          Edit Task
+          Update Task
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
-
-// export default ModalEditTask;

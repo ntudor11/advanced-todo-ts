@@ -1,13 +1,29 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Form, Button, Table } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Table,
+  Badge,
+} from "react-bootstrap";
 import InputRange from "react-input-range";
 import FlipMove from "react-flip-move";
 import "react-input-range/lib/css/index.css";
-import { deleteTodo, updateTodoStatus } from "./Functions";
+import {
+  deleteTodo,
+  updateTodoStatus,
+  addNewTag,
+  removeTag,
+} from "./Functions";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
+import { ModalNewTag } from "../views/modals/ModalNewTag";
 
 const formIds = {
   viewTask: "view-task",
+  newTag: "new-tag",
+  newTask: "new-task",
 };
 
 class MyTodos extends Component<{}, any> {
@@ -19,7 +35,6 @@ class MyTodos extends Component<{}, any> {
       description: "",
       deadline: "",
       priority: "",
-      tags: "",
       status: {},
       todos: [],
       filterStr: "",
@@ -28,16 +43,23 @@ class MyTodos extends Component<{}, any> {
       sortBy: "priority",
       showModal: "",
       editTodo: {},
+      newTag: {},
+      statuses: [],
+      tags: [],
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onChangeEditTodo = this.onChangeEditTodo.bind(this);
+    this.onChangeNewTag = this.onChangeNewTag.bind(this);
+    this.onChangeNewTagColor = this.onChangeNewTagColor.bind(this);
     this.onSubmitEdit = this.onSubmitEdit.bind(this);
+    this.onSubmitNewTag = this.onSubmitNewTag.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.getDeadlines = this.getDeadlines.bind(this);
     this.getMin = this.getMin.bind(this);
     this.getMax = this.getMax.bind(this);
+    this.delTag = this.delTag.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.convertDate = this.convertDate.bind(this);
   }
@@ -105,6 +127,43 @@ class MyTodos extends Component<{}, any> {
     });
   }
 
+  onChangeNewTag(e: any) {
+    const { newTag } = this.state;
+    this.setState({
+      newTag: {
+        ...newTag,
+        [e.target.name]: e.target.value,
+      },
+    });
+  }
+
+  delTag(tagId: any) {
+    removeTag(tagId).then((res: any) => {
+      if (res) {
+        // this.handleClose();
+        try {
+          fetch(`/tags`)
+            .then((data) => data.json())
+            .then((data) => {
+              this.setState({ tags: data });
+            });
+        } catch (e) {
+          console.log(`${e}`);
+        }
+      }
+    });
+  }
+
+  onChangeNewTagColor(color: any) {
+    const { newTag } = this.state;
+    this.setState({
+      newTag: {
+        ...newTag,
+        tagColor: color.hex,
+      },
+    });
+  }
+
   convertDate(date: any) {
     const { editTodo } = this.state;
     this.setState({
@@ -121,6 +180,36 @@ class MyTodos extends Component<{}, any> {
 
   onSubmitEdit(e: any) {
     e.preventDefault();
+  }
+
+  onSubmitNewTag(e: any) {
+    e.preventDefault();
+    const { newTag, tags } = this.state;
+    if (
+      tags &&
+      !tags
+        .map((tag: any) => {
+          return tag.tagName;
+        })
+        .includes(newTag.tagName)
+    ) {
+      addNewTag(newTag).then((res: any) => {
+        if (res) {
+          // this.handleClose();
+          try {
+            fetch(`/tags`)
+              .then((data) => data.json())
+              .then((data) => {
+                this.setState({ tags: data });
+              });
+          } catch (e) {
+            console.log(`${e}`);
+          }
+        }
+      });
+    } else {
+      console.log("err");
+    }
   }
 
   handleShow(id: string) {
@@ -147,6 +236,12 @@ class MyTodos extends Component<{}, any> {
       .then((data) => {
         this.setState(data);
       });
+
+    fetch(`/tags`)
+      .then((data) => data.json())
+      .then((data) => {
+        this.setState({ tags: data });
+      });
   }
 
   render() {
@@ -164,7 +259,9 @@ class MyTodos extends Component<{}, any> {
       range,
       sortBy,
       editTodo,
+      newTag,
       showModal,
+      statuses,
     } = this.state;
 
     // const { task, description, deadline, priority, tags, status } = todos;
@@ -273,13 +370,13 @@ class MyTodos extends Component<{}, any> {
           <th className="text-left tagsField">
             <p>
               {item.tags.map((tag: any) => (
-                <span
+                <Badge
                   key={tag.tagId}
                   style={{ backgroundColor: tag.color }}
                   className="tagSpan"
                 >
                   {tag.tagName}
-                </span>
+                </Badge>
               ))}
             </p>
           </th>
@@ -324,63 +421,99 @@ class MyTodos extends Component<{}, any> {
           className="justify-content-sm-center row-loginSignup"
         >
           <Col xs={12} md={3} className="aside">
-            <h3>Search</h3>
+            <Row className="addNewButtons">
+              <Col>
+                <Button
+                  size="sm"
+                  block
+                  className="btnDefault"
+                  type="submit"
+                  variant="outline-info"
+                  onClick={() => {
+                    this.handleShow(formIds.newTask);
+                  }}
+                >
+                  New Task <i className="icon mdi mdi-format-list-checkbox" />
+                </Button>
+              </Col>
 
-            <input
-              style={{ width: "100%" }}
-              type="text"
-              className="search-input-left"
-              value={filterStr}
-              placeholder="Search here"
-              onChange={(e) => this.setState({ filterStr: e.target.value })}
-            />
+              <Col>
+                <Button
+                  size="sm"
+                  className="btnDefault"
+                  block
+                  type="submit"
+                  variant="outline-info"
+                  onClick={() => {
+                    this.handleShow(formIds.newTag);
+                  }}
+                >
+                  New Tag <i className="icon mdi mdi-tag-outline" />
+                </Button>
+              </Col>
+            </Row>
 
-            <h3>Filter</h3>
+            <Row>
+              <Col>
+                <h3>Search</h3>
 
-            <div className="pretty p-default p-curve">
-              <input
-                type="checkbox"
-                name="isActive"
-                value={isActive}
-                onChange={this.onChange}
-                checked={isActive}
-              />
-              <div className="state p-info">
-                <label>Active</label>
-              </div>
-            </div>
+                <input
+                  style={{ width: "100%" }}
+                  type="text"
+                  className="search-input-left"
+                  value={filterStr}
+                  placeholder="Search here"
+                  onChange={(e) => this.setState({ filterStr: e.target.value })}
+                />
 
-            <div>
-              <label>By Date</label>
-              <InputRange
-                // maxValue={this.getMax(this.getDeadlines())}
-                // minValue={this.getMin(this.getDeadlines())}
-                maxValue={10}
-                minValue={1}
-                allowSameValues={true}
-                step={1}
-                value={this.state.range}
-                onChange={(range) => this.setState({ range })}
-              />
-            </div>
+                <h3>Filter</h3>
 
-            <h3>Sort By</h3>
+                <div className="pretty p-default p-curve">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    value={isActive}
+                    onChange={this.onChange}
+                    checked={isActive}
+                  />
+                  <div className="state p-info">
+                    <label>Active</label>
+                  </div>
+                </div>
 
-            <div>
-              <Form.Control
-                as="select"
-                name="sortBy"
-                value={sortBy}
-                onChange={this.onChange}
-              >
-                <option value="" disabled>
-                  Choose Type
-                </option>
-                <option value="priority">Priority</option>
-                <option value="date">Date</option>
-                <option value="task">Task</option>
-              </Form.Control>
-            </div>
+                <div>
+                  <label>By Date</label>
+                  <InputRange
+                    // maxValue={this.getMax(this.getDeadlines())}
+                    // minValue={this.getMin(this.getDeadlines())}
+                    maxValue={10}
+                    minValue={1}
+                    allowSameValues={true}
+                    step={1}
+                    value={this.state.range}
+                    onChange={(range) => this.setState({ range })}
+                  />
+                </div>
+
+                <h3>Sort By</h3>
+
+                <div>
+                  <Form.Control
+                    as="select"
+                    name="sortBy"
+                    value={sortBy}
+                    onChange={this.onChange}
+                  >
+                    <option value="" disabled>
+                      Choose Type
+                    </option>
+                    <option value="priority">Priority</option>
+                    <option value="date">Date</option>
+                    <option value="task">Task</option>
+                  </Form.Control>
+                </div>
+              </Col>
+            </Row>
           </Col>
           <Col xs={{ span: 12 }} md={9}>
             <Row className="justify-content-sm-center">
@@ -440,12 +573,31 @@ class MyTodos extends Component<{}, any> {
           </Col>
         </Row>
 
+        <ModalNewTag
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          tags={tags}
+          newTag={newTag}
+          onChangeNewTag={this.onChangeNewTag}
+          onSubmitNewTag={this.onSubmitNewTag}
+          activeColor={newTag.tagColor}
+          removeTag={this.delTag}
+          onChangeNewTagColor={this.onChangeNewTagColor}
+          onExit={() =>
+            this.setState({
+              newTag: {},
+            })
+          }
+        />
+
         <ModalEditTask
           formIds={formIds}
           showModal={showModal}
           handleClose={this.handleClose}
           taskObj={editTodo}
           convertDate={this.convertDate}
+          statuses={statuses}
           onExit={() =>
             this.setState({
               editTodo: {},

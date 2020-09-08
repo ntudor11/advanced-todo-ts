@@ -110,11 +110,12 @@ a {
 }
 
 .tagSpan {
-  padding:5px;
+  /* padding:5px;
   border-radius:5px;
-  margin: 2px;
+  margin: 2px; */
   color: #fff;
-  font-size:10pt;
+  font-weight: 500 !important;
+  margin: 4px;
 }
 
 .tagsField {
