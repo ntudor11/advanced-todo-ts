@@ -7,6 +7,10 @@
   pointer-events: none;
 }
 
+nav {
+  margin-bottom: 2em;
+}
+
 p {
   margin-top: 1rem !important;
 }
@@ -129,4 +133,17 @@ a {
 
 .taskNameTh, .removeTagIcon {
   cursor: pointer;
+}
+
+.topRowModal {
+  width: 100%;
+}
+
+.aside {
+  border-right: 10px solid #ccc !important;
+  padding-right: 1em;
+}
+
+.aside input, .aside h3 {
+  margin-top:1em;
 }

@@ -533,31 +533,6 @@ class MyTodos extends Component<{}, any> {
               <Col sm={8} md={8} className="loginBlock">
                 <h2>My Todos</h2>
 
-                <Form noValidate onSubmit={this.onSubmit}>
-                  <Form.Group
-                    className="formTemplate"
-                    controlId="exampleForm.ControlSelect1"
-                  >
-                    <br />
-
-                    <Form.Group controlId="formBasicTask">
-                      <Form.Control
-                        type="text"
-                        name="task"
-                        placeholder="Enter Task"
-                        value={task}
-                        onChange={this.onChange}
-                      />
-                    </Form.Group>
-
-                    <Button className="btnDefault" type="submit" variant="dark">
-                      Login
-                    </Button>
-                  </Form.Group>
-                </Form>
-
-                {/* <ul id="todoListing">{todoItem(filteredElementsAll)}</ul> */}
-
                 <Table hover size="sm" responsive="xs" className="table">
                   {/*<thead>
                     <tr>
@@ -599,7 +574,7 @@ class MyTodos extends Component<{}, any> {
           onChangeNewTagColor={this.onChangeNewTagColor}
           onExit={() =>
             this.setState({
-              newTag: {},
+              newTag: { tagName: "" },
             })
           }
         />
@@ -621,14 +596,13 @@ class MyTodos extends Component<{}, any> {
               // await this.onSubmitInvest(payload);
               // this.showAlert();
               this.setState({
-                alertText: "You have successfully invested in the fund!",
+                alertText: "",
                 isSuccess: true,
               });
             } catch (err) {
               // this.showAlert();
               this.setState({
-                alertText:
-                  "Your investment could not be processed. Please try again.",
+                alertText: "",
                 isSuccess: false,
               });
             }

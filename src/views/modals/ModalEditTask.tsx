@@ -1,7 +1,7 @@
 /* eslint react/require-default-props: 0 */
 /* eslint react/forbid-prop-types: 0 */
 import React from "react";
-import { Button, Modal, Form, Badge } from "react-bootstrap";
+import { Button, Modal, Form, Badge, Row, Col } from "react-bootstrap";
 import { removeTagFromTask } from "../../components/Functions";
 
 export const ModalEditTask = (props: any) => {
@@ -14,7 +14,6 @@ export const ModalEditTask = (props: any) => {
     onSubmitEdit,
     onChangeEditTodo,
     taskObj,
-    convertDate,
     removeTag,
     statuses,
   } = props;
@@ -33,7 +32,35 @@ export const ModalEditTask = (props: any) => {
       onExit={onExit}
       dialogClassName="modal-90w"
     >
-      <Modal.Header>Edit Task: {taskObj.task}</Modal.Header>
+      <Modal.Header>
+        <Row className="topRowModal">
+          <Col>
+            <p>Edit Task: {taskObj.task}</p>
+          </Col>
+          <Col>
+            <div className="align-right" style={{ float: "right" }}>
+              {taskObj.tags &&
+                taskObj.tags.map((tag: any) => (
+                  <Badge
+                    key={tag.tagId}
+                    style={{ backgroundColor: tag.color }}
+                    className="tagSpan"
+                  >
+                    {tag.tagName}
+                    <i
+                      className="icon mdi mdi-close removeTagIcon"
+                      onClick={() => {
+                        const tagId = tag.tagId;
+                        const todoId = taskObj.id;
+                        removeTagFromTask({ tagId, todoId });
+                      }}
+                    ></i>
+                  </Badge>
+                ))}
+            </div>
+          </Col>
+        </Row>
+      </Modal.Header>
       <Modal.Body>
         <Form noValidate onSubmit={onSubmitEdit} id="formUpdateKpis">
           <Form.Group className="formTemplate" controlId="formEditTodo">
@@ -65,7 +92,9 @@ export const ModalEditTask = (props: any) => {
                 Choose Type
               </option>
               {statuses.map((status: any) => (
-                <option value={status.statusName}>{status.statusName}</option>
+                <option key={status.statusName} value={status.statusName}>
+                  {status.statusName}
+                </option>
               ))}
             </Form.Control>
           </Form.Group>
@@ -79,27 +108,6 @@ export const ModalEditTask = (props: any) => {
               placeholder="Enter date"
             />
           </Form.Group>
-
-          <div>
-            {taskObj.tags &&
-              taskObj.tags.map((tag: any) => (
-                <Badge
-                  key={tag.tagId}
-                  style={{ backgroundColor: tag.color }}
-                  className="tagSpan"
-                >
-                  {tag.tagName}
-                  <i
-                    className="icon mdi mdi-close removeTagIcon"
-                    onClick={() => {
-                      const tagId = tag.tagId;
-                      const todoId = taskObj.id;
-                      removeTagFromTask({ tagId, todoId });
-                    }}
-                  ></i>
-                </Badge>
-              ))}
-          </div>
 
           <span>Description</span>
           <Form.Control

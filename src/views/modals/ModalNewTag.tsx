@@ -97,7 +97,7 @@ export const ModalNewTag = (props: any) => {
           variant="dark"
           form="formNewTag"
           type="submit"
-          // disabled={newTag && newTag.tagName.length === 0}
+          disabled={showModal && newTag.tagName.length === 0}
         >
           Add Tag
         </Button>
