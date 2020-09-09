@@ -18,10 +18,21 @@ export const ModalEditTask = (props: any) => {
     statuses,
   } = props;
 
+  // todo concat date time inputs
+
   const activeStatus = () =>
     statuses.map((stat: any) =>
       stat.statusName === taskObj.status.statusName ? stat.statusName : ""
     );
+
+  // const getDate = () => {
+  //   if (taskObj !== undefined) {
+  //     const { deadline } = taskObj;
+  //     const date = deadline.substring(0, 9);
+  //     const time = deadline.substring(10, 15);
+  //     return date;
+  //   }
+  // };
 
   return (
     <Modal
@@ -103,11 +114,37 @@ export const ModalEditTask = (props: any) => {
             <Form.Label>Deadline</Form.Label>
             <Form.Control
               name="deadline"
-              defaultValue={new Date(taskObj.deadline).toLocaleString()}
+              // defaultValue={new Date(taskObj.deadline).toLocaleString()}
+              defaultValue={
+                taskObj.deadline && taskObj.deadline.substring(0, 10)
+              }
               type="text"
               placeholder="Enter date"
             />
           </Form.Group>
+
+          <Form.Control
+            type="date"
+            id="start"
+            name="trip-start"
+            defaultValue={taskObj.deadline && taskObj.deadline.substring(0, 10)}
+            placeholder="yyyy-mm-dd"
+            // value="2018-07-22"
+            min="2018-01-01"
+            max="2018-12-31"
+          />
+
+          <Form.Control
+            type="time"
+            placeholder="hh:mm"
+            defaultValue={
+              taskObj.deadline && taskObj.deadline.substring(11, 16)
+            }
+            id="appt"
+            name="appt"
+            min="00:00"
+            max="23:59"
+          />
 
           <span>Description</span>
           <Form.Control

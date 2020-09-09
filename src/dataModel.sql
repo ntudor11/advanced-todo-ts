@@ -181,3 +181,23 @@ insert into todos_tags (
 ) values (
   5, 1
 );
+
+update todos
+	set deadline="2020-09-03T12:00"
+    where id=1;
+
+update todos
+	set deadline="2020-09-03T23:50"
+    where id=4;
+
+update todos
+	set deadline="2020-08-27T21:23"
+    where id=2;
+
+update todos
+	set deadline="2020-08-29T09:05"
+    where id=3;
+
+update todos
+	set deadline="2020-09-05T16:30"
+    where id=5;
