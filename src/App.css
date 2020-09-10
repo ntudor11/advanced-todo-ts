@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: 'Lato', helvetica, sans-serif;
 }
 
 .App-logo {
@@ -13,6 +14,17 @@ nav {
 
 p {
   margin-top: 1rem !important;
+}
+
+.asidePanel {
+  padding-top: 2em;
+  height: 100%;
+  padding-right: 2em !important;
+  border-right: 1px solid #424242 !important;
+}
+
+.asidePanel h3 {
+  margin-top:1em;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -45,6 +57,43 @@ p {
   }
 }
 
+.form-control {
+  background-color: rgba(0,0,0,0) !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-radius: 0 !important;
+}
+
+*::selection{
+  background-color: rgba(23, 162, 184, 0.5);
+}
+
+.form-control:focus {
+  border-color: inherit !important;
+  -webkit-box-shadow: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .form-control::placeholder, .form-control {
+  color: #e6e6e6 !important;
+}
+
+.input-range {
+  width: 70%;
+  margin: 1em auto 3em auto;
+}
+
+.input-range__track--active, .input-range__slider {
+  background: #17a2b8;
+  border: #17a2b8;
+}
+
+.input-range__label-container {
+  font-size:8pt;
+}
+
 body {
   margin-top:21em;
 }
@@ -56,7 +105,7 @@ body.light-mode {
 }
 body.dark-mode {
   background-color: #1a1919;
-  color: #999;
+  color: #808080 !important;
 }
 
 body.light-mode .modal-content {
@@ -70,11 +119,43 @@ body.dark-mode .modal-content {
 }
 
 body.dark-mode .table {
-  color: #999;
+  color: #cccccc;
 }
 
 body.dark-mode .table tr:hover {
   color: #ddd;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
+  color: #17a2b8;
+}
+
+body.dark-mode .navbar {
+  background-color: #1d1d1d;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .navbar a {
+  transition: background-color 0.3s ease;
+  color: #8f8f8f !important;
+}
+
+body.dark-mode .navbar .active {
+  transition: background-color 0.3s ease;
+  color: #ffffff !important;
+}
+
+body.dark-mode #todosTable .todoItem th {
+  border-top: 1px solid #424242 !important;
+}
+
+body.dark-mode #todosTable tr:hover {
+  transition: .3s ease;
+}
+
+body.light-mode .navbar {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s ease;
 }
 
 .react-datetime-picker {
@@ -84,7 +165,7 @@ body.dark-mode .table tr:hover {
 }
 
 .table th{
-  font-weight: 100;
+  font-weight: 200;
   font-size:11pt;
 }
 
@@ -141,13 +222,4 @@ a {
 
 .topRowModal {
   width: 100%;
-}
-
-.aside {
-  border-right: 10px solid #ccc !important;
-  padding-right: 1em;
-}
-
-.aside h3 {
-  margin-top:1em;
 }

@@ -58,12 +58,10 @@ class NavBar extends Component<any, any> {
 
   render() {
     const { isScrolled, image } = this.state;
-    const { loggedIn, isDark } = this.props;
+    const { loggedIn } = this.props;
 
     const loginRegLink = (
       <Navbar
-        bg={isDark ? "dark" : "light"}
-        variant={isDark ? "dark" : "light"}
         // fixed="top"
         collapseOnSelect
         id={isScrolled ? "" : "navScrolled"}
@@ -121,8 +119,6 @@ class NavBar extends Component<any, any> {
 
     const userLink = (
       <Navbar
-        bg={isDark ? "dark" : "light"}
-        variant={isDark ? "dark" : "light"}
         // fixed="top"
         collapseOnSelect
         className={isScrolled ? "navUnscrolled" : "navScrolled"}

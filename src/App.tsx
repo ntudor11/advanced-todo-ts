@@ -12,18 +12,11 @@ import "./styles.scss";
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isDark, setDark] = useState(false);
 
   useEffect(() => {
     fetch("/checkToken").then(
       ({ status }) => status === 200 && setLoggedIn(true)
     );
-  }, []);
-
-  useEffect(() => {
-    if (document.body.classList.contains("dark-mode")) {
-      setDark(true);
-    }
   }, []);
 
   // const PrivateRoute: any = ({ comp: MyComponent, ...rest }: { comp: any }) => (
@@ -51,7 +44,7 @@ const App = () => {
   return (
     <Router>
       <div className="App">
-        <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} isDark={isDark} />
+        <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
         <Switch>
           <PrivateRoute exact path="/todos" comp={MyTodos} />
 

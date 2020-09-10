@@ -346,6 +346,7 @@ class MyTodos extends Component<{}, any> {
               return resultItem.status.statusId === 4;
             },
             "priority",
+            "deadline",
           ],
           ["asc", "asc"]
         )) ||
@@ -358,6 +359,7 @@ class MyTodos extends Component<{}, any> {
               return resultItem.status.statusId === 4;
             },
             "task",
+            "deadline",
           ],
           ["asc", "asc"]
         )) ||
@@ -369,6 +371,7 @@ class MyTodos extends Component<{}, any> {
               return resultItem.status.statusId === 4;
             },
             "deadline",
+            "priority",
           ],
           ["asc", "asc"]
         ));
@@ -379,7 +382,10 @@ class MyTodos extends Component<{}, any> {
           key={item.id}
           className={`todoItem ${item.status.statusId === 4 && `doneItem`}`}
         >
-          <th className="align-middle">
+          <th
+            className="align-middle"
+            // style={{ borderTop: "1px solid #424242" }}
+          >
             <div className="pretty p-icon p-round p-bigger">
               <input
                 type="checkbox"
@@ -485,7 +491,7 @@ class MyTodos extends Component<{}, any> {
                 });
               }}
             >
-              🗑
+              <i className="icon mdi mdi-delete-outline" />
             </Button>
           </th>
         </tr>
@@ -497,7 +503,7 @@ class MyTodos extends Component<{}, any> {
           id="row-login"
           className="justify-content-sm-center row-loginSignup"
         >
-          <Col xs={12} md={3} className="aside">
+          <Col xs={12} md={3} className="asidePanel sticky-top">
             <Row className="addNewButtons">
               <Col>
                 <Button
@@ -534,7 +540,7 @@ class MyTodos extends Component<{}, any> {
               <Col>
                 <h3>Search</h3>
 
-                <input
+                <Form.Control
                   style={{ width: "100%" }}
                   type="text"
                   className="search-input-left"
@@ -545,7 +551,10 @@ class MyTodos extends Component<{}, any> {
 
                 <h3>Filter</h3>
 
-                <div className="pretty p-default p-curve">
+                <div
+                  className="pretty p-default p-curve"
+                  style={{ marginBottom: "2em" }}
+                >
                   <input
                     type="checkbox"
                     name="isActive"
@@ -567,7 +576,9 @@ class MyTodos extends Component<{}, any> {
                     minValue={new Date(
                       this.getMin(this.getDeadlines())
                     ).getTime()}
-                    formatLabel={(value) => new Date(value).toLocaleString()}
+                    formatLabel={(value) =>
+                      new Date(value).toLocaleString().substring(0, 10)
+                    }
                     allowSameValues={true}
                     value={this.state.range}
                     onChange={(range) => this.setState({ range })}
@@ -599,7 +610,13 @@ class MyTodos extends Component<{}, any> {
               <Col sm={8} md={8} className="loginBlock">
                 <h2>My Todos</h2>
 
-                <Table hover size="sm" responsive="xs" className="table">
+                <Table
+                  hover
+                  size="sm"
+                  responsive="xs"
+                  className="table"
+                  id="todosTable"
+                >
                   {/*<thead>
                     <tr>
                       <th className="text-left">Status</th>

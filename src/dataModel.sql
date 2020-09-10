@@ -132,12 +132,17 @@ insert into todos (
 
 insert into tags (name, color) values (
   "work",
-  "#ff0000"
+  "#9F0500"
 );
 
 insert into tags (name, color) values (
   "private",
-  "#00ff00"
+  "#808900"
+);
+
+insert into tags (name, color) values (
+  "uni",
+  "#0C797D"
 );
 
 insert into todos_tags (
@@ -250,7 +255,7 @@ insert into todos (task, description, deadline, priority, status_id, user_id)
 	values (
       "playbasketball",
       "at the local idraetsanlaeg",
-      "2020-09-31T16:30",
+      "2020-09-30T16:30",
       "High",
       3,
       1
