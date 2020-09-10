@@ -14,6 +14,7 @@ export const ModalNewTask = (props: any) => {
     onSubmitEdit,
     onChangeEditTodo,
     taskObj,
+    tags,
     removeTag,
     statuses,
   } = props;
@@ -74,8 +75,8 @@ export const ModalNewTask = (props: any) => {
       </Modal.Header>
       <Modal.Body>
         <Form noValidate onSubmit={onSubmitEdit} id="formUpdateKpis">
-          <Form.Group className="formTemplate" controlId="formEditTodo">
-            <Form.Label>Choose priority</Form.Label>
+          <Form.Group className="formTemplate">
+            <Form.Label>Priority</Form.Label>
             <Form.Control
               as="select"
               name="priority"
@@ -92,7 +93,7 @@ export const ModalNewTask = (props: any) => {
           </Form.Group>
 
           <Form.Group className="formTemplate" controlId="formEditStatus">
-            <Form.Label>Choose Status</Form.Label>
+            <Form.Label>Status</Form.Label>
             <Form.Control
               as="select"
               name="status"
@@ -100,7 +101,7 @@ export const ModalNewTask = (props: any) => {
               onChange={onChangeEditTodo}
             >
               <option value="" disabled>
-                Choose Type
+                Choose Status
               </option>
               {statuses.map((status: any) => (
                 <option key={status.statusName} value={status.statusName}>
@@ -110,7 +111,26 @@ export const ModalNewTask = (props: any) => {
             </Form.Control>
           </Form.Group>
 
-          <Form.Group controlId="formBasicDeadline">
+          <Form.Group>
+            <Form.Label>Choose Tags</Form.Label>
+
+            {tags &&
+              tags.map((tag: any) => (
+                <div key={tag.id} className="pretty p-default p-curve">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    value={tag.tagName}
+                    onChange={onChangeEditTodo}
+                  />
+                  <div className="state p-info">
+                    <label>{tag.tagName}</label>
+                  </div>
+                </div>
+              ))}
+          </Form.Group>
+
+          <Form.Group>
             <Form.Label>Deadline</Form.Label>
             {/* <Form.Control
               name="deadline"
@@ -124,13 +144,10 @@ export const ModalNewTask = (props: any) => {
 
             <Form.Control
               type="date"
-              id="start"
               name="trip-start"
-              defaultValue={
-                taskObj.deadline && taskObj.deadline.substring(0, 10)
-              }
-              placeholder="yyyy-mm-dd"
-              // value="2018-07-22"
+              // value=""
+              // placeholder="yyyy-mm-dd"
+              defaultValue={new Date().toISOString().substring(0, 10)}
               min="2018-01-01"
               max="2018-12-31"
             />
@@ -174,7 +191,7 @@ export const ModalNewTask = (props: any) => {
           form="formEditTask"
           type="submit"
         >
-          Update Task
+          Add Task
         </Button>
       </Modal.Footer>
     </Modal>

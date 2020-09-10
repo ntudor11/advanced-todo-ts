@@ -201,3 +201,67 @@ update todos
 update todos
 	set deadline="2020-09-05T16:30"
     where id=5;
+
+insert into todos (task, description, deadline, priority, status_id, user_id)
+	values (
+      "deliver report",
+      "do not forget about presentation as well",
+      "2020-08-24T17:20",
+      "Medium",
+      2,
+      1
+    );
+
+
+insert into todos (task, description, deadline, priority, status_id, user_id)
+	values (
+      "do presentation",
+      "slide 1 was intro, last slide is thank you page",
+      "2020-08-21T08:00",
+      "Low",
+      3,
+      1
+    );
+
+
+insert into todos (task, description, deadline, priority, status_id, user_id)
+	values (
+      "Cook something sweet",
+      "maybe a lava cake or a profiterole",
+      "2020-10-11T08:50",
+      "High",
+      4,
+      1
+    );
+
+
+insert into todos (task, description, deadline, priority, status_id, user_id)
+	values (
+      "go swimming",
+      "amager or bellevue or hornbaek strand",
+      "2020-10-07T06:00",
+      "High",
+      4,
+      1
+    );
+
+
+insert into todos (task, description, deadline, priority, status_id, user_id)
+	values (
+      "playbasketball",
+      "at the local idraetsanlaeg",
+      "2020-09-31T16:30",
+      "High",
+      3,
+      1
+    );
+
+insert into todos (task, description, deadline, priority, status_id, user_id)
+	values (
+      "go to Switzerland",
+      "St. Moritz, Zurich, Geneve, Pre saint Diddier",
+      "2020-10-04T09:00",
+      "High",
+      2,
+      1
+    );

@@ -122,6 +122,10 @@ a {
   margin: 4px;
 }
 
+.tagSpan .mdi {
+  margin-left: 3px;
+}
+
 .tagsField {
   max-width: 120px;
 }
@@ -131,7 +135,7 @@ a {
   color: #ccc;
 }
 
-.taskNameTh, .removeTagIcon {
+.taskNameTh, .removeTagIcon, .addTagEntirely {
   cursor: pointer;
 }
 

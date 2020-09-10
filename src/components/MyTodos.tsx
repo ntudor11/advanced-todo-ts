@@ -8,6 +8,7 @@ import {
   Table,
   Badge,
 } from "react-bootstrap";
+import _ from "lodash";
 import InputRange from "react-input-range";
 import FlipMove from "react-flip-move";
 import "react-input-range/lib/css/index.css";
@@ -259,16 +260,6 @@ class MyTodos extends Component<{}, any> {
       .then((data) => {
         this.setState({ tags: data });
       });
-
-    // const { range } = this.state;
-    //
-    // this.setState({
-    //   range: {
-    //     ...range,
-    //     min: this.getMin(this.getDeadlines()),
-    //     max: this.getMax(this.getDeadlines()),
-    //   },
-    // });
   }
 
   componentDidUpdate() {
@@ -310,8 +301,6 @@ class MyTodos extends Component<{}, any> {
     // const { tagId, color, tagName } = tags;
 
     console.log(this.state);
-    console.log(new Date(this.getMin(this.getDeadlines())).getTime());
-    console.log(new Date(this.getMax(this.getDeadlines())).getTime());
 
     const filteredElementsAll =
       todos &&
@@ -338,13 +327,51 @@ class MyTodos extends Component<{}, any> {
           new Date(item.deadline).getTime() <= range.max
       );
 
+    // standard sort below
+    // const sortedTodos = (arr: any) =>
+    //   (sortBy === "priority" &&
+    //     arr.sort((a: any, b: any) => a.priority.localeCompare(b.priority))) ||
+    //   (sortBy === "task" &&
+    //     arr.sort((a: any, b: any) => a.task.localeCompare(b.task))) ||
+    //   (sortBy === "date" &&
+    //     arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline)));
+
+    // better sort: sorting and leaving to end of array items with statusId === 4
     const sortedTodos = (arr: any) =>
       (sortBy === "priority" &&
-        arr.sort((a: any, b: any) => a.priority.localeCompare(b.priority))) ||
+        _.orderBy(
+          arr,
+          [
+            function (resultItem) {
+              return resultItem.status.statusId === 4;
+            },
+            "priority",
+          ],
+          ["asc", "asc"]
+        )) ||
+      // arr.sort((a: any, b: any) => a.priority.localeCompare(b.priority))) ||
       (sortBy === "task" &&
-        arr.sort((a: any, b: any) => a.task.localeCompare(b.task))) ||
+        _.orderBy(
+          arr,
+          [
+            function (resultItem) {
+              return resultItem.status.statusId === 4;
+            },
+            "task",
+          ],
+          ["asc", "asc"]
+        )) ||
       (sortBy === "date" &&
-        arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline)));
+        _.orderBy(
+          arr,
+          [
+            function (resultItem) {
+              return resultItem.status.statusId === 4;
+            },
+            "deadline",
+          ],
+          ["asc", "asc"]
+        ));
 
     const todoItem = (array: any) =>
       array.map((item: any) => (
@@ -540,8 +567,6 @@ class MyTodos extends Component<{}, any> {
                     minValue={new Date(
                       this.getMin(this.getDeadlines())
                     ).getTime()}
-                    // maxValue={10}
-                    // minValue={1}
                     formatLabel={(value) => new Date(value).toLocaleString()}
                     allowSameValues={true}
                     value={this.state.range}
@@ -626,6 +651,7 @@ class MyTodos extends Component<{}, any> {
           handleClose={this.handleClose}
           taskObj={editTodo}
           statuses={statuses}
+          tags={tags}
           onExit={() =>
             this.setState({
               editTodo: {},
