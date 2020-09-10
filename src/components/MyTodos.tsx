@@ -19,6 +19,7 @@ import {
 } from "./Functions";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
+import { ModalNewTask } from "../views/modals/ModalNewTask";
 
 const formIds = {
   viewTask: "view-task",
@@ -39,7 +40,10 @@ class MyTodos extends Component<{}, any> {
       todos: [],
       filterStr: "",
       isActive: 1,
-      range: { min: 1, max: 10 },
+      range: {
+        min: "",
+        max: "",
+      },
       sortBy: "priority",
       showModal: "",
       editTodo: {},
@@ -255,6 +259,30 @@ class MyTodos extends Component<{}, any> {
       .then((data) => {
         this.setState({ tags: data });
       });
+
+    // const { range } = this.state;
+    //
+    // this.setState({
+    //   range: {
+    //     ...range,
+    //     min: this.getMin(this.getDeadlines()),
+    //     max: this.getMax(this.getDeadlines()),
+    //   },
+    // });
+  }
+
+  componentDidUpdate() {
+    const { range } = this.state;
+
+    if (range.min === "" || range.max === "") {
+      this.setState({
+        range: {
+          ...range,
+          min: new Date(this.getMin(this.getDeadlines())).getTime(),
+          max: new Date(this.getMax(this.getDeadlines())).getTime(),
+        },
+      });
+    }
   }
 
   render() {
@@ -282,23 +310,32 @@ class MyTodos extends Component<{}, any> {
     // const { tagId, color, tagName } = tags;
 
     console.log(this.state);
+    console.log(new Date(this.getMin(this.getDeadlines())).getTime());
+    console.log(new Date(this.getMax(this.getDeadlines())).getTime());
 
     const filteredElementsAll =
       todos &&
       todos.filter(
         (item: any) =>
-          item.task.toLowerCase().includes(filterStr.toLowerCase()) ||
-          item.description.toLowerCase().includes(filterStr.toLowerCase()) ||
+          (item.task.toLowerCase().includes(filterStr.toLowerCase()) &&
+            new Date(item.deadline).getTime() >= range.min &&
+            new Date(item.deadline).getTime() <= range.max) ||
+          (item.description.toLowerCase().includes(filterStr.toLowerCase()) &&
+            new Date(item.deadline).getTime() >= range.min &&
+            new Date(item.deadline).getTime() <= range.max) ||
           // item.deadline.toLowerCase().includes(filterStr.toLowerCase()) ||
-          item.priority.toLowerCase().includes(filterStr.toLowerCase())
+          (item.priority.toLowerCase().includes(filterStr.toLowerCase()) &&
+            new Date(item.deadline).getTime() >= range.min &&
+            new Date(item.deadline).getTime() <= range.max)
       );
 
     const filterActive =
       todos &&
       filteredElementsAll.filter(
-        (item: any) => item.status.statusId !== 4 // &&
-        // item.deadline >= range.min &&
-        // item.deadline <= range.max
+        (item: any) =>
+          item.status.statusId !== 4 &&
+          new Date(item.deadline).getTime() >= range.min &&
+          new Date(item.deadline).getTime() <= range.max
       );
 
     const sortedTodos = (arr: any) =>
@@ -497,12 +534,16 @@ class MyTodos extends Component<{}, any> {
                 <div>
                   <label>By Date</label>
                   <InputRange
-                    // maxValue={this.getMax(this.getDeadlines())}
-                    // minValue={this.getMin(this.getDeadlines())}
-                    maxValue={10}
-                    minValue={1}
+                    maxValue={new Date(
+                      this.getMax(this.getDeadlines())
+                    ).getTime()}
+                    minValue={new Date(
+                      this.getMin(this.getDeadlines())
+                    ).getTime()}
+                    // maxValue={10}
+                    // minValue={1}
+                    formatLabel={(value) => new Date(value).toLocaleString()}
                     allowSameValues={true}
-                    step={1}
                     value={this.state.range}
                     onChange={(range) => this.setState({ range })}
                   />
@@ -577,6 +618,36 @@ class MyTodos extends Component<{}, any> {
               newTag: { tagName: "" },
             })
           }
+        />
+
+        <ModalNewTask
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          taskObj={editTodo}
+          statuses={statuses}
+          onExit={() =>
+            this.setState({
+              editTodo: {},
+            })
+          }
+          onSubmit={async (payload: any) => {
+            try {
+              // await this.onSubmitInvest(payload);
+              // this.showAlert();
+              this.setState({
+                alertText: "",
+                isSuccess: true,
+              });
+            } catch (err) {
+              // this.showAlert();
+              this.setState({
+                alertText: "",
+                isSuccess: false,
+              });
+            }
+          }}
+          onChangeEditTodo={this.onChangeEditTodo}
         />
 
         <ModalEditTask

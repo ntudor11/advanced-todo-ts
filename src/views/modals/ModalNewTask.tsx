@@ -4,7 +4,7 @@ import React from "react";
 import { Button, Modal, Form, Badge, Row, Col } from "react-bootstrap";
 import { removeTagFromTask } from "../../components/Functions";
 
-export const ModalEditTask = (props: any) => {
+export const ModalNewTask = (props: any) => {
   const {
     showModal,
     formIds,
@@ -37,8 +37,8 @@ export const ModalEditTask = (props: any) => {
   return (
     <Modal
       keyboard
-      show={showModal === formIds.viewTask}
-      id={formIds.viewTask}
+      show={showModal === formIds.newTask}
+      id={formIds.newTask}
       onHide={handleClose}
       onExit={onExit}
       dialogClassName="modal-90w"
@@ -46,7 +46,7 @@ export const ModalEditTask = (props: any) => {
       <Modal.Header>
         <Row className="topRowModal">
           <Col>
-            <p>Edit Task: {taskObj.task}</p>
+            <p>New Task</p>
           </Col>
           <Col>
             <div className="align-right" style={{ float: "right" }}>
@@ -79,7 +79,7 @@ export const ModalEditTask = (props: any) => {
             <Form.Control
               as="select"
               name="priority"
-              defaultValue={taskObj.priority}
+              defaultValue=""
               onChange={onChangeEditTodo}
             >
               <option value="" disabled>
@@ -96,7 +96,7 @@ export const ModalEditTask = (props: any) => {
             <Form.Control
               as="select"
               name="status"
-              defaultValue={taskObj.status}
+              defaultValue=""
               onChange={onChangeEditTodo}
             >
               <option value="" disabled>
@@ -112,6 +112,16 @@ export const ModalEditTask = (props: any) => {
 
           <Form.Group controlId="formBasicDeadline">
             <Form.Label>Deadline</Form.Label>
+            {/* <Form.Control
+              name="deadline"
+              // defaultValue={new Date(taskObj.deadline).toLocaleString()}
+              defaultValue={
+                taskObj.deadline && taskObj.deadline.substring(0, 10)
+              }
+              type="text"
+              placeholder="Enter date"
+            /> */}
+
             <Form.Control
               type="date"
               id="start"
