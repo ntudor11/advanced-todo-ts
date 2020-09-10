@@ -84,7 +84,7 @@ class Login extends Component<any, any> {
                       block
                       className="btnDefault"
                       type="submit"
-                      variant="dark"
+                      variant="outline-info"
                     >
                       Login
                     </Button>

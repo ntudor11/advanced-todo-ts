@@ -172,7 +172,7 @@ class Register extends Component<any, any> {
                       block
                       className="btnDefault"
                       type="submit"
-                      variant="dark"
+                      variant="outline-info"
                     >
                       Register
                     </Button>

@@ -17,9 +17,9 @@ p {
 }
 
 .asidePanel {
-  padding-top: 2em;
+  /* padding-top: 2em; */
   height: 100%;
-  padding-right: 2em !important;
+  padding: 2em !important;
   border-right: 1px solid #424242 !important;
 }
 
@@ -70,14 +70,19 @@ p {
 }
 
 .form-control:focus {
-  border-color: inherit !important;
+  /* border-color: inherit !important; */
   -webkit-box-shadow: none !important;
-  outline: none !important;
+  border-color: #17a2b8 !important;
   box-shadow: none !important;
+  /* box-shadow: 0 0 10px #cf7272 !important; */
 }
 
 body.dark-mode .form-control::placeholder, .form-control {
   color: #e6e6e6 !important;
+}
+
+body.dark-mode .modal-header, body.dark-mode .modal-footer {
+  border-color: #4e4e4e;
 }
 
 .input-range {

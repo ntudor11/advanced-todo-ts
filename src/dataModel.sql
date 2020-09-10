@@ -39,7 +39,7 @@ insert into users (
 ) values (
   "abc@abc.com",
   "XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=",
-  "https://cnaca.ca/wp-content/uploads/2018/10/user-icon-image-placeholder.jpg"
+  "https://images.generated.photos/iu45sy63UfSD4JqiVrW-LscMCQMYerSlH-BdkX9gfJc/rs:fit:512:512/Z3M6Ly9nZW5lcmF0/ZWQtcGhvdG9zL3Ry/YW5zcGFyZW50X3Yy/L3YyXzA0NjU5MzUu/cG5n.png"
 );
 
 insert into status (name) values ("Backlog");
