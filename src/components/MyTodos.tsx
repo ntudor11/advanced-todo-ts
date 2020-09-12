@@ -18,6 +18,7 @@ import {
   addNewTag,
   removeTag,
   addTodo,
+  updateTodo,
 } from "./Functions";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
@@ -44,6 +45,7 @@ class MyTodos extends Component<{}, any> {
       showModal: "",
       editTodo: {
         tagsArr: [],
+        tags: [],
       },
       newTag: { tagName: "", tagColor: "" },
       statuses: [],
@@ -51,11 +53,10 @@ class MyTodos extends Component<{}, any> {
     };
 
     this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
     this.onChangeEditTodo = this.onChangeEditTodo.bind(this);
     this.onChangeNewTag = this.onChangeNewTag.bind(this);
     this.onChangeNewTagColor = this.onChangeNewTagColor.bind(this);
-    this.onSubmitEdit = this.onSubmitEdit.bind(this);
+    this.onSubmitNew = this.onSubmitNew.bind(this);
     this.onSubmitNewTag = this.onSubmitNewTag.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.getDeadlines = this.getDeadlines.bind(this);
@@ -65,6 +66,7 @@ class MyTodos extends Component<{}, any> {
     this.handleClose = this.handleClose.bind(this);
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.onChangeDeadline = this.onChangeDeadline.bind(this);
+    this.copyInitial = this.copyInitial.bind(this);
   }
 
   getDeadlines() {
@@ -140,6 +142,25 @@ class MyTodos extends Component<{}, any> {
     });
   }
 
+  copyInitial() {
+    const { editTodo } = this.state;
+    const { tags, tagsArr, status } = editTodo;
+    const tempArr: any[] = [];
+    tags &&
+      tags.forEach((tag: any) => {
+        if (!tagsArr.includes(tag.tagId.toString())) {
+          tempArr.push(tag.tagId.toString());
+        }
+      });
+    this.setState({
+      editTodo: {
+        ...editTodo,
+        tagsArr: [...tagsArr.concat(tempArr)],
+        statusId: status.statusId,
+      },
+    });
+  }
+
   handleCheckboxChange(e: any) {
     const item = e.target.name;
     const { editTodo } = this.state;
@@ -208,30 +229,49 @@ class MyTodos extends Component<{}, any> {
     });
   }
 
-  onSubmit(e: any) {
+  onSubmitNew(e: any) {
     e.preventDefault();
-  }
+    const { editTodo, showModal } = this.state;
 
-  onSubmitEdit(e: any) {
-    e.preventDefault();
-    const { editTodo } = this.state;
-    addTodo(editTodo).then((res: any) => {
-      if (res) {
-        try {
-          fetch(`/my-todos`)
-            .then((data) => data.json())
-            .then((data) => {
-              this.setState(data);
-            })
-            .then(() => {
-              this.setState({ editTodo: { tagsArr: [] } });
-            });
-        } catch (e) {
-          console.log(`${e}`);
+    if (showModal === formIds.newTask) {
+      addTodo(editTodo).then((res: any) => {
+        if (res) {
+          try {
+            fetch(`/my-todos`)
+              .then((data) => data.json())
+              .then((data) => {
+                this.setState(data);
+              })
+              .then(() => {
+                this.setState({ editTodo: { tagsArr: [] } });
+              });
+          } catch (e) {
+            console.log(`${e}`);
+          }
+          this.handleClose();
         }
-        this.handleClose();
-      }
-    });
+      });
+    }
+
+    if (showModal === formIds.viewTask) {
+      updateTodo(editTodo).then((res: any) => {
+        if (res) {
+          try {
+            fetch(`/my-todos`)
+              .then((data) => data.json())
+              .then((data) => {
+                this.setState(data);
+              })
+              .then(() => {
+                this.setState({ editTodo: { tagsArr: [] } });
+              });
+          } catch (e) {
+            console.log(`${e}`);
+          }
+          this.handleClose();
+        }
+      });
+    }
   }
 
   onSubmitNewTag(e: any) {
@@ -271,7 +311,9 @@ class MyTodos extends Component<{}, any> {
   }
 
   handleClose() {
-    this.setState({ showModal: null });
+    this.setState({
+      showModal: null,
+    });
   }
 
   componentDidMount() {
@@ -327,6 +369,7 @@ class MyTodos extends Component<{}, any> {
     } = this.state;
 
     console.log(this.state);
+    const { tagsArr } = editTodo;
 
     const filteredElementsAll =
       todos &&
@@ -685,7 +728,7 @@ class MyTodos extends Component<{}, any> {
           handleCheckboxChange={this.handleCheckboxChange}
           onChangeDeadline={(date: any) => this.onChangeDeadline(date)}
           tags={tags}
-          onSubmitEdit={this.onSubmitEdit}
+          onSubmitEdit={this.onSubmitNew}
           onChangeEditTodo={this.onChangeEditTodo}
         />
 
@@ -694,33 +737,22 @@ class MyTodos extends Component<{}, any> {
           showModal={showModal}
           handleClose={this.handleClose}
           taskObj={editTodo}
+          tags={tags}
           statuses={statuses}
+          handleCheckboxChange={this.handleCheckboxChange}
+          onChangeDeadline={this.onChangeDeadline}
           onExit={() =>
             this.setState({
-              editTodo: {},
+              editTodo: { tagsArr: [], tags: [] },
             })
           }
-          onSubmit={async (payload: any) => {
-            try {
-              // await this.onSubmitInvest(payload);
-              // this.showAlert();
-              this.setState({
-                alertText: "",
-                isSuccess: true,
-              });
-            } catch (err) {
-              // this.showAlert();
-              this.setState({
-                alertText: "",
-                isSuccess: false,
-              });
-            }
-          }}
+          copyInitial={this.copyInitial}
+          onSubmitEdit={this.onSubmitNew}
           onChangeEditTodo={this.onChangeEditTodo}
         />
       </Container>
     );
   }
 }
-
+// TODO change order for "priority - 1, 2, 3 maybe"
 export default MyTodos;

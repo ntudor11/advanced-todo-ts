@@ -278,7 +278,7 @@ app.post("/update-todo", withAuth(), (req, res) => {
     priority,
     statusId,
     tagsArr,
-    itemId,
+    id,
   } = req.body;
 
   db.prepare(
@@ -291,7 +291,7 @@ app.post("/update-todo", withAuth(), (req, res) => {
       status_id = ?
       where id = ?
     `
-  ).run(task, description, deadline, priority, statusId, itemId);
+  ).run(task, description, deadline, priority, statusId, id);
 
   const insideTagsArr = db
     .prepare(
@@ -300,26 +300,25 @@ app.post("/update-todo", withAuth(), (req, res) => {
         where todo_id = ?
       `
     )
-    .all(itemId);
+    .all(id);
 
-  // if (!_.isEqual(tagsArr, insideTagsArr)) {
-  //   db.prepare(
-  //     `
-  //       delete from todos_tags where
-  //         todo_id = ?
-  //     `
-  //   ).run(itemId);
-  //
-  //   tagsArr.forEach((tag: any) => {
-  //     const { tagId } = tag;
-  //     db.prepare(
-  //       `
-  //           insert into todos_tags(todo_id, tag_id)
-  //             values (?, ?)
-  //         `
-  //     ).run(itemId, tagId);
-  //   });
-  // }
+  if (!_.isEqual(tagsArr, insideTagsArr)) {
+    db.prepare(
+      `
+        delete from todos_tags where
+          todo_id = ?
+      `
+    ).run(id);
+
+    tagsArr.forEach((tagId: any) => {
+      db.prepare(
+        `
+            insert into todos_tags(todo_id, tag_id)
+              values (?, ?)
+          `
+      ).run(id, tagId);
+    });
+  }
 
   res.send("ok");
 });

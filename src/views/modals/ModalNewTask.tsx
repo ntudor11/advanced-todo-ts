@@ -44,28 +44,6 @@ export const ModalNewTask = (props: any) => {
           <Col>
             <p>New Task</p>
           </Col>
-          <Col>
-            <div className="align-right" style={{ float: "right" }}>
-              {taskObj.tags &&
-                taskObj.tags.map((tag: any) => (
-                  <Badge
-                    key={tag.tagId}
-                    style={{ backgroundColor: tag.color }}
-                    className="tagSpan"
-                  >
-                    {tag.tagName}
-                    <i
-                      className="icon mdi mdi-close removeTagIcon"
-                      onClick={() => {
-                        const tagId = tag.tagId;
-                        const todoId = taskObj.id;
-                        removeTagFromTask({ tagId, todoId });
-                      }}
-                    ></i>
-                  </Badge>
-                ))}
-            </div>
-          </Col>
         </Row>
       </Modal.Header>
       <Modal.Body className="show-grid">

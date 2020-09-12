@@ -1,7 +1,17 @@
 /* eslint react/require-default-props: 0 */
 /* eslint react/forbid-prop-types: 0 */
 import React from "react";
-import { Button, Modal, Form, Badge, Row, Col } from "react-bootstrap";
+import {
+  Button,
+  Modal,
+  Form,
+  Badge,
+  Row,
+  Col,
+  Container,
+} from "react-bootstrap";
+import Flatpickr from "react-flatpickr";
+import "flatpickr/dist/themes/airbnb.css";
 import { removeTagFromTask } from "../../components/Functions";
 
 export const ModalEditTask = (props: any) => {
@@ -10,35 +20,30 @@ export const ModalEditTask = (props: any) => {
     formIds,
     handleClose,
     onExit,
-    disabled,
     onSubmitEdit,
     onChangeEditTodo,
     taskObj,
-    removeTag,
     statuses,
+    tags,
+    handleCheckboxChange,
+    onChangeDeadline,
+    copyInitial,
   } = props;
 
-  // todo concat date time inputs
+  const existingTags = (arr: any) => {
+    let arr2: any = [];
+    arr.map((tag: any) => arr2.push(tag.tagId));
+    return arr2;
+  };
 
-  const activeStatus = () =>
-    statuses.map((stat: any) =>
-      stat.statusName === taskObj.status.statusName ? stat.statusName : ""
-    );
-
-  // const getDate = () => {
-  //   if (taskObj !== undefined) {
-  //     const { deadline } = taskObj;
-  //     const date = deadline.substring(0, 9);
-  //     const time = deadline.substring(10, 15);
-  //     return date;
-  //   }
-  // };
+  // console.log(taskObj.tags && existingTags(taskObj.tags));
 
   return (
     <Modal
       keyboard
       show={showModal === formIds.viewTask}
       id={formIds.viewTask}
+      onShow={copyInitial}
       onHide={handleClose}
       onExit={onExit}
       dialogClassName="modal-90w"
@@ -48,104 +53,126 @@ export const ModalEditTask = (props: any) => {
           <Col>
             <p>Edit Task: {taskObj.task}</p>
           </Col>
-          <Col>
-            <div className="align-right" style={{ float: "right" }}>
-              {taskObj.tags &&
-                taskObj.tags.map((tag: any) => (
-                  <Badge
-                    key={tag.tagId}
-                    style={{ backgroundColor: tag.color }}
-                    className="tagSpan"
-                  >
-                    {tag.tagName}
-                    <i
-                      className="icon mdi mdi-close removeTagIcon"
-                      onClick={() => {
-                        const tagId = tag.tagId;
-                        const todoId = taskObj.id;
-                        removeTagFromTask({ tagId, todoId });
-                      }}
-                    ></i>
-                  </Badge>
-                ))}
-            </div>
-          </Col>
         </Row>
       </Modal.Header>
       <Modal.Body>
-        <Form noValidate onSubmit={onSubmitEdit} id="formUpdateKpis">
-          <Form.Group className="formTemplate" controlId="formEditTodo">
-            <Form.Label>Choose priority</Form.Label>
-            <Form.Control
-              as="select"
-              name="priority"
-              defaultValue={taskObj.priority}
-              onChange={onChangeEditTodo}
-            >
-              <option value="" disabled>
-                Choose Priority
-              </option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </Form.Control>
+        <Form noValidate onSubmit={onSubmitEdit} id="formEditTask">
+          <Form.Group className="formTemplate">
+            <Container>
+              <Row>
+                <Col>
+                  <Form.Group>
+                    <Form.Label>Task Name</Form.Label>
+                    <Form.Control
+                      name="task"
+                      defaultValue={taskObj.task}
+                      onChange={onChangeEditTodo}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col>
+                  <Form.Group>
+                    <Form.Label>Priority</Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="priority"
+                      defaultValue={taskObj.priority}
+                      required
+                      onChange={onChangeEditTodo}
+                    >
+                      <option value="" disabled>
+                        Choose Priority
+                      </option>
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                    </Form.Control>
+                  </Form.Group>
+                </Col>
+
+                <Col>
+                  <Form.Group className="formTemplate">
+                    <Form.Label>Status</Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="statusId"
+                      defaultValue={taskObj.status && taskObj.status.statusId}
+                      onChange={onChangeEditTodo}
+                    >
+                      <option value="" disabled>
+                        Choose Status
+                      </option>
+                      {statuses.map((status: any) => (
+                        <option key={status.statusId} value={status.statusId}>
+                          {status.statusName}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col xs={6}>
+                  <Form.Group>
+                    <Form.Label>Choose Tags</Form.Label>
+                    <br />
+
+                    {taskObj.tags &&
+                      tags.map((tag: any, i: any) => (
+                        <div key={i} className="pretty p-default p-curve">
+                          <input
+                            type="checkbox"
+                            name={tag.tagId}
+                            value={tag.tagId}
+                            onChange={handleCheckboxChange}
+                            defaultChecked={existingTags(taskObj.tags).includes(
+                              tag.tagId
+                            )}
+                          />
+                          <div className="state p-info">
+                            <label>{tag.tagName}</label>
+                          </div>
+                        </div>
+                      ))}
+                  </Form.Group>
+                </Col>
+
+                <Col xs={6}>
+                  <Form.Group>
+                    <Form.Label>Deadline</Form.Label>
+
+                    <Row>
+                      <Flatpickr
+                        data-enable-time
+                        defaultValue={taskObj.deadline}
+                        onReady={(date: any) => {
+                          onChangeDeadline(date);
+                        }}
+                        onChange={(date: any) => {
+                          onChangeDeadline(date);
+                        }}
+                      />
+                    </Row>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Form.Group>
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={6}
+                  name="description"
+                  defaultValue={taskObj.description}
+                  onChange={onChangeEditTodo}
+                />
+              </Form.Group>
+            </Container>
           </Form.Group>
-
-          <Form.Group className="formTemplate" controlId="formEditStatus">
-            <Form.Label>Choose Status</Form.Label>
-            <Form.Control
-              as="select"
-              name="status"
-              defaultValue={taskObj.status}
-              onChange={onChangeEditTodo}
-            >
-              <option value="" disabled>
-                Choose Type
-              </option>
-              {statuses.map((status: any) => (
-                <option key={status.statusName} value={status.statusName}>
-                  {status.statusName}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-
-          <Form.Group controlId="formBasicDeadline">
-            <Form.Label>Deadline</Form.Label>
-            <Form.Control
-              type="date"
-              id="start"
-              name="trip-start"
-              // defaultValue={
-              //   taskObj.deadline && taskObj.deadline.substring(0, 10)
-              // }
-              placeholder="yyyy-mm-dd"
-              // value="2018-07-22"
-              min="2018-01-01"
-              max="2018-12-31"
-            />
-
-            <Form.Control
-              type="time"
-              placeholder="hh:mm"
-              // defaultValue={
-              //   taskObj.deadline && taskObj.deadline.substring(11, 16)
-              // }
-              id="appt"
-              name="appt"
-              min="00:00"
-              max="23:59"
-            />
-          </Form.Group>
-
-          <span>Description</span>
-          <Form.Control
-            as="textarea"
-            rows={6}
-            name="description"
-            defaultValue={taskObj.description}
-            onChange={onChangeEditTodo}
-          />
         </Form>
       </Modal.Body>
       <Modal.Footer>
@@ -158,12 +185,7 @@ export const ModalEditTask = (props: any) => {
           Close
         </Button>
 
-        <Button
-          disabled={disabled}
-          variant="dark"
-          form="formEditTask"
-          type="submit"
-        >
+        <Button variant="dark" form="formEditTask" type="submit">
           Update Task
         </Button>
       </Modal.Footer>

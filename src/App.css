@@ -176,6 +176,10 @@ body.dark-mode #todosTable .todoItem th {
   border-top: 1px solid #424242 !important;
 }
 
+#todosTable {
+  margin-top: 3em;
+}
+
 #todosTable tr:hover {
   transition: .3s ease;
   background-color: rgba(23, 162, 184, 0.15);

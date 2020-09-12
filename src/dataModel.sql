@@ -28,8 +28,8 @@ create table tags (
 );
 
 create table todos_tags (
-  todo_id integer not null,
-  tag_id integer not null
+  todo_id integer,
+  tag_id integer
 );
 
 insert into users (
