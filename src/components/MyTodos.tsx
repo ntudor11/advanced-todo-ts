@@ -17,6 +17,7 @@ import {
   updateTodoStatus,
   addNewTag,
   removeTag,
+  addTodo,
 } from "./Functions";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
@@ -32,12 +33,6 @@ class MyTodos extends Component<{}, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      email: "",
-      task: "",
-      description: "",
-      deadline: "",
-      priority: "",
-      status: {},
       todos: [],
       filterStr: "",
       isActive: 1,
@@ -47,7 +42,9 @@ class MyTodos extends Component<{}, any> {
       },
       sortBy: "priority",
       showModal: "",
-      editTodo: {},
+      editTodo: {
+        tagsArr: [],
+      },
       newTag: { tagName: "", tagColor: "" },
       statuses: [],
       tags: [],
@@ -66,7 +63,8 @@ class MyTodos extends Component<{}, any> {
     this.getMax = this.getMax.bind(this);
     this.delTag = this.delTag.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.convertDate = this.convertDate.bind(this);
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+    this.onChangeDeadline = this.onChangeDeadline.bind(this);
   }
 
   getDeadlines() {
@@ -132,6 +130,37 @@ class MyTodos extends Component<{}, any> {
     });
   }
 
+  onChangeDeadline(date: any) {
+    const { editTodo } = this.state;
+    this.setState({
+      editTodo: {
+        ...editTodo,
+        deadline: date[0].toISOString(),
+      },
+    });
+  }
+
+  handleCheckboxChange(e: any) {
+    const item = e.target.name;
+    const { editTodo } = this.state;
+    const { tagsArr } = editTodo;
+    if (tagsArr && !tagsArr.includes(item)) {
+      this.setState({
+        editTodo: {
+          ...editTodo,
+          tagsArr: [...tagsArr, item],
+        },
+      });
+    } else {
+      this.setState({
+        editTodo: {
+          ...editTodo,
+          tagsArr: [...tagsArr.filter((check: any) => check !== item)],
+        },
+      });
+    }
+  }
+
   onChangeNewTag(e: any) {
     const { newTag } = this.state;
     this.setState({
@@ -179,22 +208,30 @@ class MyTodos extends Component<{}, any> {
     });
   }
 
-  convertDate(date: any) {
-    const { editTodo } = this.state;
-    this.setState({
-      editTodo: {
-        ...editTodo,
-        deadline: date.toISOString(),
-      },
-    });
-  }
-
   onSubmit(e: any) {
     e.preventDefault();
   }
 
   onSubmitEdit(e: any) {
     e.preventDefault();
+    const { editTodo } = this.state;
+    addTodo(editTodo).then((res: any) => {
+      if (res) {
+        try {
+          fetch(`/my-todos`)
+            .then((data) => data.json())
+            .then((data) => {
+              this.setState(data);
+            })
+            .then(() => {
+              this.setState({ editTodo: { tagsArr: [] } });
+            });
+        } catch (e) {
+          console.log(`${e}`);
+        }
+        this.handleClose();
+      }
+    });
   }
 
   onSubmitNewTag(e: any) {
@@ -210,7 +247,6 @@ class MyTodos extends Component<{}, any> {
     ) {
       addNewTag(newTag).then((res: any) => {
         if (res) {
-          // this.handleClose();
           try {
             fetch(`/tags`)
               .then((data) => data.json())
@@ -278,13 +314,7 @@ class MyTodos extends Component<{}, any> {
 
   render() {
     const {
-      email,
-      task,
-      description,
-      deadline,
-      priority,
       tags,
-      status,
       todos,
       filterStr,
       isActive,
@@ -295,10 +325,6 @@ class MyTodos extends Component<{}, any> {
       showModal,
       statuses,
     } = this.state;
-
-    // const { task, description, deadline, priority, tags, status } = todos;
-    // const { statusId, statusName } = status;
-    // const { tagId, color, tagName } = tags;
 
     console.log(this.state);
 
@@ -312,7 +338,6 @@ class MyTodos extends Component<{}, any> {
           (item.description.toLowerCase().includes(filterStr.toLowerCase()) &&
             new Date(item.deadline).getTime() >= range.min &&
             new Date(item.deadline).getTime() <= range.max) ||
-          // item.deadline.toLowerCase().includes(filterStr.toLowerCase()) ||
           (item.priority.toLowerCase().includes(filterStr.toLowerCase()) &&
             new Date(item.deadline).getTime() >= range.min &&
             new Date(item.deadline).getTime() <= range.max)
@@ -336,7 +361,7 @@ class MyTodos extends Component<{}, any> {
     //   (sortBy === "date" &&
     //     arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline)));
 
-    // better sort: sorting and leaving to end of array items with statusId === 4
+    /* better sort: sorting and leaving to end of array items with statusId === 4 */
     const sortedTodos = (arr: any) =>
       (sortBy === "priority" &&
         _.orderBy(
@@ -350,7 +375,6 @@ class MyTodos extends Component<{}, any> {
           ],
           ["asc", "asc"]
         )) ||
-      // arr.sort((a: any, b: any) => a.priority.localeCompare(b.priority))) ||
       (sortBy === "task" &&
         _.orderBy(
           arr,
@@ -531,7 +555,7 @@ class MyTodos extends Component<{}, any> {
                     this.handleShow(formIds.newTag);
                   }}
                 >
-                  New Tag <i className="icon mdi mdi-tag-outline" />
+                  Tags <i className="icon mdi mdi-tag-outline" />
                 </Button>
               </Col>
             </Row>
@@ -617,16 +641,6 @@ class MyTodos extends Component<{}, any> {
                   className="table"
                   id="todosTable"
                 >
-                  {/*<thead>
-                    <tr>
-                      <th className="text-left">Status</th>
-                      <th className="text-left" />
-                      <th className="text-left">Task</th>
-                      <th className="text-left">Tags</th>
-                      <th className="text-left">Deadline</th>
-                      <th />
-                    </tr>
-                  </thead>*/}
                   <FlipMove typeName="tbody" easing="ease">
                     {isActive === 1
                       ? todoItem(
@@ -668,28 +682,10 @@ class MyTodos extends Component<{}, any> {
           handleClose={this.handleClose}
           taskObj={editTodo}
           statuses={statuses}
+          handleCheckboxChange={this.handleCheckboxChange}
+          onChangeDeadline={(date: any) => this.onChangeDeadline(date)}
           tags={tags}
-          onExit={() =>
-            this.setState({
-              editTodo: {},
-            })
-          }
-          onSubmit={async (payload: any) => {
-            try {
-              // await this.onSubmitInvest(payload);
-              // this.showAlert();
-              this.setState({
-                alertText: "",
-                isSuccess: true,
-              });
-            } catch (err) {
-              // this.showAlert();
-              this.setState({
-                alertText: "",
-                isSuccess: false,
-              });
-            }
-          }}
+          onSubmitEdit={this.onSubmitEdit}
           onChangeEditTodo={this.onChangeEditTodo}
         />
 
@@ -698,7 +694,6 @@ class MyTodos extends Component<{}, any> {
           showModal={showModal}
           handleClose={this.handleClose}
           taskObj={editTodo}
-          convertDate={this.convertDate}
           statuses={statuses}
           onExit={() =>
             this.setState({

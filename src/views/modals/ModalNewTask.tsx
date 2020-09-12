@@ -1,5 +1,4 @@
 /* eslint react/require-default-props: 0 */
-/* eslint react/forbid-prop-types: 0 */
 import React from "react";
 import {
   Button,
@@ -10,7 +9,9 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
+import Flatpickr from "react-flatpickr";
 import { removeTagFromTask } from "../../components/Functions";
+import "flatpickr/dist/themes/airbnb.css";
 
 export const ModalNewTask = (props: any) => {
   const {
@@ -18,30 +19,16 @@ export const ModalNewTask = (props: any) => {
     formIds,
     handleClose,
     onExit,
-    disabled,
     onSubmitEdit,
     onChangeEditTodo,
     taskObj,
     tags,
-    removeTag,
     statuses,
+    handleCheckboxChange,
+    onChangeDeadline,
   } = props;
 
-  // todo concat date time inputs
-
-  const activeStatus = () =>
-    statuses.map((stat: any) =>
-      stat.statusName === taskObj.status.statusName ? stat.statusName : ""
-    );
-
-  // const getDate = () => {
-  //   if (taskObj !== undefined) {
-  //     const { deadline } = taskObj;
-  //     const date = deadline.substring(0, 9);
-  //     const time = deadline.substring(10, 15);
-  //     return date;
-  //   }
-  // };
+  const date = new Date().toISOString();
 
   return (
     <Modal
@@ -82,7 +69,7 @@ export const ModalNewTask = (props: any) => {
         </Row>
       </Modal.Header>
       <Modal.Body className="show-grid">
-        <Form noValidate onSubmit={onSubmitEdit} id="formUpdateKpis">
+        <Form noValidate onSubmit={onSubmitEdit} id="formNewTask">
           <Form.Group className="formTemplate">
             <Container>
               <Row>
@@ -90,8 +77,8 @@ export const ModalNewTask = (props: any) => {
                   <Form.Group>
                     <Form.Label>Task Name</Form.Label>
                     <Form.Control
-                      name="name"
-                      defaultValue={taskObj.name}
+                      name="task"
+                      defaultValue={taskObj.task}
                       onChange={onChangeEditTodo}
                     />
                   </Form.Group>
@@ -106,6 +93,7 @@ export const ModalNewTask = (props: any) => {
                       as="select"
                       name="priority"
                       defaultValue=""
+                      required
                       onChange={onChangeEditTodo}
                     >
                       <option value="" disabled>
@@ -119,25 +107,20 @@ export const ModalNewTask = (props: any) => {
                 </Col>
 
                 <Col>
-                  <Form.Group
-                    className="formTemplate"
-                    controlId="formEditStatus"
-                  >
+                  <Form.Group className="formTemplate">
                     <Form.Label>Status</Form.Label>
                     <Form.Control
                       as="select"
-                      name="status"
+                      name="statusId"
                       defaultValue=""
+                      required
                       onChange={onChangeEditTodo}
                     >
                       <option value="" disabled>
                         Choose Status
                       </option>
                       {statuses.map((status: any) => (
-                        <option
-                          key={status.statusName}
-                          value={status.statusName}
-                        >
+                        <option key={status.statusId} value={status.statusId}>
                           {status.statusName}
                         </option>
                       ))}
@@ -157,9 +140,9 @@ export const ModalNewTask = (props: any) => {
                         <div key={i} className="pretty p-default p-curve">
                           <input
                             type="checkbox"
-                            name="isActive"
-                            value={tag.tagName}
-                            onChange={onChangeEditTodo}
+                            name={tag.tagId}
+                            value={tag.tagId}
+                            onChange={handleCheckboxChange}
                           />
                           <div className="state p-info">
                             <label>{tag.tagName}</label>
@@ -172,45 +155,18 @@ export const ModalNewTask = (props: any) => {
                 <Col xs={8}>
                   <Form.Group>
                     <Form.Label>Deadline</Form.Label>
-                    {/* <Form.Control
-              name="deadline"
-              // defaultValue={new Date(taskObj.deadline).toLocaleString()}
-              defaultValue={
-                taskObj.deadline && taskObj.deadline.substring(0, 10)
-              }
-              type="text"
-              placeholder="Enter date"
-            /> */}
 
                     <Row>
-                      <Col xs={7}>
-                        <Form.Control
-                          type="date"
-                          name="trip-start"
-                          // value=""
-                          // placeholder="yyyy-mm-dd"
-                          defaultValue={new Date()
-                            .toISOString()
-                            .substring(0, 10)}
-                          min="2018-01-01"
-                          max="2018-12-31"
-                        />
-                      </Col>
-
-                      <Col xs={5}>
-                        <Form.Control
-                          type="time"
-                          placeholder="hh:mm"
-                          defaultValue={
-                            taskObj.deadline &&
-                            taskObj.deadline.substring(11, 16)
-                          }
-                          id="appt"
-                          name="appt"
-                          min="00:00"
-                          max="23:59"
-                        />
-                      </Col>
+                      <Flatpickr
+                        data-enable-time
+                        defaultValue={date}
+                        onReady={(date: any) => {
+                          onChangeDeadline(date);
+                        }}
+                        onChange={(date: any) => {
+                          onChangeDeadline(date);
+                        }}
+                      />
                     </Row>
                   </Form.Group>
                 </Col>
@@ -240,12 +196,7 @@ export const ModalNewTask = (props: any) => {
           Close
         </Button>
 
-        <Button
-          disabled={disabled}
-          variant="dark"
-          form="formEditTask"
-          type="submit"
-        >
+        <Button variant="dark" form="formNewTask" type="submit">
           Add Task
         </Button>
       </Modal.Footer>

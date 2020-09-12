@@ -116,9 +116,9 @@ export const ModalEditTask = (props: any) => {
               type="date"
               id="start"
               name="trip-start"
-              defaultValue={
-                taskObj.deadline && taskObj.deadline.substring(0, 10)
-              }
+              // defaultValue={
+              //   taskObj.deadline && taskObj.deadline.substring(0, 10)
+              // }
               placeholder="yyyy-mm-dd"
               // value="2018-07-22"
               min="2018-01-01"
@@ -128,9 +128,9 @@ export const ModalEditTask = (props: any) => {
             <Form.Control
               type="time"
               placeholder="hh:mm"
-              defaultValue={
-                taskObj.deadline && taskObj.deadline.substring(11, 16)
-              }
+              // defaultValue={
+              //   taskObj.deadline && taskObj.deadline.substring(11, 16)
+              // }
               id="appt"
               name="appt"
               min="00:00"

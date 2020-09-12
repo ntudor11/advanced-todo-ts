@@ -222,20 +222,13 @@ app.post("/register", (req, res) => {
 
 app.post("/logout", (_, res) => res.cookie("token", false).send("OK"));
 
-app.post("/addTodo", withAuth(), (req, res) => {
-  const {
-    task,
-    description,
-    deadline,
-    priority,
-    statusId,
-    userId,
-    tagsArr,
-  } = req.body;
+app.post("/add-todo", withAuth(), (req: any, res) => {
+  const { userId } = req;
+  const { description, deadline, task, priority, statusId, tagsArr } = req.body;
 
   db.prepare(
     `
-          insert into todos(task, description, deadline, priority, statusId, user_id)
+          insert into todos(task, description, deadline, priority, status_id, user_id)
             values (?, ?, ?, ?, ?, ?)
         `
   ).run(task, description, deadline, priority, statusId, userId);
@@ -252,8 +245,7 @@ app.post("/addTodo", withAuth(), (req, res) => {
 
   const { id } = todoId;
 
-  tagsArr.forEach((tag: any) => {
-    const { tagId } = tag;
+  tagsArr.forEach((tagId: any) => {
     db.prepare(
       `
             insert into todos_tags(todo_id, tag_id)
@@ -261,6 +253,7 @@ app.post("/addTodo", withAuth(), (req, res) => {
           `
     ).run(id, tagId);
   });
+  res.send("ok");
 });
 
 app.post("/update-todo-status", withAuth(), (req, res) => {
