@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import MyTodos from "./components/MyTodos";
+import MyTodosContainer from "./components/MyTodosContainer";
 import NavBar from "./components/NavBar";
 import Kanban from "./components/Kanban";
 import { NotFound, Unauthorised } from "./components/NotFound";
@@ -47,7 +47,7 @@ const App = () => {
       <div className="App">
         <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
         <Switch>
-          <PrivateRoute exact path="/todos" comp={MyTodos} />
+          <PrivateRoute exact path="/todos" comp={MyTodosContainer} />
 
           <PrivateRoute exact path="/kanban" comp={Kanban} />
 
@@ -55,7 +55,7 @@ const App = () => {
             <Route
               exact
               path="/"
-              render={(props: any) => <MyTodos {...props} />}
+              render={(props: any) => <MyTodosContainer {...props} />}
             />
           ) : (
             <Route

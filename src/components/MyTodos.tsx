@@ -317,6 +317,7 @@ class MyTodos extends Component<{}, any> {
   }
 
   componentDidMount() {
+    // const { fetchTodos } = this.props;
     try {
       fetch("/api/checkToken")
         .then((data) => data.json())
@@ -326,6 +327,8 @@ class MyTodos extends Component<{}, any> {
     } catch (e) {
       console.log(`${e} not authenticated`);
     }
+
+    // fetchTodos();
 
     fetch(`/my-todos`)
       .then((data) => data.json())
