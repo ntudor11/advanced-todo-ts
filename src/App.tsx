@@ -4,6 +4,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import MyTodos from "./components/MyTodos";
 import NavBar from "./components/NavBar";
+import Kanban from "./components/Kanban";
 import { NotFound, Unauthorised } from "./components/NotFound";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -47,6 +48,8 @@ const App = () => {
         <NavBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
         <Switch>
           <PrivateRoute exact path="/todos" comp={MyTodos} />
+
+          <PrivateRoute exact path="/kanban" comp={Kanban} />
 
           {loggedIn === true ? (
             <Route
