@@ -134,20 +134,43 @@ app.get("/my-todos", withAuth(), (req: any, res) => {
     )
     .all();
 
-  res.send({ todos, statuses });
-});
-
-app.get("/tags", withAuth(), (req: any, res) => {
   const tags = db
     .prepare(
       `
-        select id as tagId, name as tagName, color as tagColor
-        from tags
+          select id as tagId, name as tagName, color as tagColor
+          from tags
+        `
+    )
+    .all();
+
+  res.send({ todos, statuses, tags });
+});
+
+app.get("/kanban", withAuth(), (req: any, res) => {
+  const board = db
+    .prepare(
+      `
+        select s.id, s.name as title
+        from status s
       `
     )
     .all();
 
-  res.send(tags);
+  board.map((status: any) => {
+    const cards = db
+      .prepare(
+        `
+          select t.id, t.task as title, t.description
+          from todos t
+          where status_id = ?
+        `
+      )
+      .all(status.id);
+
+    status.cards = cards;
+  });
+
+  res.send({ board });
 });
 
 app.post("/login", (req, res) => {

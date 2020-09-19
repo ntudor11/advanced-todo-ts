@@ -9,9 +9,11 @@ const mapStateToProps = ({
   todos: any;
   statuses: any;
   auth: any;
+  tags: any;
 }) => ({
   todos: todos.todos,
   statuses: todos.statuses,
+  tags: todos.tags,
   auth,
 });
 

@@ -30,10 +30,14 @@ const formIds = {
   newTask: "new-task",
 };
 
-class MyTodos extends Component<
-  { fetchTodos: any; statuses: any; todos: any },
-  any
-> {
+interface IProps {
+  fetchTodos: any;
+  statuses: any;
+  todos: any;
+  tags: any;
+}
+
+class MyTodos extends Component<IProps, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -50,7 +54,6 @@ class MyTodos extends Component<
         tags: [],
       },
       newTag: { tagName: "", tagColor: "" },
-      tags: [],
     };
 
     this.onChange = this.onChange.bind(this);
@@ -145,7 +148,8 @@ class MyTodos extends Component<
 
   copyInitial() {
     const { editTodo } = this.state;
-    const { tags, tagsArr, status } = editTodo;
+    const { tags } = this.props;
+    const { tagsArr, status } = editTodo;
     const tempArr: any[] = [];
     tags &&
       tags.forEach((tag: any) => {
@@ -194,7 +198,7 @@ class MyTodos extends Component<
   }
 
   delTag(tagId: any) {
-    const { todos } = this.props;
+    const { todos, fetchTodos } = this.props;
     const tagsArr: string[] = [];
     todos.map((todo: any) =>
       todo.tags.forEach((tag: any) => {
@@ -205,11 +209,7 @@ class MyTodos extends Component<
       removeTag(tagId).then((res: any) => {
         if (res) {
           try {
-            fetch(`/tags`)
-              .then((data) => data.json())
-              .then((data) => {
-                this.setState({ tags: data });
-              });
+            fetchTodos();
           } catch (e) {
             console.log(`${e}`);
           }
@@ -268,7 +268,8 @@ class MyTodos extends Component<
 
   onSubmitNewTag(e: any) {
     e.preventDefault();
-    const { newTag, tags } = this.state;
+    const { newTag } = this.state;
+    const { fetchTodos, tags } = this.props;
     if (
       tags &&
       !tags
@@ -280,14 +281,11 @@ class MyTodos extends Component<
       addNewTag(newTag).then((res: any) => {
         if (res) {
           try {
-            fetch(`/tags`)
-              .then((data) => data.json())
-              .then((data) => {
-                this.setState({
-                  tags: data,
-                  newTag: { tagName: "", tagColor: "" },
-                });
-              });
+            fetchTodos().then(() =>
+              this.setState({
+                newTag: { tagName: "", tagColor: "" },
+              })
+            );
           } catch (e) {
             console.log(`${e}`);
           }
@@ -321,12 +319,6 @@ class MyTodos extends Component<
     }
 
     fetchTodos();
-
-    fetch(`/tags`)
-      .then((data) => data.json())
-      .then((data) => {
-        this.setState({ tags: data });
-      });
   }
 
   componentDidUpdate() {
@@ -344,10 +336,9 @@ class MyTodos extends Component<
   }
 
   render() {
-    const { todos, statuses, fetchTodos } = this.props;
+    const { todos, statuses, fetchTodos, tags } = this.props;
 
     const {
-      tags,
       filterStr,
       isActive,
       range,

@@ -1,6 +1,7 @@
 const initialState = {
   fetching: false,
   todos: [],
+  tags: [],
   statuses: [],
 };
 
@@ -14,6 +15,7 @@ const todosReducer = (state = initialState, action: any) => {
         fetching: false,
         todos: action.todos,
         statuses: action.statuses,
+        tags: action.tags,
       };
     default:
       return state;
