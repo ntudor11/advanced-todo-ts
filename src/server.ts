@@ -147,7 +147,10 @@ app.get("/my-todos", withAuth(), (req: any, res) => {
 });
 
 app.get("/kanban", withAuth(), (req: any, res) => {
-  const board = db
+  const board = {
+    columns: [],
+  };
+  const columns = db
     .prepare(
       `
         select s.id, s.name as title
@@ -156,7 +159,7 @@ app.get("/kanban", withAuth(), (req: any, res) => {
     )
     .all();
 
-  board.map((status: any) => {
+  columns.map((status: any) => {
     const cards = db
       .prepare(
         `
@@ -169,6 +172,8 @@ app.get("/kanban", withAuth(), (req: any, res) => {
 
     status.cards = cards;
   });
+
+  board.columns = columns;
 
   res.send({ board });
 });

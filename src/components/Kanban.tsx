@@ -3,7 +3,7 @@ import Board, { moveCard } from "@lourenci/react-kanban";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import "@lourenci/react-kanban/dist/styles.css";
 
-const board = {
+const demoBoard = {
   columns: [
     {
       id: 1,
@@ -17,15 +17,6 @@ const board = {
             </a>
           ),
           description: "Add capability to add a card in a column",
-          priorityId: 1,
-          tags: [
-            {
-              tagName: "work",
-            },
-            {
-              tagName: "uni",
-            },
-          ],
         },
       ],
     },
@@ -65,15 +56,34 @@ const board = {
   ],
 };
 
-class Kanban extends Component<{}, any> {
+interface IProps {
+  fetchKanban: any;
+  board: any;
+}
+
+class Kanban extends Component<IProps, any> {
   constructor(props: any) {
     super(props);
     this.state = {};
   }
 
+  componentDidMount() {
+    const { fetchKanban } = this.props;
+    try {
+      fetch("/api/checkToken")
+        .then((data) => data.json())
+        .then(({ userId, type }) =>
+          this.setState({ loggedInUser: userId, loggedUserType: type })
+        );
+    } catch (e) {
+      console.log(`${e} not authenticated`);
+    }
+    fetchKanban();
+  }
+
   ControlledBoard() {
-    // You need to control the state yourself.
-    const [controlledBoard, setBoard] = useState(board);
+    // const { board } = this.props;
+    const [controlledBoard, setBoard] = useState(demoBoard);
 
     function handleCardMove(_card: any, source: any, destination: any) {
       const updatedBoard = moveCard(controlledBoard, source, destination);
@@ -88,6 +98,9 @@ class Kanban extends Component<{}, any> {
   }
 
   render() {
+    const { board } = this.props;
+    console.log(board);
+
     return (
       <Container fluid className="body">
         <Row className="addNewButtons">
@@ -139,6 +152,7 @@ class Kanban extends Component<{}, any> {
             onCardNew={console.log}
           /> */}
           <this.ControlledBoard />
+          {/* <Board initialBoard={board} /> */}
         </Row>
       </Container>
     );

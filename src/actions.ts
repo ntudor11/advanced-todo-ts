@@ -24,3 +24,24 @@ export const fetchTodos: any = () => {
     }
   };
 };
+
+const fetchKanbanRequest = () => ({ type: "FETCH_KANBAN_REQUEST" });
+const fetchKanbanSuccess = (board: any) => ({
+  type: "FETCH_KANBAN_SUCCESS",
+  board,
+});
+const fetchKanbanFailure = () => ({ type: "FETCH_KANBAN_FAILURE" });
+
+export const fetchKanban: any = () => {
+  return async (dispatch: any) => {
+    dispatch(fetchKanbanRequest());
+
+    const { data, status } = await axios.get("/kanban");
+
+    if (status === 200) {
+      dispatch(fetchKanbanSuccess(data.board));
+    } else {
+      dispatch(fetchKanbanFailure());
+    }
+  };
+};
