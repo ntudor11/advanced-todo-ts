@@ -30,11 +30,13 @@ const formIds = {
   newTask: "new-task",
 };
 
-class MyTodos extends Component<{}, any> {
+class MyTodos extends Component<
+  { fetchTodos: any; statuses: any; todos: any },
+  any
+> {
   constructor(props: any) {
     super(props);
     this.state = {
-      todos: [],
       filterStr: "",
       isActive: 1,
       range: {
@@ -48,7 +50,6 @@ class MyTodos extends Component<{}, any> {
         tags: [],
       },
       newTag: { tagName: "", tagColor: "" },
-      statuses: [],
       tags: [],
     };
 
@@ -70,7 +71,7 @@ class MyTodos extends Component<{}, any> {
   }
 
   getDeadlines() {
-    const { todos } = this.state;
+    const { todos } = this.props;
     const arr: any = [];
     todos.forEach((item: any) => {
       arr.push(item.deadline);
@@ -78,7 +79,7 @@ class MyTodos extends Component<{}, any> {
     return arr;
   }
 
-  getMin(arr: any) {
+  getMin(arr: any[]) {
     // return Math.min(...arr);
     if (!arr) {
       return null;
@@ -90,7 +91,7 @@ class MyTodos extends Component<{}, any> {
     return minV;
   }
 
-  getMax(arr: any) {
+  getMax(arr: any[]) {
     // return Math.max(...arr);
     if (!arr) {
       return null;
@@ -193,7 +194,7 @@ class MyTodos extends Component<{}, any> {
   }
 
   delTag(tagId: any) {
-    const { todos } = this.state;
+    const { todos } = this.props;
     const tagsArr: string[] = [];
     todos.map((todo: any) =>
       todo.tags.forEach((tag: any) => {
@@ -232,19 +233,15 @@ class MyTodos extends Component<{}, any> {
   onSubmitNew(e: any) {
     e.preventDefault();
     const { editTodo, showModal } = this.state;
+    const { fetchTodos } = this.props;
 
     if (showModal === formIds.newTask) {
       addTodo(editTodo).then((res: any) => {
         if (res) {
           try {
-            fetch(`/my-todos`)
-              .then((data) => data.json())
-              .then((data) => {
-                this.setState(data);
-              })
-              .then(() => {
-                this.setState({ editTodo: { tagsArr: [] } });
-              });
+            fetchTodos().then(() => {
+              this.setState({ editTodo: { tagsArr: [] } });
+            });
           } catch (e) {
             console.log(`${e}`);
           }
@@ -257,14 +254,9 @@ class MyTodos extends Component<{}, any> {
       updateTodo(editTodo).then((res: any) => {
         if (res) {
           try {
-            fetch(`/my-todos`)
-              .then((data) => data.json())
-              .then((data) => {
-                this.setState(data);
-              })
-              .then(() => {
-                this.setState({ editTodo: { tagsArr: [] } });
-              });
+            fetchTodos().then(() => {
+              this.setState({ editTodo: { tagsArr: [] } });
+            });
           } catch (e) {
             console.log(`${e}`);
           }
@@ -317,7 +309,7 @@ class MyTodos extends Component<{}, any> {
   }
 
   componentDidMount() {
-    // const { fetchTodos } = this.props;
+    const { fetchTodos } = this.props;
     try {
       fetch("/api/checkToken")
         .then((data) => data.json())
@@ -328,13 +320,7 @@ class MyTodos extends Component<{}, any> {
       console.log(`${e} not authenticated`);
     }
 
-    // fetchTodos();
-
-    fetch(`/my-todos`)
-      .then((data) => data.json())
-      .then((data) => {
-        this.setState(data);
-      });
+    fetchTodos();
 
     fetch(`/tags`)
       .then((data) => data.json())
@@ -358,9 +344,10 @@ class MyTodos extends Component<{}, any> {
   }
 
   render() {
+    const { todos, statuses, fetchTodos } = this.props;
+
     const {
       tags,
-      todos,
       filterStr,
       isActive,
       range,
@@ -368,11 +355,9 @@ class MyTodos extends Component<{}, any> {
       editTodo,
       newTag,
       showModal,
-      statuses,
     } = this.state;
 
     console.log(this.state);
-    const { tagsArr } = editTodo;
 
     const filteredElementsAll =
       todos &&
@@ -466,9 +451,7 @@ class MyTodos extends Component<{}, any> {
                   updateTodoStatus({ itemId, statusId }).then((res: any) => {
                     if (res) {
                       try {
-                        fetch(`my-todos`)
-                          .then((data) => data.json())
-                          .then((data) => this.setState(data));
+                        fetchTodos();
                       } catch (e) {
                         console.log(`${e}`);
                       }
@@ -549,11 +532,7 @@ class MyTodos extends Component<{}, any> {
                 deleteTodo({ itemId }).then((res: any) => {
                   if (res) {
                     try {
-                      fetch(`/my-todos`)
-                        .then((data) => data.json())
-                        .then((data) => {
-                          this.setState(data);
-                        });
+                      fetchTodos();
                     } catch (e) {
                       console.log(`${e}`);
                     }

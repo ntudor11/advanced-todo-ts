@@ -1,18 +1,9 @@
 /* eslint react/require-default-props: 0 */
 /* eslint react/forbid-prop-types: 0 */
 import React from "react";
-import {
-  Button,
-  Modal,
-  Form,
-  Badge,
-  Row,
-  Col,
-  Container,
-} from "react-bootstrap";
+import { Button, Modal, Form, Row, Col, Container } from "react-bootstrap";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/airbnb.css";
-import { removeTagFromTask } from "../../components/Functions";
 
 export const ModalEditTask = (props: any) => {
   const {
