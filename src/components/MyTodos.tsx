@@ -308,16 +308,6 @@ class MyTodos extends Component<IProps, any> {
 
   componentDidMount() {
     const { fetchTodos } = this.props;
-    try {
-      fetch("/api/checkToken")
-        .then((data) => data.json())
-        .then(({ userId, type }) =>
-          this.setState({ loggedInUser: userId, loggedUserType: type })
-        );
-    } catch (e) {
-      console.log(`${e} not authenticated`);
-    }
-
     fetchTodos();
   }
 

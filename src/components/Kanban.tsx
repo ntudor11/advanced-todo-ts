@@ -11,11 +11,7 @@ const demoBoard = {
       cards: [
         {
           id: 1,
-          title: (
-            <a href="#" onClick={() => console.log("click")}>
-              Add card
-            </a>
-          ),
+          title: "add card",
           description: "Add capability to add a card in a column",
         },
       ],
@@ -64,26 +60,22 @@ interface IProps {
 class Kanban extends Component<IProps, any> {
   constructor(props: any) {
     super(props);
-    this.state = {};
+    this.state = {
+      boardDemo: {},
+    };
+    this.controlledBoard = this.controlledBoard.bind(this);
   }
 
   componentDidMount() {
-    const { fetchKanban } = this.props;
-    try {
-      fetch("/api/checkToken")
-        .then((data) => data.json())
-        .then(({ userId, type }) =>
-          this.setState({ loggedInUser: userId, loggedUserType: type })
-        );
-    } catch (e) {
-      console.log(`${e} not authenticated`);
-    }
+    const { fetchKanban, board } = this.props;
     fetchKanban();
+    this.setState({ boardDemo: board });
   }
 
-  ControlledBoard() {
-    // const { board } = this.props;
-    const [controlledBoard, setBoard] = useState(demoBoard);
+  controlledBoard() {
+    const { board } = this.props;
+    console.log(board);
+    const [controlledBoard, setBoard] = useState(board);
 
     function handleCardMove(_card: any, source: any, destination: any) {
       const updatedBoard = moveCard(controlledBoard, source, destination);
@@ -100,6 +92,7 @@ class Kanban extends Component<IProps, any> {
   render() {
     const { board } = this.props;
     console.log(board);
+    console.log(demoBoard);
 
     return (
       <Container fluid className="body">
@@ -136,23 +129,23 @@ class Kanban extends Component<IProps, any> {
         </Row>
 
         <Row>
-          {/* <Board
+          <Board
             allowRemoveLane
             allowRenameColumn
             allowRemoveCard
             onLaneRemove={console.log}
             onCardRemove={console.log}
             onLaneRename={console.log}
-            initialBoard={board}
+            initialBoard={demoBoard}
             allowAddCard={{ on: "top" }}
             // onNewCardConfirm={(draftCard) => ({
             //   id: new Date().getTime(),
             //   ...draftCard,
             // })}
             onCardNew={console.log}
-          /> */}
-          <this.ControlledBoard />
-          {/* <Board initialBoard={board} /> */}
+          />
+          {/* <this.controlledBoard /> */}
+          {/* <Board>{board}</Board> */}
         </Row>
       </Container>
     );

@@ -45,6 +45,19 @@ body.light-mode .asidePanel {
   border-right: 1px solid #ced4da !important;
 }
 
+body.dark-mode .react-kanban-column {
+  background-color: rgba(180, 180, 180, 0.1);
+}
+
+.react-kanban-card {
+  text-align: left;
+}
+
+body.dark-mode .react-kanban-card {
+  background-color: rgba(23, 162, 184, 0.5);
+  color: #d7d7d7;
+}
+
 .asidePanel h3 {
   margin-top:1em;
 }
