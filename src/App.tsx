@@ -5,8 +5,10 @@ import Register from "./components/Register";
 import MyTodosContainer from "./components/MyTodosContainer";
 import NavBar from "./components/NavBar";
 import KanbanContainer from "./components/KanbanContainer";
+import Calendar from "./components/Calendar";
 import { NotFound, Unauthorised } from "./components/NotFound";
 
+import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import "./styles.scss";
@@ -50,6 +52,8 @@ const App = () => {
           <PrivateRoute exact path="/todos" comp={MyTodosContainer} />
 
           <PrivateRoute exact path="/kanban" comp={KanbanContainer} />
+
+          <PrivateRoute exact path="/calendar" comp={Calendar} />
 
           {loggedIn === true ? (
             <Route

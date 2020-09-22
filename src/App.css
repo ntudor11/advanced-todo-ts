@@ -180,6 +180,15 @@ body.dark-mode .navbar a {
   color: #8f8f8f !important;
 }
 
+.navbar .nav-link {
+  transition: .5s ease;
+}
+
+.navbar .nav-link:hover {
+  transition: .5s ease;
+  color: #17a2b8 !important;
+}
+
 body.dark-mode .navbar .active {
   transition: background-color 0.3s ease;
   color: #ffffff !important;
