@@ -81,6 +81,7 @@ class Calendar extends Component<IProps, any> {
                 right: "dayGridMonth,timeGridWeek,timeGridDay",
               }}
               initialView="dayGridMonth"
+              eventColor="#17a2b8"
               editable={true}
               selectable={true}
               selectMirror={true}

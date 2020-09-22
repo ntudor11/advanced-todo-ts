@@ -166,6 +166,24 @@ body.dark-mode .table tr:hover {
   color: #ddd;
 }
 
+body.dark-mode .fc-scrollgrid .fc-daygrid-event-harness {
+  color: #17a2b8;
+}
+
+body.dark-mode .fc-daygrid-day-number {
+  color: #e2e2e2;
+}
+
+body.dark-mode .fc-scrollgrid,
+body.dark-mode .table-bordered td,
+body.dark-mode .table-bordered th {
+  border-color: #555;
+}
+
+body.light-mode .table-bordered td, body.light-mode .table-bordered th {
+  border-color: 1px solid #dee2e6;
+}
+
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
   color: #17a2b8;
 }
