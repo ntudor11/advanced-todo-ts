@@ -529,7 +529,7 @@ class MyTodos extends Component<IProps, any> {
           className="justify-content-sm-center row-loginSignup"
         >
           <Col xs={12} md={3} className="asidePanel sticky-top">
-            <ButtonsRow handleShow={this.handleShow} />
+            <ButtonsRow handleShow={this.handleShow} colSize={6} />
 
             <Row>
               <Col>
@@ -653,11 +653,9 @@ class MyTodos extends Component<IProps, any> {
           handleClose={this.handleClose}
           taskObj={editTodo}
           statuses={statuses}
-          handleCheckboxChange={this.handleCheckboxChange}
-          onChangeDeadline={(date: any) => this.onChangeDeadline(date)}
           tags={tags}
-          onSubmitEdit={this.onSubmitNew}
-          onChangeEditTodo={this.onChangeEditTodo}
+          stateEditTodo={editTodo}
+          fetchTodos={fetchTodos}
         />
 
         <ModalEditTask

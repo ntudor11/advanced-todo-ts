@@ -1,8 +1,9 @@
 /* eslint react/require-default-props: 0 */
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal, Form, Container, Row, Col } from "react-bootstrap";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/airbnb.css";
+import { addTodo } from "../../components/Functions";
 
 export const ModalNewTask = (props: any) => {
   const {
@@ -10,16 +11,81 @@ export const ModalNewTask = (props: any) => {
     formIds,
     handleClose,
     onExit,
-    onSubmitEdit,
-    onChangeEditTodo,
+    stateEditTodo,
     taskObj,
     tags,
     statuses,
-    handleCheckboxChange,
-    onChangeDeadline,
+    fetchTodos,
   } = props;
 
+  const [editTodo, setEditTodo] = useState(stateEditTodo);
+
+  const setETD = (e: any) =>
+    setEditTodo({
+      ...editTodo,
+      [e.target.name]: e.target.value,
+    });
+
+  const handleCheckboxChange = (e: any) => {
+    const item = e.target.name;
+    const { tagsArr } = editTodo;
+    if (tagsArr && !tagsArr.includes(item)) {
+      setEditTodo({
+        ...editTodo,
+        tagsArr: [...tagsArr, item],
+      });
+    } else {
+      setEditTodo({
+        ...editTodo,
+        tagsArr: [...tagsArr.filter((check: any) => check !== item)],
+      });
+    }
+  };
+
+  const onSubmitEdit = (e: any) => {
+    e.preventDefault();
+
+    if (showModal === formIds.newTask) {
+      addTodo(editTodo).then((res: any) => {
+        if (res) {
+          try {
+            fetchTodos().then(() => {
+              setEditTodo({ tagsArr: [] });
+            });
+          } catch (e) {
+            console.log(`${e}`);
+          }
+          handleClose();
+        }
+      });
+    }
+
+    // if (showModal === formIds.viewTask) {
+    //   updateTodo(editTodo).then((res: any) => {
+    //     if (res) {
+    //       try {
+    //         fetchTodos().then(() => {
+    //           setEditTodo({ tagsArr: [] });
+    //         });
+    //       } catch (e) {
+    //         console.log(`${e}`);
+    //       }
+    //       handleClose();
+    //     }
+    //   });
+    // }
+  };
+
+  const onChangeDeadline = (date: any) => {
+    setEditTodo({
+      ...editTodo,
+      deadline: date[0].toISOString(),
+    });
+  };
+
   const date = new Date().toISOString();
+
+  console.log(editTodo);
 
   return (
     <Modal
@@ -48,7 +114,7 @@ export const ModalNewTask = (props: any) => {
                     <Form.Control
                       name="task"
                       defaultValue={taskObj.task}
-                      onChange={onChangeEditTodo}
+                      onChange={setETD}
                     />
                   </Form.Group>
                 </Col>
@@ -63,7 +129,7 @@ export const ModalNewTask = (props: any) => {
                       name="priority"
                       defaultValue=""
                       required
-                      onChange={onChangeEditTodo}
+                      onChange={setETD}
                     >
                       <option value="" disabled>
                         Choose Priority
@@ -83,7 +149,7 @@ export const ModalNewTask = (props: any) => {
                       name="statusId"
                       defaultValue=""
                       required
-                      onChange={onChangeEditTodo}
+                      onChange={setETD}
                     >
                       <option value="" disabled>
                         Choose Status
@@ -148,7 +214,7 @@ export const ModalNewTask = (props: any) => {
                   rows={6}
                   name="description"
                   defaultValue={taskObj.description}
-                  onChange={onChangeEditTodo}
+                  onChange={setETD}
                 />
               </Form.Group>
             </Container>

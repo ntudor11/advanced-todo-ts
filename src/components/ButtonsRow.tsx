@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Row, Col, Button } from "react-bootstrap";
 
 export const formIds = {
@@ -8,11 +8,11 @@ export const formIds = {
 };
 
 const ButtonsRow = (props: any) => {
-  const { handleShow } = props;
+  const { handleShow, colSize } = props;
 
   return (
     <Row className="addNewButtons">
-      <Col>
+      <Col xs={colSize}>
         <Button
           size="sm"
           block
@@ -27,7 +27,7 @@ const ButtonsRow = (props: any) => {
         </Button>
       </Col>
 
-      <Col>
+      <Col xs={colSize}>
         <Button
           size="sm"
           className="btnDefault"

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import FullCalendar, { formatDate } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -7,7 +7,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
 import { createEventId } from "./event-utils";
 import "@lourenci/react-kanban/dist/styles.css";
-import ButtonsRow from "./ButtonsRow";
+import ButtonsRow, { formIds } from "./ButtonsRow";
+import { ModalNewTask } from "../views/modals/ModalNewTask";
 
 interface IProps {
   fetchCalendar: any;
@@ -23,8 +24,13 @@ class Calendar extends Component<IProps, any> {
     super(props);
     this.state = {
       showModal: "",
+      editTodo: {
+        tagsArr: [],
+        tags: [],
+      },
     };
     this.handleShow = this.handleShow.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
@@ -36,44 +42,20 @@ class Calendar extends Component<IProps, any> {
     this.setState({ showModal: id });
   }
 
+  handleClose() {
+    this.setState({
+      showModal: null,
+    });
+  }
+
   render() {
     const { todos, statuses, fetchCalendar, tags } = this.props;
+    const { showModal, editTodo } = this.state;
     console.log(todos);
 
     return (
       <Container fluid className="body">
-        <ButtonsRow handleShow={this.handleShow} />
-        {/* <Row className="addNewButtons">
-          <Col xs={3}>
-            <Button
-              size="sm"
-              block
-              className="btnDefault"
-              type="submit"
-              variant="outline-info"
-              onClick={() => {
-                // this.handleShow(formIds.newTask);
-              }}
-            >
-              New Task <i className="icon mdi mdi-format-list-checkbox" />
-            </Button>
-          </Col>
-
-          <Col xs={3}>
-            <Button
-              size="sm"
-              className="btnDefault"
-              block
-              type="submit"
-              variant="outline-info"
-              onClick={() => {
-                // this.handleShow(formIds.newTag);
-              }}
-            >
-              Tags <i className="icon mdi mdi-tag-outline" />
-            </Button>
-          </Col>
-        </Row> */}
+        <ButtonsRow handleShow={this.handleShow} colSize={3} />
 
         <Row style={{ marginTop: "2em" }}>
           <Col sm={{ span: 10, offset: 1 }}>
@@ -110,6 +92,17 @@ class Calendar extends Component<IProps, any> {
             />
           </Col>
         </Row>
+
+        <ModalNewTask
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          taskObj={editTodo}
+          statuses={statuses}
+          tags={tags}
+          stateEditTodo={editTodo}
+          fetchTodos={fetchCalendar}
+        />
       </Container>
     );
   }
