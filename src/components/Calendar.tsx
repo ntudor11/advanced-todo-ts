@@ -5,8 +5,9 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
-import { INITIAL_EVENTS, createEventId } from "./event-utils";
+import { createEventId } from "./event-utils";
 import "@lourenci/react-kanban/dist/styles.css";
+import ButtonsRow from "./ButtonsRow";
 
 interface IProps {
   fetchCalendar: any;
@@ -20,12 +21,19 @@ const todayStr = new Date().toISOString().replace(/T.*$/, ""); // YYYY-MM-DD of 
 class Calendar extends Component<IProps, any> {
   constructor(props: any) {
     super(props);
-    this.state = {};
+    this.state = {
+      showModal: "",
+    };
+    this.handleShow = this.handleShow.bind(this);
   }
 
   componentDidMount() {
     const { fetchCalendar } = this.props;
     fetchCalendar();
+  }
+
+  handleShow(id: string) {
+    this.setState({ showModal: id });
   }
 
   render() {
@@ -34,7 +42,8 @@ class Calendar extends Component<IProps, any> {
 
     return (
       <Container fluid className="body">
-        <Row className="addNewButtons">
+        <ButtonsRow handleShow={this.handleShow} />
+        {/* <Row className="addNewButtons">
           <Col xs={3}>
             <Button
               size="sm"
@@ -64,7 +73,7 @@ class Calendar extends Component<IProps, any> {
               Tags <i className="icon mdi mdi-tag-outline" />
             </Button>
           </Col>
-        </Row>
+        </Row> */}
 
         <Row style={{ marginTop: "2em" }}>
           <Col sm={{ span: 10, offset: 1 }}>

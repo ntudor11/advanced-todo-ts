@@ -20,15 +20,10 @@ import {
   addTodo,
   updateTodo,
 } from "./Functions";
+import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
-
-const formIds = {
-  viewTask: "view-task",
-  newTag: "new-tag",
-  newTask: "new-task",
-};
 
 interface IProps {
   fetchTodos: any;
@@ -534,37 +529,7 @@ class MyTodos extends Component<IProps, any> {
           className="justify-content-sm-center row-loginSignup"
         >
           <Col xs={12} md={3} className="asidePanel sticky-top">
-            <Row className="addNewButtons">
-              <Col>
-                <Button
-                  size="sm"
-                  block
-                  className="btnDefault"
-                  type="submit"
-                  variant="outline-info"
-                  onClick={() => {
-                    this.handleShow(formIds.newTask);
-                  }}
-                >
-                  New Task <i className="icon mdi mdi-format-list-checkbox" />
-                </Button>
-              </Col>
-
-              <Col>
-                <Button
-                  size="sm"
-                  className="btnDefault"
-                  block
-                  type="submit"
-                  variant="outline-info"
-                  onClick={() => {
-                    this.handleShow(formIds.newTag);
-                  }}
-                >
-                  Tags <i className="icon mdi mdi-tag-outline" />
-                </Button>
-              </Col>
-            </Row>
+            <ButtonsRow handleShow={this.handleShow} />
 
             <Row>
               <Col>
