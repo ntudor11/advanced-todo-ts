@@ -216,6 +216,72 @@ app.post("/login", (req, res) => {
     .send({ success: true, userId });
 });
 
+app.get("/calendar", withAuth(), (req: any, res) => {
+  const { userId } = req;
+
+  const todos = db
+    .prepare(
+      `
+        select t.id, t.task as title, t.description, t.priority, t.deadline as date from todos t
+          join users u
+          on u.id = t.user_id
+          where t.user_id = ?
+      `
+    )
+    .all(userId);
+
+  todos.map((todo: any) => {
+    const todoTags = db
+      .prepare(
+        `
+            select distinct tg.id as tagId, tg.name as tagName, tg.color
+              from tags tg
+              join todos_tags tt
+              on tg.id = tt.tag_id
+              join todos t
+              on t.id = tt.todo_id
+              where t.id = ?;
+          `
+      )
+      .all(todo.id);
+
+    const todoStatus = db
+      .prepare(
+        `
+          select distinct s.id as statusId, s.name as statusName
+            from status s
+            join todos t
+            on s.id = t.status_id
+            where t.id = ?;
+        `
+      )
+      .get(todo.id);
+
+    todo.tags = todoTags;
+    todo.status = todoStatus;
+  });
+
+  const statuses = db
+    .prepare(
+      `
+        select distinct s.id as statusId, s.name as statusName
+          from status s;
+      `
+    )
+    .all();
+
+  const tags = db
+    .prepare(
+      `
+          select id as tagId, name as tagName, color as tagColor
+          from tags
+        `
+    )
+    .all();
+
+  res.send({ todos, statuses, tags });
+});
+
 app.post("/register", (req, res) => {
   const { name, email, image, password } = req.body;
 

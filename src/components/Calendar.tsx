@@ -9,8 +9,10 @@ import { INITIAL_EVENTS, createEventId } from "./event-utils";
 import "@lourenci/react-kanban/dist/styles.css";
 
 interface IProps {
-  fetchKanban: any;
-  board: any;
+  fetchCalendar: any;
+  statuses: any;
+  todos: any;
+  tags: any;
 }
 
 const todayStr = new Date().toISOString().replace(/T.*$/, ""); // YYYY-MM-DD of today
@@ -18,23 +20,17 @@ const todayStr = new Date().toISOString().replace(/T.*$/, ""); // YYYY-MM-DD of 
 class Calendar extends Component<IProps, any> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      events: [
-        { id: "1", title: "event 1", date: "2020-09-28" },
-        { id: "2", title: "event 2", date: "2020-09-23" },
-        { id: "3", title: "timed event 3", start: todayStr + "T04:30:00" },
-      ],
-    };
+    this.state = {};
   }
 
   componentDidMount() {
-    // const { fetchKanban, board } = this.props;
-    // fetchKanban();
+    const { fetchCalendar } = this.props;
+    fetchCalendar();
   }
 
   render() {
-    const { board } = this.props;
-    console.log(board);
+    const { todos, statuses, fetchCalendar, tags } = this.props;
+    console.log(todos);
 
     return (
       <Container fluid className="body">
@@ -91,8 +87,7 @@ class Calendar extends Component<IProps, any> {
               dayMaxEvents={true}
               fixedWeekCount={false}
               themeSystem="bootstrap"
-              events={this.state.events}
-              // initialEvents={INITIAL_EVENTS}
+              events={todos}
               select={this.handleDateSelect}
               eventContent={this.renderEventContent}
               eventClick={this.handleEventClick}

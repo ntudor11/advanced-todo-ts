@@ -45,3 +45,26 @@ export const fetchKanban: any = () => {
     }
   };
 };
+
+const fetchCalendarRequest = () => ({ type: "FETCH_CALENDAR_REQUEST" });
+const fetchCalendarSuccess = (todos: any, statuses: any, tags: any) => ({
+  type: "FETCH_CALENDAR_SUCCESS",
+  todos,
+  statuses,
+  tags,
+});
+const fetchCalendarFailure = () => ({ type: "FETCH_CALENDAR_FAILURE" });
+
+export const fetchCalendar: any = () => {
+  return async (dispatch: any) => {
+    dispatch(fetchCalendarRequest());
+
+    const { data, status } = await axios.get("/calendar");
+
+    if (status === 200) {
+      dispatch(fetchCalendarSuccess(data.todos, data.statuses, data.tags));
+    } else {
+      dispatch(fetchCalendarFailure());
+    }
+  };
+};
