@@ -92,8 +92,6 @@ export const ModalEditTask = (props: any) => {
     return arr2;
   };
 
-  console.log(editTodo);
-
   // console.log(taskObj.tags && existingTags(taskObj.tags));
 
   return (

@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import FullCalendar, { formatDate } from "@fullcalendar/react";
+import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
-import { createEventId } from "./event-utils";
 import "@lourenci/react-kanban/dist/styles.css";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
+import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
 
 interface IProps {
@@ -17,8 +17,6 @@ interface IProps {
   todos: any;
   tags: any;
 }
-
-const todayStr = new Date().toISOString().replace(/T.*$/, ""); // YYYY-MM-DD of today
 
 class Calendar extends Component<IProps, any> {
   constructor(props: any) {
@@ -49,10 +47,44 @@ class Calendar extends Component<IProps, any> {
     });
   }
 
+  handleEventClick = (info: any) => {
+    const { editTodo } = this.state;
+    this.setState({
+      editTodo: {
+        ...editTodo,
+        id: info.event.id,
+        task: info.event.title,
+        description: info.event.extendedProps.description,
+        priority: info.event.extendedProps.priority,
+        status: {
+          statusId: info.event.extendedProps.status.statusId,
+          statusName: info.event.extendedProps.status.statusName,
+        },
+        tags: info.event.extendedProps.tags.map((tag: any) => tag),
+        deadline: info.event.start && info.event.start.toISOString(),
+      },
+    });
+    this.handleShow(formIds.viewTask);
+  };
+
+  handleEvents = (events: any) => {
+    this.setState({
+      currentEvents: events,
+    });
+  };
+
+  renderEventContent(eventInfo: any) {
+    return (
+      <>
+        <b>{eventInfo.timeText}</b>
+        <i>{eventInfo.event.title}</i>
+      </>
+    );
+  }
+
   render() {
     const { todos, statuses, fetchCalendar, tags } = this.props;
     const { showModal, editTodo } = this.state;
-    console.log(todos);
 
     return (
       <Container fluid className="body">
@@ -75,21 +107,15 @@ class Calendar extends Component<IProps, any> {
               initialView="dayGridMonth"
               eventColor="#17a2b8"
               editable={true}
-              selectable={true}
+              selectable={false}
               selectMirror={true}
               dayMaxEvents={true}
               fixedWeekCount={false}
               themeSystem="bootstrap"
               events={todos}
-              select={this.handleDateSelect}
               eventContent={this.renderEventContent}
               eventClick={this.handleEventClick}
-              eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-              /* update db below:
-            eventAdd={function(){}}
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
+              eventsSet={this.handleEvents}
             />
           </Col>
         </Row>
@@ -113,58 +139,17 @@ class Calendar extends Component<IProps, any> {
           todos={todos}
           fetchTodos={fetchCalendar}
         />
+
+        <ModalEditTask
+          formIds={formIds}
+          showModal={showModal}
+          stateEditTodo={editTodo}
+          handleClose={this.handleClose}
+          tags={tags}
+          statuses={statuses}
+          fetchTodos={fetchCalendar}
+        />
       </Container>
-    );
-  }
-
-  handleEventClick = (clickInfo: any) => {
-    console.log(clickInfo.event);
-  };
-
-  handleDateSelect = (selectInfo: any) => {
-    let title = prompt("Please enter a new title for your event");
-    let calendarApi = selectInfo.view.calendar;
-
-    calendarApi.unselect(); // clear date selection
-
-    if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-      });
-    }
-  };
-
-  handleEvents = (events: any) => {
-    this.setState({
-      currentEvents: events,
-    });
-  };
-
-  renderEventContent(eventInfo: any) {
-    return (
-      <>
-        <b>{eventInfo.timeText}</b>
-        <i>{eventInfo.event.title}</i>
-      </>
-    );
-  }
-
-  renderSidebarEvent(event: any) {
-    return (
-      <li key={event.id}>
-        <b>
-          {formatDate(event.start, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </b>
-        <i>{event.title}</i>
-      </li>
     );
   }
 }

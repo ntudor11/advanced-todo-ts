@@ -73,8 +73,6 @@ export const ModalNewTag = (props: any) => {
     }
   };
 
-  console.log(newTag);
-
   return (
     <Modal
       keyboard

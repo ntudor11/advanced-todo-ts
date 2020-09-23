@@ -67,8 +67,6 @@ export const ModalNewTask = (props: any) => {
 
   const date = new Date().toISOString();
 
-  console.log(editTodo);
-
   return (
     <Modal
       keyboard

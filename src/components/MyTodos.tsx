@@ -146,8 +146,6 @@ class MyTodos extends Component<IProps, any> {
       showModal,
     } = this.state;
 
-    console.log(this.state);
-
     const filteredElementsAll =
       todos &&
       todos.filter(
