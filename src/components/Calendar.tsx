@@ -9,6 +9,7 @@ import { createEventId } from "./event-utils";
 import "@lourenci/react-kanban/dist/styles.css";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
+import { ModalNewTag } from "../views/modals/ModalNewTag";
 
 interface IProps {
   fetchCalendar: any;
@@ -101,6 +102,15 @@ class Calendar extends Component<IProps, any> {
           statuses={statuses}
           tags={tags}
           stateEditTodo={editTodo}
+          fetchTodos={fetchCalendar}
+        />
+
+        <ModalNewTag
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          tags={tags}
+          todos={todos}
           fetchTodos={fetchCalendar}
         />
       </Container>

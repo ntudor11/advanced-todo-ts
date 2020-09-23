@@ -75,7 +75,6 @@ export const ModalNewTag = (props: any) => {
 
   console.log(newTag);
 
-  // delete tag on badge, directly import from functions
   return (
     <Modal
       keyboard

@@ -53,8 +53,6 @@ class MyTodos extends Component<IProps, any> {
 
     this.onChange = this.onChange.bind(this);
     this.onChangeEditTodo = this.onChangeEditTodo.bind(this);
-    this.onChangeNewTag = this.onChangeNewTag.bind(this);
-    this.onChangeNewTagColor = this.onChangeNewTagColor.bind(this);
     this.onSubmitNew = this.onSubmitNew.bind(this);
     this.onSubmitNewTag = this.onSubmitNewTag.bind(this);
     this.handleShow = this.handleShow.bind(this);
@@ -182,16 +180,6 @@ class MyTodos extends Component<IProps, any> {
     }
   }
 
-  onChangeNewTag(e: any) {
-    const { newTag } = this.state;
-    this.setState({
-      newTag: {
-        ...newTag,
-        [e.target.name]: e.target.value,
-      },
-    });
-  }
-
   delTag(tagId: any) {
     const { todos, fetchTodos } = this.props;
     const tagsArr: string[] = [];
@@ -213,16 +201,6 @@ class MyTodos extends Component<IProps, any> {
     } else {
       console.log("tag cannot be deleted");
     }
-  }
-
-  onChangeNewTagColor(color: any) {
-    const { newTag } = this.state;
-    this.setState({
-      newTag: {
-        ...newTag,
-        tagColor: color.hex,
-      },
-    });
   }
 
   onSubmitNew(e: any) {
