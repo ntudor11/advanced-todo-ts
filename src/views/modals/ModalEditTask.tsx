@@ -1,31 +1,98 @@
-/* eslint react/require-default-props: 0 */
-/* eslint react/forbid-prop-types: 0 */
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal, Form, Row, Col, Container } from "react-bootstrap";
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/airbnb.css";
+import DateTimePicker from "react-datetime-picker";
+// import Flatpickr from "react-flatpickr";
+// import "flatpickr/dist/themes/airbnb.css";
+import { updateTodo } from "../../components/Functions";
 
 export const ModalEditTask = (props: any) => {
   const {
     showModal,
     formIds,
     handleClose,
-    onExit,
-    onSubmitEdit,
-    onChangeEditTodo,
-    taskObj,
     statuses,
     tags,
-    handleCheckboxChange,
-    onChangeDeadline,
-    copyInitial,
+    stateEditTodo,
+    fetchTodos,
   } = props;
+
+  const [editTodo, setEditTodo] = useState(stateEditTodo);
+
+  const copyInitial = () => {
+    const { tagsArr, status, tags } = stateEditTodo;
+    const tempArr: any[] = [];
+    tags &&
+      tags.forEach((tag: any) => {
+        if (!tagsArr.includes(tag.tagId.toString())) {
+          tempArr.push(tag.tagId.toString());
+        }
+      });
+    setEditTodo({
+      ...stateEditTodo,
+      tagsArr: [...tagsArr.concat(tempArr)],
+      statusId: status.statusId,
+    });
+  };
+
+  const setETD = (e: any) => {
+    e.preventDefault();
+    setEditTodo({
+      ...editTodo,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleCheckboxChange = (e: any) => {
+    const item = e.target.name;
+    const { tagsArr } = editTodo;
+    if (tagsArr && !tagsArr.includes(item)) {
+      setEditTodo({
+        ...editTodo,
+        tagsArr: [...tagsArr, item],
+      });
+    } else {
+      setEditTodo({
+        ...editTodo,
+        tagsArr: [...tagsArr.filter((check: any) => check !== item)],
+      });
+    }
+  };
+
+  const onChangeDeadline = (date: any) => {
+    setEditTodo({
+      ...editTodo,
+      deadline: date.toISOString(),
+      // for Flatpickr module: deadline: date[0].toISOString(),
+      // TODO fix issue with clicking inside component
+    });
+  };
+
+  const onSubmitEdit = (e: any) => {
+    e.preventDefault();
+
+    if (showModal === formIds.viewTask) {
+      updateTodo(editTodo).then((res: any) => {
+        if (res) {
+          try {
+            fetchTodos().then(() => {
+              setEditTodo({ tagsArr: [] });
+            });
+          } catch (e) {
+            console.log(`${e}`);
+          }
+          handleClose();
+        }
+      });
+    }
+  };
 
   const existingTags = (arr: any) => {
     let arr2: any = [];
     arr.map((tag: any) => arr2.push(tag.tagId));
     return arr2;
   };
+
+  console.log(editTodo);
 
   // console.log(taskObj.tags && existingTags(taskObj.tags));
 
@@ -36,13 +103,13 @@ export const ModalEditTask = (props: any) => {
       id={formIds.viewTask}
       onShow={copyInitial}
       onHide={handleClose}
-      onExit={onExit}
+      onExit={() => setEditTodo({ tagsArr: [], tags: [] })}
       dialogClassName="modal-90w"
     >
       <Modal.Header>
         <Row className="topRowModal">
           <Col>
-            <p>Edit Task: {taskObj.task}</p>
+            <p>Edit Task: {editTodo.task}</p>
           </Col>
         </Row>
       </Modal.Header>
@@ -56,8 +123,8 @@ export const ModalEditTask = (props: any) => {
                     <Form.Label>Task Name</Form.Label>
                     <Form.Control
                       name="task"
-                      defaultValue={taskObj.task}
-                      onChange={onChangeEditTodo}
+                      defaultValue={stateEditTodo.task}
+                      onChange={setETD}
                     />
                   </Form.Group>
                 </Col>
@@ -70,9 +137,9 @@ export const ModalEditTask = (props: any) => {
                     <Form.Control
                       as="select"
                       name="priority"
-                      defaultValue={taskObj.priority}
+                      defaultValue={stateEditTodo.priority}
                       required
-                      onChange={onChangeEditTodo}
+                      onChange={setETD}
                     >
                       <option value="" disabled>
                         Choose Priority
@@ -90,8 +157,10 @@ export const ModalEditTask = (props: any) => {
                     <Form.Control
                       as="select"
                       name="statusId"
-                      defaultValue={taskObj.status && taskObj.status.statusId}
-                      onChange={onChangeEditTodo}
+                      defaultValue={
+                        stateEditTodo.status && stateEditTodo.status.statusId
+                      }
+                      onChange={setETD}
                     >
                       <option value="" disabled>
                         Choose Status
@@ -112,7 +181,7 @@ export const ModalEditTask = (props: any) => {
                     <Form.Label>Choose Tags</Form.Label>
                     <br />
 
-                    {taskObj.tags &&
+                    {stateEditTodo.tags &&
                       tags.map((tag: any, i: any) => (
                         <div key={i} className="pretty p-default p-curve">
                           <input
@@ -120,9 +189,9 @@ export const ModalEditTask = (props: any) => {
                             name={tag.tagId}
                             value={tag.tagId}
                             onChange={handleCheckboxChange}
-                            defaultChecked={existingTags(taskObj.tags).includes(
-                              tag.tagId
-                            )}
+                            defaultChecked={existingTags(
+                              stateEditTodo.tags
+                            ).includes(tag.tagId)}
                           />
                           <div className="state p-info">
                             <label>{tag.tagName}</label>
@@ -137,16 +206,20 @@ export const ModalEditTask = (props: any) => {
                     <Form.Label>Deadline</Form.Label>
 
                     <Row>
-                      <Flatpickr
-                        data-enable-time
-                        defaultValue={taskObj.deadline}
-                        onReady={(date: any) => {
-                          onChangeDeadline(date);
-                        }}
+                      <DateTimePicker
                         onChange={(date: any) => {
                           onChangeDeadline(date);
                         }}
+                        name="deadline"
+                        value={new Date(stateEditTodo.deadline)}
                       />
+                      {/* <Flatpickr
+                        data-enable-time
+                        defaultValue={stateEditTodo.deadline}
+                        onChange={(date: any) => {
+                          onChangeDeadline(date);
+                        }}
+                      /> */}
                     </Row>
                   </Form.Group>
                 </Col>
@@ -158,8 +231,8 @@ export const ModalEditTask = (props: any) => {
                   as="textarea"
                   rows={6}
                   name="description"
-                  defaultValue={taskObj.description}
-                  onChange={onChangeEditTodo}
+                  defaultValue={stateEditTodo.description}
+                  onChange={setETD}
                 />
               </Form.Group>
             </Container>

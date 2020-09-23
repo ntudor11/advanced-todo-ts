@@ -12,14 +12,7 @@ import _ from "lodash";
 import InputRange from "react-input-range";
 import FlipMove from "react-flip-move";
 import "react-input-range/lib/css/index.css";
-import {
-  deleteTodo,
-  updateTodoStatus,
-  addNewTag,
-  removeTag,
-  addTodo,
-  updateTodo,
-} from "./Functions";
+import { deleteTodo, updateTodoStatus } from "./Functions";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
@@ -52,18 +45,11 @@ class MyTodos extends Component<IProps, any> {
     };
 
     this.onChange = this.onChange.bind(this);
-    this.onChangeEditTodo = this.onChangeEditTodo.bind(this);
-    this.onSubmitNew = this.onSubmitNew.bind(this);
-    this.onSubmitNewTag = this.onSubmitNewTag.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.getDeadlines = this.getDeadlines.bind(this);
     this.getMin = this.getMin.bind(this);
     this.getMax = this.getMax.bind(this);
-    this.delTag = this.delTag.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
-    this.onChangeDeadline = this.onChangeDeadline.bind(this);
-    this.copyInitial = this.copyInitial.bind(this);
   }
 
   getDeadlines() {
@@ -117,156 +103,6 @@ class MyTodos extends Component<IProps, any> {
     const value =
       target.type === "checkbox" ? (target.checked ? 1 : 0) : target.value;
     this.setState({ [target.name]: value });
-  }
-
-  onChangeEditTodo(e: any) {
-    const { editTodo } = this.state;
-    this.setState({
-      editTodo: {
-        ...editTodo,
-        [e.target.name]: e.target.value,
-      },
-    });
-  }
-
-  onChangeDeadline(date: any) {
-    const { editTodo } = this.state;
-    this.setState({
-      editTodo: {
-        ...editTodo,
-        deadline: date[0].toISOString(),
-      },
-    });
-  }
-
-  copyInitial() {
-    const { editTodo } = this.state;
-    const { tags } = this.props;
-    const { tagsArr, status } = editTodo;
-    const tempArr: any[] = [];
-    tags &&
-      tags.forEach((tag: any) => {
-        if (!tagsArr.includes(tag.tagId.toString())) {
-          tempArr.push(tag.tagId.toString());
-        }
-      });
-    this.setState({
-      editTodo: {
-        ...editTodo,
-        tagsArr: [...tagsArr.concat(tempArr)],
-        statusId: status.statusId,
-      },
-    });
-  }
-
-  handleCheckboxChange(e: any) {
-    const item = e.target.name;
-    const { editTodo } = this.state;
-    const { tagsArr } = editTodo;
-    if (tagsArr && !tagsArr.includes(item)) {
-      this.setState({
-        editTodo: {
-          ...editTodo,
-          tagsArr: [...tagsArr, item],
-        },
-      });
-    } else {
-      this.setState({
-        editTodo: {
-          ...editTodo,
-          tagsArr: [...tagsArr.filter((check: any) => check !== item)],
-        },
-      });
-    }
-  }
-
-  delTag(tagId: any) {
-    const { todos, fetchTodos } = this.props;
-    const tagsArr: string[] = [];
-    todos.map((todo: any) =>
-      todo.tags.forEach((tag: any) => {
-        tagsArr.push(tag.tagId);
-      })
-    );
-    if (!tagsArr.includes(tagId.tagId)) {
-      removeTag(tagId).then((res: any) => {
-        if (res) {
-          try {
-            fetchTodos();
-          } catch (e) {
-            console.log(`${e}`);
-          }
-        }
-      });
-    } else {
-      console.log("tag cannot be deleted");
-    }
-  }
-
-  onSubmitNew(e: any) {
-    e.preventDefault();
-    const { editTodo, showModal } = this.state;
-    const { fetchTodos } = this.props;
-
-    if (showModal === formIds.newTask) {
-      addTodo(editTodo).then((res: any) => {
-        if (res) {
-          try {
-            fetchTodos().then(() => {
-              this.setState({ editTodo: { tagsArr: [] } });
-            });
-          } catch (e) {
-            console.log(`${e}`);
-          }
-          this.handleClose();
-        }
-      });
-    }
-
-    if (showModal === formIds.viewTask) {
-      updateTodo(editTodo).then((res: any) => {
-        if (res) {
-          try {
-            fetchTodos().then(() => {
-              this.setState({ editTodo: { tagsArr: [] } });
-            });
-          } catch (e) {
-            console.log(`${e}`);
-          }
-          this.handleClose();
-        }
-      });
-    }
-  }
-
-  onSubmitNewTag(e: any) {
-    e.preventDefault();
-    const { newTag } = this.state;
-    const { fetchTodos, tags } = this.props;
-    if (
-      tags &&
-      !tags
-        .map((tag: any) => {
-          return tag.tagName;
-        })
-        .includes(newTag.tagName)
-    ) {
-      addNewTag(newTag).then((res: any) => {
-        if (res) {
-          try {
-            fetchTodos().then(() =>
-              this.setState({
-                newTag: { tagName: "", tagColor: "" },
-              })
-            );
-          } catch (e) {
-            console.log(`${e}`);
-          }
-        }
-      });
-    } else {
-      console.log("This tag already exists!");
-    }
   }
 
   handleShow(id: string) {
@@ -619,7 +455,6 @@ class MyTodos extends Component<IProps, any> {
           formIds={formIds}
           showModal={showModal}
           handleClose={this.handleClose}
-          taskObj={editTodo}
           statuses={statuses}
           tags={tags}
           stateEditTodo={editTodo}
@@ -629,20 +464,11 @@ class MyTodos extends Component<IProps, any> {
         <ModalEditTask
           formIds={formIds}
           showModal={showModal}
+          stateEditTodo={editTodo}
           handleClose={this.handleClose}
-          taskObj={editTodo}
           tags={tags}
           statuses={statuses}
-          handleCheckboxChange={this.handleCheckboxChange}
-          onChangeDeadline={this.onChangeDeadline}
-          onExit={() =>
-            this.setState({
-              editTodo: { tagsArr: [], tags: [] },
-            })
-          }
-          copyInitial={this.copyInitial}
-          onSubmitEdit={this.onSubmitNew}
-          onChangeEditTodo={this.onChangeEditTodo}
+          fetchTodos={fetchTodos}
         />
       </Container>
     );

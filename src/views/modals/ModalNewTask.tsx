@@ -9,9 +9,7 @@ export const ModalNewTask = (props: any) => {
     showModal,
     formIds,
     handleClose,
-    onExit,
     stateEditTodo,
-    taskObj,
     tags,
     statuses,
     fetchTodos,
@@ -58,21 +56,6 @@ export const ModalNewTask = (props: any) => {
         }
       });
     }
-
-    // if (showModal === formIds.viewTask) {
-    //   updateTodo(editTodo).then((res: any) => {
-    //     if (res) {
-    //       try {
-    //         fetchTodos().then(() => {
-    //           setEditTodo({ tagsArr: [] });
-    //         });
-    //       } catch (e) {
-    //         console.log(`${e}`);
-    //       }
-    //       handleClose();
-    //     }
-    //   });
-    // }
   };
 
   const onChangeDeadline = (date: any) => {
@@ -92,7 +75,7 @@ export const ModalNewTask = (props: any) => {
       show={showModal === formIds.newTask}
       id={formIds.newTask}
       onHide={handleClose}
-      onExit={onExit}
+      onExit={() => setEditTodo({ tagsArr: [], tags: [] })}
       size="lg"
     >
       <Modal.Header>
@@ -112,7 +95,7 @@ export const ModalNewTask = (props: any) => {
                     <Form.Label>Task Name</Form.Label>
                     <Form.Control
                       name="task"
-                      defaultValue={taskObj.task}
+                      defaultValue={editTodo.task}
                       onChange={setETD}
                     />
                   </Form.Group>
@@ -212,7 +195,7 @@ export const ModalNewTask = (props: any) => {
                   as="textarea"
                   rows={6}
                   name="description"
-                  defaultValue={taskObj.description}
+                  defaultValue={editTodo.description}
                   onChange={setETD}
                 />
               </Form.Group>
