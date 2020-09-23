@@ -329,7 +329,6 @@ class MyTodos extends Component<IProps, any> {
       range,
       sortBy,
       editTodo,
-      newTag,
       showModal,
     } = this.state;
 
@@ -634,17 +633,8 @@ class MyTodos extends Component<IProps, any> {
           showModal={showModal}
           handleClose={this.handleClose}
           tags={tags}
-          newTag={newTag}
-          onChangeNewTag={this.onChangeNewTag}
-          onSubmitNewTag={this.onSubmitNewTag}
-          activeColor={newTag.tagColor}
-          delTag={(tagId: any) => this.delTag(tagId)}
-          onChangeNewTagColor={this.onChangeNewTagColor}
-          onExit={() =>
-            this.setState({
-              newTag: { tagName: "" },
-            })
-          }
+          todos={todos}
+          fetchTodos={fetchTodos}
         />
 
         <ModalNewTask

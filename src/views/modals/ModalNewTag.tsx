@@ -1,22 +1,79 @@
-/* eslint react/require-default-props: 0 */
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal, Form, Badge } from "react-bootstrap";
 import { CompactPicker } from "react-color";
+import { addNewTag, removeTag } from "../../components/Functions";
 
 export const ModalNewTag = (props: any) => {
-  const {
-    showModal,
-    formIds,
-    handleClose,
-    onExit,
-    onSubmitNewTag,
-    onChangeNewTag,
-    onChangeNewTagColor,
-    tags,
-    newTag,
-    activeColor,
-    delTag,
-  } = props;
+  const { showModal, formIds, handleClose, tags, fetchTodos, todos } = props;
+
+  const [newTag, setTag] = useState({ tagName: "", tagColor: "" });
+
+  const onChangeNewTag = (e: any) => {
+    setTag({
+      ...newTag,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onChangeNewTagColor = (color: any) => {
+    setTag({
+      ...newTag,
+      tagColor: color.hex,
+    });
+  };
+
+  const onSubmitNewTag = (e: any) => {
+    e.preventDefault();
+    if (
+      tags &&
+      !tags
+        .map((tag: any) => {
+          return tag.tagName;
+        })
+        .includes(newTag.tagName)
+    ) {
+      addNewTag(newTag).then((res: any) => {
+        if (res) {
+          try {
+            fetchTodos().then(() =>
+              setTag({
+                tagName: "",
+                tagColor: "",
+              })
+            );
+          } catch (e) {
+            console.log(`${e}`);
+          }
+        }
+      });
+    } else {
+      console.log("This tag already exists!");
+    }
+  };
+
+  const delTag = (tagId: any) => {
+    const tagsArr: string[] = [];
+    todos.map((todo: any) =>
+      todo.tags.forEach((tag: any) => {
+        tagsArr.push(tag.tagId);
+      })
+    );
+    if (!tagsArr.includes(tagId.tagId)) {
+      removeTag(tagId).then((res: any) => {
+        if (res) {
+          try {
+            fetchTodos();
+          } catch (e) {
+            console.log(`${e}`);
+          }
+        }
+      });
+    } else {
+      console.log("tag cannot be deleted");
+    }
+  };
+
+  console.log(newTag);
 
   // delete tag on badge, directly import from functions
   return (
@@ -25,7 +82,12 @@ export const ModalNewTag = (props: any) => {
       show={showModal === formIds.newTag}
       id={formIds.newTag}
       onHide={handleClose}
-      onExit={onExit}
+      onExit={() =>
+        setTag({
+          tagName: "",
+          tagColor: "",
+        })
+      }
       dialogClassName="modal-90w"
     >
       <Modal.Header>Tag Manager</Modal.Header>
@@ -57,7 +119,10 @@ export const ModalNewTag = (props: any) => {
             </Form.Group>
 
             <Form.Label>Tag Color</Form.Label>
-            <CompactPicker color={activeColor} onChange={onChangeNewTagColor} />
+            <CompactPicker
+              color={newTag.tagColor}
+              onChange={onChangeNewTagColor}
+            />
           </Form.Group>
         </Form>
 

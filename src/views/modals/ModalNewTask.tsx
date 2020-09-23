@@ -1,4 +1,3 @@
-/* eslint react/require-default-props: 0 */
 import React, { useState } from "react";
 import { Button, Modal, Form, Container, Row, Col } from "react-bootstrap";
 import Flatpickr from "react-flatpickr";

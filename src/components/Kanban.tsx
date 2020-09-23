@@ -1,7 +1,8 @@
 import React, { Component, useState } from "react";
 import Board, { moveCard } from "@lourenci/react-kanban";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import "@lourenci/react-kanban/dist/styles.css";
+import ButtonsRow from "./ButtonsRow";
 
 const demoBoard = {
   columns: [
@@ -64,6 +65,8 @@ class Kanban extends Component<IProps, any> {
       boardDemo: {},
     };
     this.controlledBoard = this.controlledBoard.bind(this);
+    this.handleShow = this.handleShow.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
@@ -89,6 +92,16 @@ class Kanban extends Component<IProps, any> {
     );
   }
 
+  handleShow(id: string) {
+    this.setState({ showModal: id });
+  }
+
+  handleClose() {
+    this.setState({
+      showModal: null,
+    });
+  }
+
   render() {
     const { board } = this.props;
     console.log(board);
@@ -96,37 +109,7 @@ class Kanban extends Component<IProps, any> {
 
     return (
       <Container fluid className="body">
-        <Row className="addNewButtons">
-          <Col xs={3}>
-            <Button
-              size="sm"
-              block
-              className="btnDefault"
-              type="submit"
-              variant="outline-info"
-              onClick={() => {
-                // this.handleShow(formIds.newTask);
-              }}
-            >
-              New Task <i className="icon mdi mdi-format-list-checkbox" />
-            </Button>
-          </Col>
-
-          <Col xs={3}>
-            <Button
-              size="sm"
-              className="btnDefault"
-              block
-              type="submit"
-              variant="outline-info"
-              onClick={() => {
-                // this.handleShow(formIds.newTag);
-              }}
-            >
-              Tags <i className="icon mdi mdi-tag-outline" />
-            </Button>
-          </Col>
-        </Row>
+        <ButtonsRow handleShow={this.handleShow} colSize={3} />
 
         <Row>
           <Board
