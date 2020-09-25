@@ -2,7 +2,10 @@ import React, { Component, useState } from "react";
 import Board, { moveCard } from "@lourenci/react-kanban";
 import { Container, Row } from "react-bootstrap";
 import "@lourenci/react-kanban/dist/styles.css";
-import ButtonsRow from "./ButtonsRow";
+import ButtonsRow, { formIds } from "./ButtonsRow";
+import { ModalNewTask } from "../views/modals/ModalNewTask";
+import { ModalEditTask } from "../views/modals/ModalEditTask";
+import { ModalNewTag } from "../views/modals/ModalNewTag";
 
 const demoBoard = {
   columns: [
@@ -56,6 +59,8 @@ const demoBoard = {
 interface IProps {
   fetchKanban: any;
   board: any;
+  statuses: any;
+  tags: any;
 }
 
 class Kanban extends Component<IProps, any> {
@@ -63,6 +68,8 @@ class Kanban extends Component<IProps, any> {
     super(props);
     this.state = {
       boardDemo: {},
+      editTodo: {},
+      showModal: "",
     };
     this.controlledBoard = this.controlledBoard.bind(this);
     this.handleShow = this.handleShow.bind(this);
@@ -103,9 +110,14 @@ class Kanban extends Component<IProps, any> {
   }
 
   render() {
-    const { board } = this.props;
+    const { board, fetchKanban, statuses, tags } = this.props;
+    const { showModal, editTodo } = this.state;
     console.log(board);
     console.log(demoBoard);
+
+    const flatTodos =
+      board.columns &&
+      board.columns.map((cols: any) => [].concat(cols.cards)).flat();
 
     return (
       <Container fluid className="body">
@@ -130,6 +142,36 @@ class Kanban extends Component<IProps, any> {
           {/* <this.controlledBoard /> */}
           {/* <Board>{board}</Board> */}
         </Row>
+
+        <ModalNewTask
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          taskObj={editTodo}
+          statuses={statuses}
+          tags={tags}
+          stateEditTodo={editTodo}
+          fetchTodos={fetchKanban}
+        />
+
+        <ModalNewTag
+          formIds={formIds}
+          showModal={showModal}
+          handleClose={this.handleClose}
+          tags={tags}
+          todos={flatTodos}
+          fetchTodos={fetchKanban}
+        />
+
+        <ModalEditTask
+          formIds={formIds}
+          showModal={showModal}
+          stateEditTodo={editTodo}
+          handleClose={this.handleClose}
+          tags={tags}
+          statuses={statuses}
+          fetchTodos={fetchKanban}
+        />
       </Container>
     );
   }

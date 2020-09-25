@@ -163,11 +163,12 @@ export const ModalEditTask = (props: any) => {
                       <option value="" disabled>
                         Choose Status
                       </option>
-                      {statuses.map((status: any) => (
-                        <option key={status.statusId} value={status.statusId}>
-                          {status.statusName}
-                        </option>
-                      ))}
+                      {statuses &&
+                        statuses.map((status: any) => (
+                          <option key={status.statusId} value={status.statusId}>
+                            {status.statusName}
+                          </option>
+                        ))}
                     </Form.Control>
                   </Form.Group>
                 </Col>

@@ -26,9 +26,11 @@ export const fetchTodos: any = () => {
 };
 
 const fetchKanbanRequest = () => ({ type: "FETCH_KANBAN_REQUEST" });
-const fetchKanbanSuccess = (board: any) => ({
+const fetchKanbanSuccess = (board: any, statuses: any, tags: any) => ({
   type: "FETCH_KANBAN_SUCCESS",
   board,
+  statuses,
+  tags,
 });
 const fetchKanbanFailure = () => ({ type: "FETCH_KANBAN_FAILURE" });
 
@@ -39,7 +41,7 @@ export const fetchKanban: any = () => {
     const { data, status } = await axios.get("/kanban");
 
     if (status === 200) {
-      dispatch(fetchKanbanSuccess(data.board));
+      dispatch(fetchKanbanSuccess(data.board, data.statuses, data.tags));
     } else {
       dispatch(fetchKanbanFailure());
     }

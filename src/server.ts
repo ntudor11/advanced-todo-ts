@@ -147,6 +147,7 @@ app.get("/my-todos", withAuth(), (req: any, res) => {
 });
 
 app.get("/kanban", withAuth(), (req: any, res) => {
+  const reqId = req.userId;
   const board = {
     columns: [],
   };
@@ -160,22 +161,58 @@ app.get("/kanban", withAuth(), (req: any, res) => {
     .all();
 
   columns.map((status: any) => {
+    const { id } = status;
     const cards = db
       .prepare(
         `
-          select t.id, t.task as title, t.description
+          select t.id, t.task as title, t.description, t.status_id
           from todos t
-          where status_id = ?
+          where status_id = ? and user_id = ?
         `
       )
-      .all(status.id);
+      .all(id, reqId);
+
+    cards.map((todo: any) => {
+      const todoTags = db
+        .prepare(
+          `
+                select distinct tg.id as tagId, tg.name as tagName, tg.color
+                  from tags tg
+                  join todos_tags tt
+                  on tg.id = tt.tag_id
+                  join todos t
+                  on t.id = tt.todo_id
+                  where t.id = ?;
+              `
+        )
+        .all(todo.id);
+      todo.tags = todoTags;
+    });
 
     status.cards = cards;
   });
 
   board.columns = columns;
 
-  res.send({ board });
+  const statuses = db
+    .prepare(
+      `
+        select distinct s.id as statusId, s.name as statusName
+          from status s;
+      `
+    )
+    .all();
+
+  const tags = db
+    .prepare(
+      `
+          select id as tagId, name as tagName, color as tagColor
+          from tags
+        `
+    )
+    .all();
+
+  res.send({ board, statuses, tags });
 });
 
 app.post("/login", (req, res) => {

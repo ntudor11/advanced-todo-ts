@@ -4,6 +4,8 @@ import Kanban from "./Kanban";
 
 const mapStateToProps = ({ kanban }: { kanban: any }) => ({
   board: kanban.board,
+  statuses: kanban.statuses,
+  tags: kanban.tags,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

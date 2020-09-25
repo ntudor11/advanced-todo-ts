@@ -17,7 +17,7 @@ create table todos (
   description text,
   deadline text,
   priority text,
-  status_id text references status(id),
+  status_id integer references status(id),
   user_id integer references users(id)
 );
 

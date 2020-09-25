@@ -12,6 +12,8 @@ const kanbanReducer = (state = initialState, action: any) => {
         ...state,
         fetching: false,
         board: action.board,
+        statuses: action.statuses,
+        tags: action.tags,
       };
     default:
       return state;
