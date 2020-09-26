@@ -5,7 +5,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
-import "@lourenci/react-kanban/dist/styles.css";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalEditTask } from "../views/modals/ModalEditTask";

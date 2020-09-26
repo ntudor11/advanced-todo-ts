@@ -19,7 +19,10 @@ class Kanban extends Component<IProps, any> {
     super(props);
     this.state = {
       boardDemo: {},
-      editTodo: {},
+      editTodo: {
+        tagsArr: [],
+        tags: [],
+      },
       showModal: "",
     };
     this.handleShow = this.handleShow.bind(this);
@@ -40,6 +43,27 @@ class Kanban extends Component<IProps, any> {
       showModal: null,
     });
   }
+
+  onTitleClick = (item: any) => {
+    const { editTodo } = this.state;
+    this.setState({
+      editTodo: {
+        ...editTodo,
+        id: item.id,
+        task: item.title,
+        description: item.description,
+        priority: item.priority,
+        status: {
+          statusId: item.status_id,
+          // statusName: item.status.statusName,
+        },
+        tags: item.tags.map((tag: any) => tag),
+        deadline: item.deadline,
+      },
+    });
+    console.log(item);
+    this.handleShow(formIds.viewTask);
+  };
 
   handleMove = (itemId: any, oldStatus: any, direction: number) => {
     const { fetchKanban } = this.props;
@@ -66,7 +90,6 @@ class Kanban extends Component<IProps, any> {
     const flatTodos =
       board.columns &&
       board.columns.map((cols: any) => [].concat(cols.cards)).flat();
-    console.log(board);
 
     return (
       <Container fluid className="body">
@@ -78,6 +101,7 @@ class Kanban extends Component<IProps, any> {
               <Column
                 column={column}
                 columnIndex={columnIndex}
+                onTitleClick={(card: any) => this.onTitleClick(card)}
                 onMoveLeft={(cardId: any, statusId: any) =>
                   this.handleMove(cardId, statusId, DIRECTION_LEFT)
                 }

@@ -8,6 +8,7 @@ export default ({
   canMoveRight,
   onMoveLeft,
   onMoveRight,
+  onTitleClick,
 }: {
   card: any;
   cardIndex: any;
@@ -15,11 +16,12 @@ export default ({
   canMoveRight: any;
   onMoveLeft: any;
   onMoveRight: any;
+  onTitleClick: any;
 }) => (
   <Container className="card">
     <Row>
       <Col className="cardTitle text-wrap">
-        <p onClick={() => console.log(card.title)}>
+        <p onClick={() => onTitleClick(card)}>
           <strong>{card.title}</strong>
         </p>
       </Col>

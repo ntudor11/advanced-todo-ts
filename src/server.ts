@@ -165,7 +165,7 @@ app.get("/kanban", withAuth(), (req: any, res) => {
     const cards = db
       .prepare(
         `
-          select t.id, t.task as title, t.description, t.status_id
+          select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
           from todos t
           where status_id = ? and user_id = ?
         `

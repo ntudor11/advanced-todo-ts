@@ -181,6 +181,7 @@ export const ModalEditTask = (props: any) => {
                     <br />
 
                     {stateEditTodo.tags &&
+                      tags &&
                       tags.map((tag: any, i: any) => (
                         <div key={i} className="pretty p-default p-curve">
                           <input
