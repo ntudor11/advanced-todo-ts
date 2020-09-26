@@ -1,60 +1,11 @@
-import React, { Component, useState } from "react";
-import Board, { moveCard } from "@lourenci/react-kanban";
+import React, { Component } from "react";
 import { Container, Row } from "react-bootstrap";
-import "@lourenci/react-kanban/dist/styles.css";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
-
-const demoBoard = {
-  columns: [
-    {
-      id: 1,
-      title: "Backlog",
-      cards: [
-        {
-          id: 1,
-          title: "add card",
-          description: "Add capability to add a card in a column",
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Todo",
-      cards: [
-        {
-          id: 2,
-          title: "Drag-n-drop support",
-          description: "Move a card between the columns",
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Doing",
-      cards: [
-        {
-          id: 3,
-          title: "Drag-n-drop support",
-          description: "Move a card between the columns",
-        },
-      ],
-    },
-    {
-      id: 4,
-      title: "Done",
-      cards: [
-        {
-          id: 4,
-          title: "Drag-n-drop support",
-          description: "Move a card between the columns",
-        },
-      ],
-    },
-  ],
-};
+import Column from "./Column";
+import { updateTodoStatus } from "./Functions";
 
 interface IProps {
   fetchKanban: any;
@@ -71,32 +22,13 @@ class Kanban extends Component<IProps, any> {
       editTodo: {},
       showModal: "",
     };
-    this.controlledBoard = this.controlledBoard.bind(this);
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
-    const { fetchKanban, board } = this.props;
+    const { fetchKanban } = this.props;
     fetchKanban();
-    this.setState({ boardDemo: board });
-  }
-
-  controlledBoard() {
-    const { board } = this.props;
-    console.log(board);
-    const [controlledBoard, setBoard] = useState(board);
-
-    function handleCardMove(_card: any, source: any, destination: any) {
-      const updatedBoard = moveCard(controlledBoard, source, destination);
-      setBoard(updatedBoard);
-    }
-
-    return (
-      <Board onCardDragEnd={handleCardMove} disableColumnDrag>
-        {controlledBoard}
-      </Board>
-    );
   }
 
   handleShow(id: string) {
@@ -109,38 +41,52 @@ class Kanban extends Component<IProps, any> {
     });
   }
 
+  handleMove = (itemId: any, oldStatus: any, direction: number) => {
+    const { fetchKanban } = this.props;
+    const statusId = oldStatus + direction;
+    console.log(`card ${itemId} in status ${statusId}`);
+    updateTodoStatus({ itemId, statusId }).then((res: any) => {
+      if (res) {
+        try {
+          fetchKanban();
+        } catch (e) {
+          console.log(`${e}`);
+        }
+      }
+    });
+  };
+
   render() {
     const { board, fetchKanban, statuses, tags } = this.props;
     const { showModal, editTodo } = this.state;
-    console.log(board);
-    console.log(demoBoard);
+
+    const DIRECTION_LEFT = -1;
+    const DIRECTION_RIGHT = 1;
 
     const flatTodos =
       board.columns &&
       board.columns.map((cols: any) => [].concat(cols.cards)).flat();
+    console.log(board);
 
     return (
       <Container fluid className="body">
         <ButtonsRow handleShow={this.handleShow} colSize={3} />
 
-        <Row>
-          <Board
-            allowRemoveLane
-            allowRenameColumn
-            allowRemoveCard
-            onLaneRemove={console.log}
-            onCardRemove={console.log}
-            onLaneRename={console.log}
-            initialBoard={demoBoard}
-            allowAddCard={{ on: "top" }}
-            // onNewCardConfirm={(draftCard) => ({
-            //   id: new Date().getTime(),
-            //   ...draftCard,
-            // })}
-            onCardNew={console.log}
-          />
-          {/* <this.controlledBoard /> */}
-          {/* <Board>{board}</Board> */}
+        <Row className="flex-row flex-nowrap kanbanContainer">
+          {board.columns &&
+            board.columns.map((column: any, columnIndex: any) => (
+              <Column
+                column={column}
+                columnIndex={columnIndex}
+                onMoveLeft={(cardId: any, statusId: any) =>
+                  this.handleMove(cardId, statusId, DIRECTION_LEFT)
+                }
+                onMoveRight={(cardId: any, statusId: any) =>
+                  this.handleMove(cardId, statusId, DIRECTION_RIGHT)
+                }
+                key={column.id}
+              />
+            ))}
         </Row>
 
         <ModalNewTask

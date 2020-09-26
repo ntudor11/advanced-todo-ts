@@ -5,6 +5,7 @@ import Register from "./components/Register";
 import MyTodosContainer from "./components/MyTodosContainer";
 import NavBar from "./components/NavBar";
 import KanbanContainer from "./components/KanbanContainer";
+// import KanbanDemo2 from "./components/KanbanDemo2";
 import CalendarContainer from "./components/CalendarContainer";
 import { NotFound, Unauthorised } from "./components/NotFound";
 
@@ -52,6 +53,8 @@ const App = () => {
           <PrivateRoute exact path="/todos" comp={MyTodosContainer} />
 
           <PrivateRoute exact path="/kanban" comp={KanbanContainer} />
+
+          {/* <PrivateRoute exact path="/kanbandemo2" comp={KanbanDemo2} /> */}
 
           <PrivateRoute exact path="/calendar" comp={CalendarContainer} />
 

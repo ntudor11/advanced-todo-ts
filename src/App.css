@@ -295,3 +295,59 @@ a {
 .topRowModal {
   width: 100%;
 }
+
+/* KANBAN */
+
+.kanbanContainer {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.column {
+  background-color: rgba(180, 180, 180, 0.1);
+  display: inline-block;
+  padding-bottom:1em;
+  margin:1em 1em 1em 1px;
+  float: none;
+  max-width: 275px !important;
+  border-radius: 3px;
+  height: auto !important;
+}
+
+.column:first-child {
+  margin-left: 1em;
+}
+
+.card {
+  background-color: rgba(23, 162, 184, 0.5) !important;
+  color: #fff;
+  margin:.5em;
+  text-align: left;
+  max-height: 200px;
+}
+
+.card .cardTitle {
+  /* max-width: fit-content(100px); */
+  text-align: left !important;
+  cursor: pointer;
+  /* margin-left: 1em;
+  margin-right: 1em; */
+}
+
+.card .cardTitle p {
+  border-bottom: 1px solid #d4d4d4;
+  padding-bottom: 6px !important;
+  margin-bottom: 0;
+}
+
+.moveBtnContainer {
+  padding: 0 !important;
+}
+
+.moveBtnRight {
+  border-radius: 0 0 3px 0 !important;
+}
+
+.moveBtnLeft {
+  border-radius: 0 0 0 3px !important;
+}
