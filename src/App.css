@@ -270,9 +270,36 @@ body.dark-mode .navbar a {
   color: #17a2b8 !important;
 }
 
-body.dark-mode .navbar .active {
+.navbar-nav .nav-link {
+  text-align:right !important;
+  width:max-content;
+  padding: 10px 10px;
+  border: 2px solid rgba(0,0,0,0);
+  float:right;
+  -webkit-transition:0.25s;
+  transition:0.25s;
+  position:relative;
+}
+
+.navbar-nav .underline-from-center:after {
+  content: '';
+  display: block;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #17a2b8;
+  width: 0;
+  position: absolute;
+  right: 0;
+  -webkit-transition: .25s ease;
+  transition: .25s ease;
+}
+
+.navbar-nav .underline-from-center:hover:after, .navbar-nav .active:after {
+  width: 100%;
+}
+
+body.dark-mode .navbar .active, body.light-mode .navbar .active {
   transition: background-color 0.3s ease;
-  color: #ffffff !important;
+  color: #17a2b8 !important;
 }
 
 body.dark-mode #todosTable .todoItem th {
@@ -360,6 +387,16 @@ a {
   width: 100%;
 }
 
+.fc .btn {
+  background: #5b8288;
+  border: 1px solid #5b8288;
+}
+
+.fc .btn:hover, .fc .active, .fc .fc-today-button {
+  background: #343a40 !important;
+  border: 1px solid #343a40 !important;
+}
+
 /* KANBAN */
 
 .kanbanContainer {
@@ -404,11 +441,8 @@ body.light-mode .card:hover {
 }
 
 .card .cardTitle {
-  /* max-width: fit-content(100px); */
   text-align: left !important;
   cursor: pointer;
-  /* margin-left: 1em;
-  margin-right: 1em; */
 }
 
 .card .cardTitle p {
@@ -441,5 +475,19 @@ body.light-mode .card:hover {
 @media only screen and (min-width: 768px) {
   .navbar-expand-md .navbar-nav .dropdown-menu {
     margin-left: -180% !important;
+  }
+}
+
+@media screen and (max-width: 768px) { /* Bootstrap's mobile view breakpoint */
+  .asidePanel {
+    position: relative !important;
+  }
+
+  body.dark-mode .asidePanel {
+    border-right: 0px solid #424242 !important;
+  }
+
+  body.light-mode .asidePanel {
+    border-right: 0px solid #ced4da !important;
   }
 }

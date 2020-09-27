@@ -127,7 +127,7 @@ class NavBar extends Component<any, any> {
         <Navbar.Brand>
           <DarkModeToggle />
           <Link to="/">
-            {/* <img src={ImpactLogo} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
+            {/* <img src={} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
           </Link>
         </Navbar.Brand>
         <Navbar.Toggle

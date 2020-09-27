@@ -313,7 +313,7 @@ class MyTodos extends Component<IProps, any> {
               size="sm"
               className="btnDefault"
               type="submit"
-              variant="outline-info"
+              variant="outline-danger"
               onClick={() => {
                 const itemId = item.id;
                 deleteTodo({ itemId }).then((res: any) => {
@@ -339,7 +339,7 @@ class MyTodos extends Component<IProps, any> {
           id="row-login"
           className="justify-content-sm-center row-loginSignup"
         >
-          <Col xs={12} md={3} className="asidePanel sticky-top">
+          <Col xs={12} sm={8} md={3} className="asidePanel sticky-top">
             <ButtonsRow handleShow={this.handleShow} colSize={6} />
 
             <Row>
@@ -413,7 +413,7 @@ class MyTodos extends Component<IProps, any> {
           </Col>
           <Col xs={{ span: 12 }} md={9}>
             <Row className="justify-content-sm-center">
-              <Col sm={8} md={8} className="loginBlock">
+              <Col sm={10} md={8} className="loginBlock">
                 <h2>My Todos</h2>
 
                 <Table
