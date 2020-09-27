@@ -21,18 +21,15 @@ class Login extends Component<any, any> {
   onSubmit(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
 
-    const { history } = this.props;
+    const { history, setLoggedIn } = this.props;
     const { email, password } = this.state;
 
     const user = { email, password };
 
     login(user).then(({ data }: { data: any }) => {
       if (data.success) {
-        const { setLoggedIn } = this.props;
         setLoggedIn(true);
-        console.log("success");
         history.push("/todos");
-        // window.location.reload();
       } else {
         this.setState({});
       }

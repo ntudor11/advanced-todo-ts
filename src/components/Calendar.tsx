@@ -26,6 +26,7 @@ class Calendar extends Component<IProps, any> {
         tagsArr: [],
         tags: [],
       },
+      vw: window.innerWidth,
     };
     this.handleShow = this.handleShow.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -34,6 +35,17 @@ class Calendar extends Component<IProps, any> {
   componentDidMount() {
     const { fetchCalendar } = this.props;
     fetchCalendar();
+    window.addEventListener("resize", this.updateDimensions.bind(this));
+  }
+
+  updateDimensions() {
+    const width = window.innerWidth;
+    if (window.innerWidth < 476) {
+      this.setState({ vw: width });
+    } else {
+      let update_width = window.innerWidth - 100;
+      this.setState({ vw: update_width });
+    }
   }
 
   handleShow(id: string) {
@@ -83,14 +95,7 @@ class Calendar extends Component<IProps, any> {
 
   render() {
     const { todos, statuses, fetchCalendar, tags } = this.props;
-    const { showModal, editTodo } = this.state;
-
-    const vw = Math.max(
-      (document.documentElement && document.documentElement.clientWidth) || 0,
-      window.innerWidth || 0
-    );
-
-    console.log(vw);
+    const { showModal, editTodo, vw } = this.state;
 
     return (
       <Container fluid className="body">
@@ -98,7 +103,7 @@ class Calendar extends Component<IProps, any> {
 
         <Row style={{ marginTop: "2em" }}>
           <Col sm={{ span: 10, offset: 1 }}>
-            {vw > 480 ? (
+            {vw >= 476 ? (
               <FullCalendar
                 plugins={[
                   dayGridPlugin,
