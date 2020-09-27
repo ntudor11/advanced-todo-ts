@@ -5,7 +5,7 @@ import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
 import Column from "./Column";
-import { updateTodoStatus } from "./Functions";
+import { updateTodoStatus, deleteTodo } from "./Functions";
 
 interface IProps {
   fetchKanban: any;
@@ -65,6 +65,19 @@ class Kanban extends Component<IProps, any> {
     this.handleShow(formIds.viewTask);
   };
 
+  onDelete = (itemId: any) => {
+    const { fetchKanban } = this.props;
+    deleteTodo({ itemId }).then((res: any) => {
+      if (res) {
+        try {
+          fetchKanban();
+        } catch (e) {
+          console.log(`${e}`);
+        }
+      }
+    });
+  };
+
   handleMove = (itemId: any, oldStatus: any, direction: number) => {
     const { fetchKanban } = this.props;
     const statusId = oldStatus + direction;
@@ -109,6 +122,7 @@ class Kanban extends Component<IProps, any> {
                   this.handleMove(cardId, statusId, DIRECTION_RIGHT)
                 }
                 key={column.id}
+                onDelete={(cardId: any) => this.onDelete(cardId)}
               />
             ))}
         </Row>

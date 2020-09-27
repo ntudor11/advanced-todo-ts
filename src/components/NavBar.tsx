@@ -69,8 +69,9 @@ class NavBar extends Component<any, any> {
         expand="md"
       >
         <Navbar.Brand>
+          <DarkModeToggle />
           <Link to="/">
-            {/* <img src={ImpactLogo} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
+            {/* <img src={} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
           </Link>
         </Navbar.Brand>
         <Navbar.Toggle
@@ -113,7 +114,6 @@ class NavBar extends Component<any, any> {
             </NavLink>
           </Nav>
         </Navbar.Collapse>
-        <DarkModeToggle />
       </Navbar>
     );
 
@@ -125,6 +125,7 @@ class NavBar extends Component<any, any> {
         expand="md"
       >
         <Navbar.Brand>
+          <DarkModeToggle />
           <Link to="/">
             {/* <img src={ImpactLogo} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
           </Link>
@@ -200,7 +201,6 @@ class NavBar extends Component<any, any> {
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
-        <DarkModeToggle />
       </Navbar>
     );
 

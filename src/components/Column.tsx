@@ -8,12 +8,14 @@ export default ({
   onMoveLeft,
   onMoveRight,
   onTitleClick,
+  onDelete,
 }: {
   column: any;
   columnIndex: any;
   onMoveLeft: any;
   onMoveRight: any;
   onTitleClick: any;
+  onDelete: any;
 }) => (
   <Col className="column" xs={6} md={3}>
     <p className="font-weight-bold">
@@ -29,6 +31,7 @@ export default ({
         onMoveLeft={() => onMoveLeft(card.id, card.status_id)}
         onMoveRight={() => onMoveRight(card.id, card.status_id)}
         onTitleClick={() => onTitleClick(card)}
+        onDelete={() => onDelete(card.id)}
       />
     ))}
   </Col>
