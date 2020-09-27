@@ -147,21 +147,21 @@ export const ModalNewTag = (props: any) => {
       </Modal.Body>
       <Modal.Footer>
         <Button
-          variant="outline-dark"
-          onClick={() => {
-            handleClose();
-          }}
-        >
-          Close
-        </Button>
-
-        <Button
           variant="dark"
           form="formNewTag"
           type="submit"
           disabled={showModal && newTag.tagName.length === 0}
         >
           Add Tag
+        </Button>
+
+        <Button
+          variant="outline-info"
+          onClick={() => {
+            handleClose();
+          }}
+        >
+          <i className="icon mdi mdi-close" />
         </Button>
       </Modal.Footer>
     </Modal>

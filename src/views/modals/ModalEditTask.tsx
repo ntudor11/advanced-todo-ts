@@ -3,7 +3,7 @@ import { Button, Modal, Form, Row, Col, Container } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
 // import Flatpickr from "react-flatpickr";
 // import "flatpickr/dist/themes/airbnb.css";
-import { updateTodo } from "../../components/Functions";
+import { updateTodo, deleteTodo } from "../../components/Functions";
 
 export const ModalEditTask = (props: any) => {
   const {
@@ -240,17 +240,36 @@ export const ModalEditTask = (props: any) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
+        <Button variant="dark" form="formEditTask" type="submit">
+          Update Task
+        </Button>
+
         <Button
-          variant="outline-dark"
+          variant="outline-danger"
+          onClick={() => {
+            const itemId = editTodo.id;
+            deleteTodo({ itemId }).then((res: any) => {
+              if (res) {
+                try {
+                  fetchTodos();
+                } catch (e) {
+                  console.log(`${e}`);
+                }
+              }
+            });
+            handleClose();
+          }}
+        >
+          <i className="icon mdi mdi-delete-outline" />
+        </Button>
+
+        <Button
+          variant="outline-info"
           onClick={() => {
             handleClose();
           }}
         >
-          Close
-        </Button>
-
-        <Button variant="dark" form="formEditTask" type="submit">
-          Update Task
+          <i className="icon mdi mdi-close" />
         </Button>
       </Modal.Footer>
     </Modal>

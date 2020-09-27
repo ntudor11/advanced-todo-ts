@@ -203,17 +203,17 @@ export const ModalNewTask = (props: any) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
+        <Button variant="dark" form="formNewTask" type="submit">
+          Add Task
+        </Button>
+
         <Button
-          variant="outline-dark"
+          variant="outline-info"
           onClick={() => {
             handleClose();
           }}
         >
-          Close
-        </Button>
-
-        <Button variant="dark" form="formNewTask" type="submit">
-          Add Task
+          <i className="icon mdi mdi-close" />
         </Button>
       </Modal.Footer>
     </Modal>
