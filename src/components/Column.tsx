@@ -17,7 +17,7 @@ export default ({
   onTitleClick: any;
   onDelete: any;
 }) => (
-  <Col className="column" xs={6} md={3}>
+  <Col className="column" xs={12} sm={6} md={3}>
     <p className="font-weight-bold">
       {column.title} ({column.cards.length})
     </p>

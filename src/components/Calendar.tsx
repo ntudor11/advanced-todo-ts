@@ -85,37 +85,51 @@ class Calendar extends Component<IProps, any> {
     const { todos, statuses, fetchCalendar, tags } = this.props;
     const { showModal, editTodo } = this.state;
 
+    const vw = Math.max(
+      (document.documentElement && document.documentElement.clientWidth) || 0,
+      window.innerWidth || 0
+    );
+
+    console.log(vw);
+
     return (
       <Container fluid className="body">
         <ButtonsRow handleShow={this.handleShow} colSize={3} />
 
         <Row style={{ marginTop: "2em" }}>
           <Col sm={{ span: 10, offset: 1 }}>
-            <FullCalendar
-              plugins={[
-                dayGridPlugin,
-                timeGridPlugin,
-                interactionPlugin,
-                bootstrapPlugin,
-              ]}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay",
-              }}
-              initialView="dayGridMonth"
-              eventColor="#17a2b8"
-              editable={true}
-              selectable={false}
-              selectMirror={true}
-              dayMaxEvents={true}
-              fixedWeekCount={false}
-              themeSystem="bootstrap"
-              events={todos}
-              eventContent={this.renderEventContent}
-              eventClick={this.handleEventClick}
-              eventsSet={this.handleEvents}
-            />
+            {vw > 480 ? (
+              <FullCalendar
+                plugins={[
+                  dayGridPlugin,
+                  timeGridPlugin,
+                  interactionPlugin,
+                  bootstrapPlugin,
+                ]}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay",
+                }}
+                initialView="dayGridMonth"
+                eventColor="#17a2b8"
+                editable={true}
+                selectable={false}
+                selectMirror={true}
+                dayMaxEvents={true}
+                fixedWeekCount={false}
+                themeSystem="bootstrap"
+                events={todos}
+                eventContent={this.renderEventContent}
+                eventClick={this.handleEventClick}
+                eventsSet={this.handleEvents}
+              />
+            ) : (
+              <p className="text-left">
+                Calendar cannot render in a small width. Resize window or rotate
+                your device into a landscape position and then refresh the page.
+              </p>
+            )}
           </Col>
         </Row>
 

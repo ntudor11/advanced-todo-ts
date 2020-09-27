@@ -12,7 +12,7 @@ const ButtonsRow = (props: any) => {
 
   return (
     <Row className="addNewButtons">
-      <Col xs={colSize}>
+      <Col xs={12} sm={colSize}>
         <Button
           size="sm"
           block
@@ -27,7 +27,7 @@ const ButtonsRow = (props: any) => {
         </Button>
       </Col>
 
-      <Col xs={colSize}>
+      <Col xs={12} sm={colSize}>
         <Button
           size="sm"
           className="btnDefault"

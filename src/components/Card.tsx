@@ -76,7 +76,7 @@ export default ({
         {canMoveRight && (
           <Button
             variant="info"
-            className="moveBtn moveBtnRight"
+            className="moveBtn moveBtnMiddle"
             block
             size="sm"
             onClick={onMoveRight}
@@ -88,7 +88,7 @@ export default ({
       <Col xs={2} className="moveBtnContainer">
         <Button
           variant="danger"
-          className="moveBtn moveBtnRight"
+          className="moveBtn delBtnRight"
           block
           size="sm"
           onClick={onDelete}
