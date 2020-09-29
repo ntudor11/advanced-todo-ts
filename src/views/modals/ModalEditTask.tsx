@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, Row, Col, Container } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
+import _ from "lodash";
 // import Flatpickr from "react-flatpickr";
 // import "flatpickr/dist/themes/airbnb.css";
 import { updateTodo, deleteTodo } from "../../components/Functions";
@@ -164,11 +165,16 @@ export const ModalEditTask = (props: any) => {
                         Choose Status
                       </option>
                       {statuses &&
-                        statuses.map((status: any) => (
-                          <option key={status.statusId} value={status.statusId}>
-                            {status.statusName}
-                          </option>
-                        ))}
+                        _.orderBy(statuses, ["statusId"], ["asc"]).map(
+                          (status: any) => (
+                            <option
+                              key={status.statusId}
+                              value={status.statusId}
+                            >
+                              {status.statusName}
+                            </option>
+                          )
+                        )}
                     </Form.Control>
                   </Form.Group>
                 </Col>
