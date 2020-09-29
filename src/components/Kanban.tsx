@@ -61,7 +61,6 @@ class Kanban extends Component<IProps, any> {
         deadline: item.deadline,
       },
     });
-    console.log(item);
     this.handleShow(formIds.viewTask);
   };
 

@@ -1,15 +1,20 @@
 import express from "express";
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const Database = require("better-sqlite3");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const _ = require("lodash");
+const pgPromise = require("pg-promise");
 
 const app = express();
-const db = new Database("src/todo.db");
 const PORT = process.env.PORT || 8000;
+
+const cn =
+  process.env.DATABASE_URL ||
+  "postgres://todo:todos-local@localhost:5432/todos_ts";
+const pgp = pgPromise();
+const postgresDb = pgp(cn);
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -52,185 +57,188 @@ const withAuth = (requiredLevel?: string) => (
   }
 };
 
-app.get("/users", (req, res) => {
-  const users = db
-    .prepare(
-      `
+app.get("/testpostgres", async (req, res) => {
+  const test = await postgresDb.any("select * from users");
+
+  res.send({ test });
+});
+
+app.get("/users", async (req, res) => {
+  const users = await postgresDb.any(`
       select id, email, image
       from users
-    `
-    )
-    .all();
+    `);
 
   res.send(users);
 });
 
-app.get("/user/:id", withAuth(), (req: any, res) => {
+app.get("/user/:id", withAuth(), async (req: any, res) => {
   const { id } = req.params;
-  const user = db
-    .prepare(
-      `
+  const user = await postgresDb.any(
+    `
       select id, name, email, image
       from users
-      where id = ?
-    `
-    )
-    .get(id);
-
+      where id = $1
+    `,
+    id
+  );
   res.send({ user });
 });
 
-app.get("/my-todos", withAuth(), (req: any, res) => {
+app.get("/my-todos", withAuth(), async (req: any, res) => {
   const { userId } = req;
 
-  const todos = db
-    .prepare(
-      `
-        select t.id, t.task, t.description, t.priority, t.deadline from todos t
-          join users u
-          on u.id = t.user_id
-          where t.user_id = ?
-      `
-    )
-    .all(userId);
-
-  todos.map((todo: any) => {
-    const todoTags = db
-      .prepare(
-        `
-            select distinct tg.id as tagId, tg.name as tagName, tg.color
-              from tags tg
-              join todos_tags tt
-              on tg.id = tt.tag_id
-              join todos t
-              on t.id = tt.todo_id
-              where t.id = ?;
-          `
-      )
-      .all(todo.id);
-
-    const todoStatus = db
-      .prepare(
-        `
-          select distinct s.id as statusId, s.name as statusName
-            from status s
-            join todos t
-            on s.id = t.status_id
-            where t.id = ?;
-        `
-      )
-      .get(todo.id);
-
-    todo.tags = todoTags;
-    todo.status = todoStatus;
-  });
-
-  const statuses = db
-    .prepare(
-      `
-        select distinct s.id as statusId, s.name as statusName
-          from status s;
-      `
-    )
-    .all();
-
-  const tags = db
-    .prepare(
-      `
-          select id as tagId, name as tagName, color as tagColor
-          from tags
-        `
-    )
-    .all();
-
-  res.send({ todos, statuses, tags });
-});
-
-app.get("/kanban", withAuth(), (req: any, res) => {
-  const reqId = req.userId;
-  const board = {
-    columns: [],
-  };
-  const columns = db
-    .prepare(
-      `
-        select s.id, s.name as title
-        from status s
-      `
-    )
-    .all();
-
-  columns.map((status: any) => {
-    const { id } = status;
-    const cards = db
-      .prepare(
-        `
-          select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
-          from todos t
-          where status_id = ? and user_id = ?
-        `
-      )
-      .all(id, reqId);
-
-    cards.map((todo: any) => {
-      const todoTags = db
-        .prepare(
-          `
-                select distinct tg.id as tagId, tg.name as tagName, tg.color
-                  from tags tg
-                  join todos_tags tt
-                  on tg.id = tt.tag_id
-                  join todos t
-                  on t.id = tt.todo_id
-                  where t.id = ?;
-              `
+  const getAllTasks = () => {
+    return postgresDb.task((t: any) => {
+      return t
+        .map(
+          `select t.id, t.task, t.description, t.priority, t.deadline from todos t
+            join users u
+            on u.id = t.user_id
+            where t.user_id = $1`,
+          userId,
+          (todo: any) => {
+            return t
+              .batch([
+                t.any(
+                  `select distinct tg.id as "tagId", tg.name as "tagName", tg.color
+                    from tags tg
+                    join todos_tags tt
+                    on tg.id = tt.tag_id
+                    join todos t
+                    on t.id = tt.todo_id
+                    where t.id = $1;`,
+                  todo.id
+                ),
+                t.one(
+                  `select distinct s.id as "statusId", s.name as "statusName"
+                    from status s
+                    join todos t
+                    on s.id = t.status_id
+                    where t.id = $1;`,
+                  todo.id
+                ),
+              ])
+              .then((data: any) => {
+                todo.tags = data[0];
+                todo.status = data[1];
+                return todo;
+              });
+          }
         )
-        .all(todo.id);
-      todo.tags = todoTags;
+        .then(t.batch);
     });
+  };
 
-    status.cards = cards;
-  });
+  const statuses = await postgresDb.any(
+    `
+    select distinct s.id as "statusId", s.name as "statusName"
+      from status s;
+    `
+  );
 
-  board.columns = columns;
+  const tags = await postgresDb.any(
+    `
+    select id as "tagId", name as "tagName", color as "tagColor"
+    from tags
+    `
+  );
 
-  const statuses = db
-    .prepare(
-      `
-        select distinct s.id as statusId, s.name as statusName
-          from status s;
-      `
-    )
-    .all();
-
-  const tags = db
-    .prepare(
-      `
-          select id as tagId, name as tagName, color as tagColor
-          from tags
-        `
-    )
-    .all();
-
-  res.send({ board, statuses, tags });
+  getAllTasks()
+    .then((todos: any) => {
+      res.json({ todos, statuses, tags });
+    })
+    .catch((err: any) => {
+      console.log(err);
+    });
 });
 
-app.post("/login", (req, res) => {
+app.get("/kanban", withAuth(), async (req: any, res) => {
+  const reqId = req.userId;
+
+  const getBoard = () => {
+    return postgresDb.task((t: any) => {
+      return t
+        .map(
+          `select s.id, s.name as title
+        from status s`,
+          [],
+          (status: any) => {
+            return t
+              .map(
+                `select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
+          from todos t
+          where status_id = $1 and user_id = $2`,
+                [status.id, reqId],
+                (card: any) => {
+                  return t
+                    .any(
+                      `select distinct tg.id as "tagId", tg.name as "tagName", tg.color
+                from tags tg
+                join todos_tags tt
+                on tg.id = tt.tag_id
+                join todos t
+                on t.id = tt.todo_id
+                where t.id = $1;`,
+                      card.id
+                    )
+                    .then((data: any) => {
+                      card.tags = data;
+                      return card;
+                    });
+                }
+              )
+              .then(t.batch)
+              .then((data: any) => {
+                status.cards = data;
+                return status;
+              });
+          }
+        )
+        .then(t.batch);
+    });
+  };
+
+  const statuses = await postgresDb.any(
+    `
+    select distinct s.id as "statusId", s.name as "statusName"
+      from status s;
+    `
+  );
+
+  const tags = await postgresDb.any(
+    `
+    select id as "tagId", name as "tagName", color as "tagColor"
+    from tags
+    `
+  );
+
+  getBoard()
+    .then((columns: any) => {
+      res.json({ board: { columns }, statuses, tags });
+    })
+    .catch((err: any) => {
+      res.send(err);
+    });
+});
+
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const hashedPass = hashPass(password);
 
-  const dbRow = db
-    .prepare(
-      `
-        select id, name, email, image, password
-        from users
-        where email = lower(?)
-      `
-    )
-    .get(email);
+  const dbRow = await postgresDb.one(
+    `
+      select id, name, email, image, password
+      from users
+      where email = $1
+    `,
+    email.toLowerCase()
+  );
 
   if (!dbRow) {
-    return res.status(401).send({ success: false, errType: "user_not_found" });
+    return await res
+      .status(401)
+      .send({ success: false, errType: "user_not_found" });
   }
 
   const {
@@ -253,155 +261,154 @@ app.post("/login", (req, res) => {
     .send({ success: true, userId });
 });
 
-app.get("/calendar", withAuth(), (req: any, res) => {
+app.get("/calendar", withAuth(), async (req: any, res) => {
   const { userId } = req;
 
-  const todos = db
-    .prepare(
-      `
-        select t.id, t.task as title, t.description, t.priority, t.deadline as date from todos t
-          join users u
-          on u.id = t.user_id
-          where t.user_id = ?
-      `
-    )
-    .all(userId);
+  const getAllTasks = () => {
+    return postgresDb.task((t: any) => {
+      return t
+        .map(
+          `select t.id, t.task as title, t.description, t.priority, t.deadline as date from todos t
+            join users u
+            on u.id = t.user_id
+            where t.user_id = $1`,
+          userId,
+          (todo: any) => {
+            return t
+              .batch([
+                t.any(
+                  `select distinct tg.id as "tagId", tg.name as "tagName", tg.color
+                    from tags tg
+                    join todos_tags tt
+                    on tg.id = tt.tag_id
+                    join todos t
+                    on t.id = tt.todo_id
+                    where t.id = $1;`,
+                  todo.id
+                ),
+                t.one(
+                  `select distinct s.id as "statusId", s.name as "statusName"
+                    from status s
+                    join todos t
+                    on s.id = t.status_id
+                    where t.id = $1;`,
+                  todo.id
+                ),
+              ])
+              .then((data: any) => {
+                todo.tags = data[0];
+                todo.status = data[1];
+                return todo;
+              });
+          }
+        )
+        .then(t.batch);
+    });
+  };
 
-  todos.map((todo: any) => {
-    const todoTags = db
-      .prepare(
-        `
-            select distinct tg.id as tagId, tg.name as tagName, tg.color
-              from tags tg
-              join todos_tags tt
-              on tg.id = tt.tag_id
-              join todos t
-              on t.id = tt.todo_id
-              where t.id = ?;
-          `
-      )
-      .all(todo.id);
+  const statuses = await postgresDb.any(
+    `
+    select distinct s.id as "statusId", s.name as "statusName"
+      from status s;
+    `
+  );
 
-    const todoStatus = db
-      .prepare(
-        `
-          select distinct s.id as statusId, s.name as statusName
-            from status s
-            join todos t
-            on s.id = t.status_id
-            where t.id = ?;
-        `
-      )
-      .get(todo.id);
+  const tags = await postgresDb.any(
+    `
+    select id as "tagId", name as "tagName", color as "tagColor"
+    from tags
+    `
+  );
 
-    todo.tags = todoTags;
-    todo.status = todoStatus;
-  });
-
-  const statuses = db
-    .prepare(
-      `
-        select distinct s.id as statusId, s.name as statusName
-          from status s;
-      `
-    )
-    .all();
-
-  const tags = db
-    .prepare(
-      `
-          select id as tagId, name as tagName, color as tagColor
-          from tags
-        `
-    )
-    .all();
-
-  res.send({ todos, statuses, tags });
+  getAllTasks()
+    .then((todos: any) => {
+      res.json({ todos, statuses, tags });
+    })
+    .catch((err: any) => {
+      console.log(err);
+    });
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { name, email, image, password } = req.body;
 
-  const dbRow = db
-    .prepare(
-      `
-        select id, email
-        from users
-        where email = lower(?)
-      `
-    )
-    .get(email);
+  const dbRow = await postgresDb.any(
+    `
+      select id, email
+      from users
+      where email = $1
+    `,
+    email.toLowerCase()
+  );
 
-  if (!dbRow) {
+  if (!dbRow.id) {
     const hashedPass = hashPass(password);
 
-    db.prepare(
+    await postgresDb.none(
       `
         insert into users (
           name, email, image, password
+        ) values (
+          $1, $2, $3, $4
         )
-        values
-          (?, ?, ?, ?)
-      `
-    ).run(name, email, image, hashedPass);
-    res.send({ email, success: true });
-    return;
+      `,
+      [name, email, image, hashedPass]
+    );
+    return res.send({ email, success: true });
   }
-  res.send({ error: "email already exists" });
-  return;
+  return res.send({ error: "email already exists" });
 });
 
 app.post("/logout", (_, res) => res.cookie("token", false).send("OK"));
 
-app.post("/add-todo", withAuth(), (req: any, res) => {
+app.post("/add-todo", withAuth(), async (req: any, res) => {
   const { userId } = req;
   const { description, deadline, task, priority, statusId, tagsArr } = req.body;
 
-  db.prepare(
+  await postgresDb.none(
     `
-          insert into todos(task, description, deadline, priority, status_id, user_id)
-            values (?, ?, ?, ?, ?, ?)
-        `
-  ).run(task, description, deadline, priority, statusId, userId);
+    insert into todos(task, description, deadline, priority, status_id, user_id)
+      values ($1, $2, $3, $4, $5, $6)
+    `,
+    [task, description, deadline, priority, statusId, userId]
+  );
 
-  const todoId = db
-    .prepare(
-      `
-        select id from todos
-          order by id desc
-          limit 1;
-      `
-    )
-    .get();
+  const todoId = await postgresDb.one(
+    `
+    select id from todos
+      order by id desc
+      limit 1;
+    `
+  );
 
   const { id } = todoId;
 
-  tagsArr.forEach((tagId: any) => {
-    db.prepare(
+  tagsArr.forEach(async (tagId: any) => {
+    await postgresDb.none(
       `
-            insert into todos_tags(todo_id, tag_id)
-              values (?, ?)
-          `
-    ).run(id, tagId);
+      insert into todos_tags(todo_id, tag_id)
+        values ($1, $2)
+      `,
+      [id, tagId]
+    );
   });
   res.send("ok");
 });
 
-app.post("/update-todo-status", withAuth(), (req, res) => {
+app.post("/update-todo-status", withAuth(), async (req, res) => {
   const { itemId, statusId } = req.body;
-
-  db.prepare(
+  await postgresDb.none(
     `
     update todos
-      set status_id = ?
-      where id = ?
-    `
-  ).run(statusId, itemId);
-
+      set status_id = $1
+      where id = $2
+    `,
+    [statusId, itemId]
+  );
   res.send("ok");
 });
 
-app.post("/update-todo", withAuth(), (req, res) => {
+app.post("/update-todo", withAuth(), async (req, res) => {
   const {
     task,
     description,
@@ -412,126 +419,117 @@ app.post("/update-todo", withAuth(), (req, res) => {
     id,
   } = req.body;
 
-  db.prepare(
+  await postgresDb.none(
     `
-    update todos
-      set task = ?,
-      description = ?,
-      deadline = ?,
-      priority = ?,
-      status_id = ?
-      where id = ?
-    `
-  ).run(task, description, deadline, priority, statusId, id);
+      update todos
+        set task = $1,
+        description = $2,
+        deadline = $3,
+        priority = $4,
+        status_id = $5
+        where id = $6
+    `,
+    [task, description, deadline, priority, statusId, id]
+  );
 
-  const insideTagsArr = db
-    .prepare(
-      `
-        select tag_id from todos_tags
-        where todo_id = ?
-      `
-    )
-    .all(id);
+  const insideTagsArr = await postgresDb.any(
+    `
+      select tag_id from todos_tags
+      where todo_id = $1
+    `,
+    id
+  );
 
   if (!_.isEqual(tagsArr, insideTagsArr)) {
-    db.prepare(
+    await postgresDb.any(
       `
         delete from todos_tags where
-          todo_id = ?
-      `
-    ).run(id);
+          todo_id = $1
+      `,
+      id
+    );
 
-    tagsArr.forEach((tagId: any) => {
-      db.prepare(
+    tagsArr.forEach(async (tagId: any) => {
+      await postgresDb.any(
         `
-            insert into todos_tags(todo_id, tag_id)
-              values (?, ?)
-          `
-      ).run(id, tagId);
+          insert into todos_tags(todo_id, tag_id)
+            values ($1, $2)
+        `,
+        [id, tagId]
+      );
     });
   }
-
   res.send("ok");
 });
 
-app.post("/delete-todo", withAuth(), (req, res) => {
+app.post("/delete-todo", withAuth(), async (req, res) => {
   const { itemId } = req.body;
-  db.prepare(
+  await postgresDb.any(
     `
-        delete from todos_tags where
-          todo_id = ?
-      `
-  ).run(itemId);
-  db.prepare(
+      delete from todos_tags where
+        todo_id = $1
+    `,
+    itemId
+  );
+  await postgresDb.any(
     `
-        delete from todos where
-          id = ?
-      `
-  ).run(itemId);
-
+      delete from todos where
+        id = $1
+    `,
+    itemId
+  );
   res.send("ok");
 });
 
-app.post("/add-tag", withAuth(), (req, res) => {
+app.post("/add-tag", withAuth(), async (req, res) => {
   const { tagName, tagColor } = req.body;
 
-  const insideTagsArr = db
-    .prepare(
-      `
-        select name from tags
-        where name = ?
-      `
-    )
-    .all(tagName);
+  const insideTagsArr = await postgresDb.any(
+    `
+      select name from tags
+      where name = $1
+    `,
+    tagName
+  );
 
   if (!insideTagsArr.includes(tagName)) {
-    db.prepare(
+    await postgresDb.none(
       `
-          insert into tags
-            (name, color)
-            values (?, ?)
-        `
-    ).run(tagName, tagColor);
+            insert into tags
+              (name, color)
+              values ($1, $2)
+      `,
+      [tagName, tagColor]
+    );
     res.send(tagName);
   }
   res.send({ error: "tag already exists" });
 });
 
-app.post("/remove-tag-from-task", withAuth(), (req, res) => {
+app.post("/remove-tag-from-task", withAuth(), async (req, res) => {
   const { tagId, todoId } = req.body;
 
-  db.prepare(
+  await postgresDb.any(
     `
-          delete from todos_tags where
-            tag_id = ? and todo_id = ?
-        `
-  ).run(tagId, todoId);
-
+      delete from todos_tags where
+        tag_id = $1 and todo_id = $2
+    `,
+    [tagId, todoId]
+  );
   res.send("ok");
 });
 
-app.post("/delete-tag", withAuth(), (req, res) => {
+app.post("/delete-tag", withAuth(), async (req, res) => {
   const { tagId } = req.body;
 
-  const usedTagsArr = db
-    .prepare(
-      `
-        select tag_id from todos_tags
-        where tag_id = ?
-      `
-    )
-    .all(tagId);
-
-  // if (!usedTagsArr.includes(tagId)) {
-  db.prepare(
+  await postgresDb.any(
     `
-          delete from tags where
-            id = ?
-        `
-  ).run(tagId);
+    delete from tags where
+      id = $1
+    `,
+    tagId
+  );
   res.send("ok");
-  // }
-  // res.send({ error: "tag is used, you cannot delete it" });
 });
 
 app.get("/checkToken", withAuth(), (req, res) => {

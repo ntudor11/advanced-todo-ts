@@ -31,7 +31,9 @@ class Register extends Component<any, any> {
     this.setState({ showAlert: true, alertText, isSuccess });
     setTimeout(() => {
       this.setState({ showAlert: false, alertText: "", isSuccess: null });
-      history.push("/login");
+      if (isSuccess) {
+        history.push("/login");
+      }
     }, 2000);
   }
 

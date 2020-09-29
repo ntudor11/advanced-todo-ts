@@ -292,15 +292,16 @@ class MyTodos extends Component<IProps, any> {
 
           <th className="text-left tagsField">
             <p>
-              {item.tags.map((tag: any) => (
-                <Badge
-                  key={tag.tagId}
-                  style={{ backgroundColor: tag.color }}
-                  className="tagSpan"
-                >
-                  {tag.tagName}
-                </Badge>
-              ))}
+              {item.tags &&
+                item.tags.map((tag: any) => (
+                  <Badge
+                    key={tag.tagId}
+                    style={{ backgroundColor: tag.color }}
+                    className="tagSpan"
+                  >
+                    {tag.tagName}
+                  </Badge>
+                ))}
             </p>
           </th>
 

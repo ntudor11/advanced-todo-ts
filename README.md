@@ -2,13 +2,32 @@
 
 ## Installation Guidelines
 
+### Set up PostgreSQL
+
+After installing PostgreSQL and enabling the `postgresql` service, run `psql postgres`. Once in the `psql` command line, run the commands:
+
+```
+> CREATE ROLE todo WITH LOGIN PASSWORD 'todos-local';
+> ALTER ROLE todo CREATEDB;
+> \q
+```
+
+Then, enter the `psql` command line again, this time with the newly created user account: `psql -d postgres -U todo`. Afterwards, run:
+
+```
+> CREATE DATABASE todos_ts;
+> \q
+```
+
+For setting the data model and adding some demo data in the PostgreSQL database, run the following command from the root directory:
+
+### `npm run setup-db`
+
+### Installing the application
+
 In the project directory, you can run the following command for installing all the necessary dependencies:
 
 ### `npm install --save`
-
-For setting the data model and adding some demo data in the SQLite database, run the following command:
-
-### `npm run setup-db`
 
 For running both the React and Express servers, run the following command:
 
