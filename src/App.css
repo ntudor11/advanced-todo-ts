@@ -479,6 +479,10 @@ body.light-mode .card:hover {
   margin: .5em;
 }
 
+.piechartsContainer {
+  margin-top: 2em;
+}
+
 @media only screen and (min-width: 768px) {
   .navbar-expand-md .navbar-nav .dropdown-menu {
     margin-left: -180% !important;
