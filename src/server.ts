@@ -237,7 +237,7 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
               (status: any) => {
                 return t
                   .map(
-                    `select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
+                    `select t.id, t.task as title, t.description, t.status_id, t.status_since, t.priority, t.deadline
               from todos t
               where t.status_id = $1 and t.user_id = $2`,
                     [status.statusId, reqId],
@@ -456,12 +456,14 @@ app.post("/add-todo", withAuth(), async (req: any, res) => {
   const { userId } = req;
   const { description, deadline, task, priority, statusId, tagsArr } = req.body;
 
+  const currentTime = new Date().toISOString();
+
   await postgresDb.none(
     `
-    insert into todos(task, description, deadline, priority, status_id, user_id)
-      values ($1, $2, $3, $4, $5, $6)
+    insert into todos(task, description, deadline, priority, status_id, status_since, user_id)
+      values ($1, $2, $3, $4, $5, $6, $7)
     `,
-    [task, description, deadline, priority, statusId, userId]
+    [task, description, deadline, priority, statusId, currentTime, userId]
   );
 
   const todoId = await postgresDb.one(
@@ -488,13 +490,16 @@ app.post("/add-todo", withAuth(), async (req: any, res) => {
 
 app.post("/update-todo-status", withAuth(), async (req, res) => {
   const { itemId, statusId } = req.body;
+  const currentTime = new Date().toISOString();
+
   await postgresDb.none(
     `
     update todos
-      set status_id = $1
-      where id = $2
+      set status_id = $1,
+      status_since = $2
+      where id = $3
     `,
-    [statusId, itemId]
+    [statusId, currentTime, itemId]
   );
   res.send("ok");
 });
@@ -510,17 +515,26 @@ app.post("/update-todo", withAuth(), async (req, res) => {
     id,
   } = req.body;
 
+  const currentTime = new Date().toISOString();
+
+  const prevStatus = await postgresDb.one(
+    `
+      select status_id from todos
+        where id = $1;
+    `,
+    [id]
+  );
+
   await postgresDb.none(
     `
       update todos
         set task = $1,
         description = $2,
         deadline = $3,
-        priority = $4,
-        status_id = $5
-        where id = $6
+        priority = $4
+        where id = $5
     `,
-    [task, description, deadline, priority, statusId, id]
+    [task, description, deadline, priority, id]
   );
 
   const insideTagsArr = await postgresDb.any(
@@ -530,6 +544,18 @@ app.post("/update-todo", withAuth(), async (req, res) => {
     `,
     id
   );
+
+  if (prevStatus.status_id !== statusId) {
+    await postgresDb.none(
+      `
+        update todos
+          set status_id = $1,
+          status_since = $2
+          where id = $3
+      `,
+      [statusId, currentTime, id]
+    );
+  }
 
   if (!_.isEqual(tagsArr, insideTagsArr)) {
     await postgresDb.any(

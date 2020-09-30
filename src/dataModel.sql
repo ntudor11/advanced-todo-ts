@@ -15,7 +15,6 @@ create table users (
 create table status (
   id serial primary key,
   name text -- [eg. backlog, todo, doing, done]
-  since text,
 );
 
 create table todos (
@@ -25,6 +24,7 @@ create table todos (
   deadline text,
   priority text,
   status_id integer references status(id),
+  status_since text,
   user_id integer references users(id)
 );
 

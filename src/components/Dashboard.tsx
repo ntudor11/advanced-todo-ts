@@ -61,10 +61,6 @@ class Dashboard extends Component<IProps, any> {
     const flatTodos =
       columns && columns.map((cols: any) => [].concat(cols.cards)).flat();
 
-    console.log(columns);
-
-    console.log(tags);
-
     const colorsTags = [
       "rgba(76, 60, 77, 1)",
       "rgba(139, 182, 165, 1)",
