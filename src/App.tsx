@@ -5,7 +5,7 @@ import Register from "./components/Register";
 import MyTodosContainer from "./components/MyTodosContainer";
 import NavBar from "./components/NavBar";
 import KanbanContainer from "./components/KanbanContainer";
-import Dashboard from "./components/Dashboard";
+import DashboardContainer from "./components/DashboardContainer";
 import CalendarContainer from "./components/CalendarContainer";
 import { NotFound, Unauthorised } from "./components/NotFound";
 
@@ -56,7 +56,7 @@ const App = () => {
 
           <PrivateRoute exact path="/calendar" comp={CalendarContainer} />
 
-          <PrivateRoute exact path="/dashboard" comp={Dashboard} />
+          <PrivateRoute exact path="/dashboard" comp={DashboardContainer} />
 
           {loggedIn === true ? (
             <Route

@@ -3,12 +3,11 @@ import { Container, Row } from "react-bootstrap";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
-import { updateTodoStatus, deleteTodo } from "./Functions";
+import { deleteTodo } from "./Functions";
 
 interface IProps {
-  fetchKanban: any;
-  board: any;
-  statuses: any;
+  fetchDashboard: any;
+  columns: any;
   tags: any;
 }
 
@@ -27,8 +26,8 @@ class Dashboard extends Component<IProps, any> {
   }
 
   componentDidMount() {
-    // const { fetchKanban } = this.props;
-    // fetchKanban();
+    const { fetchDashboard } = this.props;
+    fetchDashboard();
   }
 
   handleShow(id: string) {
@@ -42,26 +41,11 @@ class Dashboard extends Component<IProps, any> {
   }
 
   onDelete = (itemId: any) => {
-    // const { fetchKanban } = this.props;
+    const { fetchDashboard } = this.props;
     deleteTodo({ itemId }).then((res: any) => {
       if (res) {
         try {
-          // fetchKanban();
-        } catch (e) {
-          console.log(`${e}`);
-        }
-      }
-    });
-  };
-
-  handleMove = (itemId: any, oldStatus: any, direction: number) => {
-    const { fetchKanban } = this.props;
-    const statusId = oldStatus + direction;
-    console.log(`card ${itemId} in status ${statusId}`);
-    updateTodoStatus({ itemId, statusId }).then((res: any) => {
-      if (res) {
-        try {
-          fetchKanban();
+          fetchDashboard();
         } catch (e) {
           console.log(`${e}`);
         }
@@ -70,25 +54,30 @@ class Dashboard extends Component<IProps, any> {
   };
 
   render() {
-    const { fetchKanban, statuses, tags } = this.props;
+    const { fetchDashboard, tags, columns } = this.props;
     const { showModal, editTodo } = this.state;
+
+    const flatTodos =
+      columns && columns.map((cols: any) => [].concat(cols.cards)).flat();
+
+    console.log(tags, columns);
 
     return (
       <Container fluid className="body">
         <ButtonsRow handleShow={this.handleShow} colSize={3} />
         <h3>Dashboard</h3>
 
-        <Row className="flex-row flex-nowrap kanbanContainer"></Row>
+        <Row className="flex-row flex-nowrap dashboardContainer"></Row>
 
         <ModalNewTask
           formIds={formIds}
           showModal={showModal}
           handleClose={this.handleClose}
           taskObj={editTodo}
-          statuses={statuses}
+          statuses={columns}
           tags={tags}
           stateEditTodo={editTodo}
-          fetchTodos={fetchKanban}
+          fetchTodos={fetchDashboard}
         />
 
         <ModalNewTag
@@ -96,8 +85,8 @@ class Dashboard extends Component<IProps, any> {
           showModal={showModal}
           handleClose={this.handleClose}
           tags={tags}
-          // todos={flatTodos}
-          fetchTodos={fetchKanban}
+          todos={flatTodos}
+          fetchTodos={fetchDashboard}
         />
       </Container>
     );

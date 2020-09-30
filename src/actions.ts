@@ -70,3 +70,25 @@ export const fetchCalendar: any = () => {
     }
   };
 };
+
+const fetchDashboardRequest = () => ({ type: "FETCH_DASHBOARD_REQUEST" });
+const fetchDashboardSuccess = (columns: any, tags: any) => ({
+  type: "FETCH_DASHBOARD_SUCCESS",
+  columns,
+  tags,
+});
+const fetchDashboardFailure = () => ({ type: "FETCH_DASHBOARD_FAILURE" });
+
+export const fetchDashboard: any = () => {
+  return async (dispatch: any) => {
+    dispatch(fetchDashboardRequest());
+
+    const { data, status } = await axios.get("/dashboard");
+
+    if (status === 200) {
+      dispatch(fetchDashboardSuccess(data.columns, data.tags));
+    } else {
+      dispatch(fetchDashboardFailure());
+    }
+  };
+};

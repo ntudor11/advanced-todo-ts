@@ -231,7 +231,7 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
         .batch([
           t
             .map(
-              `select s.id, s.name as title
+              `select s.id as "statusId", s.name as "statusName"
             from status s`,
               [],
               (status: any) => {
@@ -240,11 +240,11 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
                     `select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
               from todos t
               where t.status_id = $1 and t.user_id = $2`,
-                    [status.id, reqId],
+                    [status.statusId, reqId],
                     (card: any) => {
                       return t
                         .any(
-                          `select distinct tg.id as "tagId", tg.name as "tagName", tg.color
+                          `select distinct tg.id as "tagId", tg.name as "tagName", tg.color as "tagColor"
                     from tags tg
                     join todos_tags tt
                     on tg.id = tt.tag_id
@@ -262,7 +262,7 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
                   )
                   .then(t.batch)
                   .then((data: any) => {
-                    // status.cards = data;
+                    status.cards = data;
                     status.cardCount = data.length;
                     return status;
                   });
@@ -272,7 +272,7 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
           t
             .map(
               `
-              select id as "tagId", name as "tagName", color from tags
+              select id as "tagId", name as "tagName", color as "tagColor" from tags
             `,
               [],
               (tag: any) => {
