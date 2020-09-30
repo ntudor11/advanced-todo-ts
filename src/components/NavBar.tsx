@@ -182,6 +182,19 @@ class NavBar extends Component<any, any> {
               Calendar
             </NavLink>
 
+            <NavLink
+              // as={Link}
+              exact
+              activeClassName="active"
+              to="/dashboard"
+              // eventKey="5"
+              className={`ml-auto nav-link underline-from-center ${
+                isScrolled ? "" : "navitem-scroll"
+              }`}
+            >
+              Dashboard
+            </NavLink>
+
             <NavDropdown
               // eventkey="4"
               title={

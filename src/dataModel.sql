@@ -15,6 +15,7 @@ create table users (
 create table status (
   id serial primary key,
   name text -- [eg. backlog, todo, doing, done]
+  since text,
 );
 
 create table todos (

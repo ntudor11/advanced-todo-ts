@@ -222,6 +222,97 @@ app.get("/kanban", withAuth(), async (req: any, res) => {
     });
 });
 
+app.get("/dashboard", withAuth(), async (req: any, res) => {
+  const reqId = req.userId;
+
+  const getBoard = () => {
+    return postgresDb.task((t: any) => {
+      return t
+        .batch([
+          t
+            .map(
+              `select s.id, s.name as title
+            from status s`,
+              [],
+              (status: any) => {
+                return t
+                  .map(
+                    `select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
+              from todos t
+              where t.status_id = $1 and t.user_id = $2`,
+                    [status.id, reqId],
+                    (card: any) => {
+                      return t
+                        .any(
+                          `select distinct tg.id as "tagId", tg.name as "tagName", tg.color
+                    from tags tg
+                    join todos_tags tt
+                    on tg.id = tt.tag_id
+                    join todos t
+                    on t.id = tt.todo_id
+                    where t.id = $1;`,
+                          card.id
+                        )
+                        .then(t.batch)
+                        .then((data: any) => {
+                          card.tags = data;
+                          return card;
+                        });
+                    }
+                  )
+                  .then(t.batch)
+                  .then((data: any) => {
+                    // status.cards = data;
+                    status.cardCount = data.length;
+                    return status;
+                  });
+              }
+            )
+            .then(t.batch),
+          t
+            .map(
+              `
+              select id as "tagId", name as "tagName", color from tags
+            `,
+              [],
+              (tag: any) => {
+                return t
+                  .any(
+                    `
+                    select t.id, t.task as title, t.description, t.status_id, t.priority, t.deadline
+              from todos t
+              join todos_tags tt
+              on t.id = tt.todo_id
+              where tt.tag_id = $1 and t.user_id = $2
+                    `,
+                    [tag.tagId, reqId]
+                  )
+                  .then(t.batch)
+                  .then((data: any) => {
+                    tag.todoCount = data.length;
+                    return tag;
+                  });
+              }
+            )
+            .then(t.batch),
+        ])
+        .then(t.batch);
+    });
+  };
+
+  getBoard()
+    .then((data: any) => {
+      res.json({
+        columns: data[0],
+        tags: data[1],
+        // data,
+      });
+    })
+    .catch((err: any) => {
+      res.send(err);
+    });
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const hashedPass = hashPass(password);
