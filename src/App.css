@@ -481,6 +481,7 @@ body.light-mode .card:hover {
 
 .piechartsContainer {
   margin-top: 2em;
+  margin-bottom:4em;
 }
 
 @media only screen and (min-width: 768px) {

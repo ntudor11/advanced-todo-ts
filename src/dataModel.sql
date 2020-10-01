@@ -17,6 +17,13 @@ create table status (
   name text -- [eg. backlog, todo, doing, done]
 );
 
+-- create table status_history (
+--   id serial primary key,
+--   status_id integer references status(id),
+--   todo_id integer references todos(id),
+--   time_stamp text,
+-- ); -- TODO keep timestamps for each status
+
 create table todos (
   id serial primary key,
   task text,
@@ -24,7 +31,7 @@ create table todos (
   deadline text,
   priority text,
   status_id integer references status(id),
-  status_since text,
+  status_since text references status_history(time_stamp),
   user_id integer references users(id)
 );
 

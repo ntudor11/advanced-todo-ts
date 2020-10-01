@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard";
 const mapStateToProps = ({ dashboard }: { dashboard: any }) => ({
   columns: dashboard.columns,
   tags: dashboard.tags,
+  todos: dashboard.todos,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

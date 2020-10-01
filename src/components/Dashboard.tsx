@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { Doughnut } from "react-chartjs-2";
+import { Doughnut, Line } from "react-chartjs-2";
 import ButtonsRow, { formIds } from "./ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
@@ -10,6 +10,7 @@ interface IProps {
   fetchDashboard: any;
   columns: any;
   tags: any;
+  todos: any;
 }
 
 class Dashboard extends Component<IProps, any> {
@@ -55,7 +56,7 @@ class Dashboard extends Component<IProps, any> {
   };
 
   render() {
-    const { fetchDashboard, tags, columns } = this.props;
+    const { fetchDashboard, tags, columns, todos } = this.props;
     const { showModal, editTodo } = this.state;
 
     const flatTodos =
@@ -120,6 +121,70 @@ class Dashboard extends Component<IProps, any> {
       return data;
     };
 
+    const chartData = () => {
+      const testData: any = {
+        labels: [],
+        datasets: [
+          // {
+          //   label: "",
+          //   data: [],
+          //   backgroundColor: ["rgba(103, 103, 103, 0.25)"],
+          // },
+          // {
+          //   label: "",
+          //   data: [],
+          //   backgroundColor: ["rgba(128, 61, 32, .45)"],
+          // },
+          // {
+          //   label: "",
+          //   data: [],
+          //   backgroundColor: ["rgba(189, 147, 56, .65)"],
+          // },
+          // {
+          //   label: "",
+          //   data: [],
+          //   backgroundColor: ["rgba(31, 149, 103, .85)"],
+          // },
+          {
+            label: "Backlog",
+            data: [20, 15, 24, 30],
+            backgroundColor: ["rgba(103, 103, 103, 0.25)"],
+          },
+          {
+            label: "To do",
+            data: [7, 8, 8, 15],
+            backgroundColor: ["rgba(128, 61, 32, .45)"],
+          },
+          {
+            label: "Doing",
+            data: [8, 12, 8, 9],
+            backgroundColor: ["rgba(189, 147, 56, .65)"],
+          },
+          {
+            label: "Done",
+            data: [12, 14, 17, 22],
+            backgroundColor: ["rgba(31, 149, 103, .85)"],
+          },
+        ],
+      };
+
+      for (let i = 29; i >= 0; i--) {
+        testData.labels.push(
+          new Date(new Date().setDate(new Date().getDate() - i))
+            .toLocaleString()
+            .split(",", 1)
+        );
+        testData.datasets[0].data.push(i);
+        testData.datasets[1].data.push(i + 2);
+        testData.datasets[2].data.push(i + 5);
+        testData.datasets[3].data.push(i + 7);
+      }
+
+      return testData;
+    };
+
+    console.log(todos);
+
     return (
       <Container fluid className="body">
         <ButtonsRow handleShow={this.handleShow} colSize={3} />
@@ -144,6 +209,39 @@ class Dashboard extends Component<IProps, any> {
               }}
             />
             <h4>Progress Stats</h4>
+          </Col>
+        </Row>
+
+        <Row className="piechartsContainer">
+          <Col xs={{ span: 10, offset: 1 }}>
+            <h4>Timeline</h4>
+            <Line
+              data={chartData}
+              width={100}
+              height={50}
+              options={{
+                maintainAspectRatio: true,
+                scales: {
+                  yAxes: [
+                    {
+                      // ticks: {
+                      //   callback(label) {
+                      //     if (label < 1e3) return label.toFixed(2);
+                      //     if (label >= 1e3 && label < 1e6) return `${+(label / 1e3).toFixed(2)}K`;
+                      //     if (label >= 1e6 && label < 1e9) return `${+(label / 1e6).toFixed(2)}M`;
+                      //     if (label >= 1e9 && label < 1e12) return `${+(label / 1e9).toFixed(2)}B`;
+                      //   },
+                      // },
+                      scaleLabel: {
+                        display: false,
+                        labelString: "1k = 1000",
+                      },
+                      stacked: true,
+                    },
+                  ],
+                },
+              }}
+            />
           </Col>
         </Row>
 

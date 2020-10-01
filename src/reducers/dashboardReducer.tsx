@@ -2,6 +2,7 @@ const initialState = {
   fetching: false,
   columns: [],
   tags: [],
+  todos: [],
 };
 
 const dashboardReducer = (state = initialState, action: any) => {
@@ -14,6 +15,7 @@ const dashboardReducer = (state = initialState, action: any) => {
         fetching: false,
         columns: action.columns,
         tags: action.tags,
+        todos: action.todos,
       };
     default:
       return state;

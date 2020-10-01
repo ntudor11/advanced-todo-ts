@@ -137,6 +137,8 @@ class MyTodos extends Component<IProps, any> {
   render() {
     const { todos, statuses, fetchTodos, tags } = this.props;
 
+    // TODO fix checkmark issue
+
     const {
       filterStr,
       isActive,

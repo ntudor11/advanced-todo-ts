@@ -72,10 +72,11 @@ export const fetchCalendar: any = () => {
 };
 
 const fetchDashboardRequest = () => ({ type: "FETCH_DASHBOARD_REQUEST" });
-const fetchDashboardSuccess = (columns: any, tags: any) => ({
+const fetchDashboardSuccess = (columns: any, tags: any, todos: any) => ({
   type: "FETCH_DASHBOARD_SUCCESS",
   columns,
   tags,
+  todos,
 });
 const fetchDashboardFailure = () => ({ type: "FETCH_DASHBOARD_FAILURE" });
 
@@ -86,7 +87,7 @@ export const fetchDashboard: any = () => {
     const { data, status } = await axios.get("/dashboard");
 
     if (status === 200) {
-      dispatch(fetchDashboardSuccess(data.columns, data.tags));
+      dispatch(fetchDashboardSuccess(data.columns, data.tags, data.todos));
     } else {
       dispatch(fetchDashboardFailure());
     }

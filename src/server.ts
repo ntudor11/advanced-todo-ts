@@ -5,6 +5,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const _ = require("lodash");
+const path = require("path");
 const pgPromise = require("pg-promise");
 
 const app = express();
@@ -21,6 +22,11 @@ app.use(cors());
 app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(express.static("./build"));
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "build")));
+}
 
 // TODO add salting possibility to hashing pass
 const hashPass = (password: string) => {
@@ -295,6 +301,98 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
               }
             )
             .then(t.batch),
+          // t
+          //   .map(
+          //     `
+          //     select s.id, s.name as label
+          //     from status s
+          //   `,
+          //     [],
+          //     (status: any) => {
+          //       return t
+          //         .any(
+          //           `
+          //             select distinct t.status_since from
+          //             todos t
+          //             where user_id = $1
+          //           `,
+          //           reqId
+          //         )
+          //         .then(t.batch)
+          //         .then((res: any) => {
+          //           console.log(res);
+          //           status.data = res;
+          //           return status;
+          //         });
+          //       // return t
+          //       //   .one(
+          //       //     `
+          //       //     select count(t.id) from
+          //       //       todos t
+          //       //       where user_id = $1
+          //       //       and t.status_id = $2
+          //       //   `,
+          //       //     [reqId, status.id]
+          //       //   )
+          //       //   .then((res: any) => {
+          //       //     status.data = res.count;
+          //       //     return status;
+          //       //   });
+          //     }
+          //   )
+          //   .then(t.batch),
+          // t.batch([
+          t
+            .any(
+              `
+                  select array_agg(distinct t.status_since) as labels
+                    from todos t
+                    where t.user_id = $1
+                `,
+              [reqId]
+            )
+            .then(t.batch),
+          t
+            .map(
+              `
+                select s.id as status_id, s.name as label from status s
+              `,
+              [],
+              (status: any) => {
+                return t
+                  .any(
+                    `
+                    select array_agg(distinct t.status_since) as dates
+                      from todos t
+                      join status s
+                      on s.id = t.status_id
+                      where s.id = $1
+                      and t.user_id = $2
+                  `,
+                    [status.status_id, reqId]
+                  )
+                  .then((res: any) => {
+                    status.data = res[0].dates;
+                    return status;
+                  });
+
+                // return t
+                //   .one(
+                //     `
+                //     select count(t.id) from todos t
+                //       where t.status_id = $1
+                //       and t.user_id = $2
+                //   `,
+                //     [status.status_id, reqId]
+                //   )
+                //   .then((res: any) => {
+                //     status.data = res.count;
+                //     return status;
+                //   });
+              }
+            )
+            .then(t.batch),
+          // ]),
         ])
         .then(t.batch);
     });
@@ -305,6 +403,7 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
       res.json({
         columns: data[0],
         tags: data[1],
+        todos: { labels: data[2][0].labels, datasets: data[3] },
         // data,
       });
     })
@@ -456,7 +555,8 @@ app.post("/add-todo", withAuth(), async (req: any, res) => {
   const { userId } = req;
   const { description, deadline, task, priority, statusId, tagsArr } = req.body;
 
-  const currentTime = new Date().toISOString();
+  const currentTime = new Date().toISOString().split("T", 1)[0];
+  console.log(currentTime);
 
   await postgresDb.none(
     `
@@ -490,7 +590,7 @@ app.post("/add-todo", withAuth(), async (req: any, res) => {
 
 app.post("/update-todo-status", withAuth(), async (req, res) => {
   const { itemId, statusId } = req.body;
-  const currentTime = new Date().toISOString();
+  const currentTime = new Date().toISOString().split("T", 1)[0];
 
   await postgresDb.none(
     `
@@ -515,7 +615,8 @@ app.post("/update-todo", withAuth(), async (req, res) => {
     id,
   } = req.body;
 
-  const currentTime = new Date().toISOString();
+  const currentTime = new Date().toISOString().split("T", 1)[0];
+  console.log(currentTime);
 
   const prevStatus = await postgresDb.one(
     `
