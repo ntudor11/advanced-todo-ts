@@ -63,12 +63,6 @@ const withAuth = (requiredLevel?: string) => (
   }
 };
 
-app.get("/testpostgres", async (req, res) => {
-  const test = await postgresDb.any("select * from users");
-
-  res.send({ test });
-});
-
 app.get("/users", async (req, res) => {
   const users = await postgresDb.any(`
       select id, email, image
@@ -556,7 +550,6 @@ app.post("/add-todo", withAuth(), async (req: any, res) => {
   const { description, deadline, task, priority, statusId, tagsArr } = req.body;
 
   const currentTime = new Date().toISOString().split("T", 1)[0];
-  console.log(currentTime);
 
   await postgresDb.none(
     `
@@ -616,7 +609,6 @@ app.post("/update-todo", withAuth(), async (req, res) => {
   } = req.body;
 
   const currentTime = new Date().toISOString().split("T", 1)[0];
-  console.log(currentTime);
 
   const prevStatus = await postgresDb.one(
     `

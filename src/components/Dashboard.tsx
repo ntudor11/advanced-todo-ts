@@ -192,16 +192,6 @@ class Dashboard extends Component<IProps, any> {
         <Row className="piechartsContainer">
           <Col xs={12} sm={6}>
             <Doughnut
-              data={pieDataTags(tags)}
-              options={{
-                legend: { position: "bottom" },
-                cutoutPercentage: "75",
-              }}
-            />
-            <h4>Tags Stats</h4>
-          </Col>
-          <Col xs={12} sm={6}>
-            <Doughnut
               data={pieDataCols(columns)}
               options={{
                 legend: { position: "bottom" },
@@ -209,6 +199,16 @@ class Dashboard extends Component<IProps, any> {
               }}
             />
             <h4>Progress Stats</h4>
+          </Col>
+          <Col xs={12} sm={6}>
+            <Doughnut
+              data={pieDataTags(tags)}
+              options={{
+                legend: { position: "bottom" },
+                cutoutPercentage: "75",
+              }}
+            />
+            <h4>Tags Stats</h4>
           </Col>
         </Row>
 
