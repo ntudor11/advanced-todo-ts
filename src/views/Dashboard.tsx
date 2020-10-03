@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Doughnut, Line } from "react-chartjs-2";
-import ButtonsRow, { formIds } from "./ButtonsRow";
+import ButtonsRow, { formIds } from "../components/ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
-import { deleteTodo } from "./Functions";
+import { deleteTodo } from "../components/Functions";
 
 interface IProps {
   fetchDashboard: any;

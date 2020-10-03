@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Container, Row } from "react-bootstrap";
-import ButtonsRow, { formIds } from "./ButtonsRow";
+import ButtonsRow, { formIds } from "../components/ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
-import Column from "./Column";
-import { updateTodoStatus, deleteTodo } from "./Functions";
+import Column from "../components/Column";
+import { updateTodoStatus, deleteTodo } from "../components/Functions";
 
 interface IProps {
   fetchKanban: any;

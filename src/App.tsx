@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import MyTodosContainer from "./components/MyTodosContainer";
+import MyTodosContainer from "./views/MyTodosContainer";
 import NavBar from "./components/NavBar";
-import KanbanContainer from "./components/KanbanContainer";
-import DashboardContainer from "./components/DashboardContainer";
-import CalendarContainer from "./components/CalendarContainer";
+import KanbanContainer from "./views/KanbanContainer";
+import DashboardContainer from "./views/DashboardContainer";
+import CalendarContainer from "./views/CalendarContainer";
 import { NotFound, Unauthorised } from "./components/NotFound";
 
 import "@fortawesome/fontawesome-free/css/all.css";

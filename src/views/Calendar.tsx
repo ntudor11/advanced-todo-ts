@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
-import ButtonsRow, { formIds } from "./ButtonsRow";
+import ButtonsRow, { formIds } from "../components/ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";

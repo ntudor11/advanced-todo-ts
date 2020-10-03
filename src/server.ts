@@ -711,9 +711,11 @@ app.post("/add-tag", withAuth(), async (req, res) => {
       `,
       [tagName, tagColor]
     );
-    res.send(tagName);
+    res.status(200).send(tagName);
+    return;
   }
   res.send({ error: "tag already exists" });
+  return;
 });
 
 app.post("/remove-tag-from-task", withAuth(), async (req, res) => {
