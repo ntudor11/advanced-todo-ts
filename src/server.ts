@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const path = require("path");
 const pgPromise = require("pg-promise");
@@ -28,10 +29,8 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "build")));
 }
 
-// TODO add salting possibility to hashing pass
 const hashPass = (password: string) => {
-  const sha256 = crypto.createHash("sha256");
-  const passHash = sha256.update(password).digest("base64");
+  const passHash = bcrypt.hashSync(password, 10);
   return passHash;
 };
 
@@ -408,7 +407,6 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const hashedPass = hashPass(password);
 
   const dbRow = await postgresDb.one(
     `
@@ -433,7 +431,7 @@ app.post("/login", async (req, res) => {
     image,
   } = dbRow;
 
-  if (hashedPass !== dbPasswordHash) {
+  if (!bcrypt.compareSync(password, dbPasswordHash)) {
     return res.status(401).send({ success: false, errType: "WRONG_PASSWORD" });
   }
 
