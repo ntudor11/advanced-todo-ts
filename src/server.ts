@@ -140,7 +140,9 @@ app.get("/my-todos", withAuth(), async (req: any, res) => {
     `
     select id as "tagId", name as "tagName", color as "tagColor"
     from tags
-    `
+    where user_id = $1
+    `,
+    userId
   );
 
   getAllTasks()
@@ -209,7 +211,9 @@ app.get("/kanban", withAuth(), async (req: any, res) => {
     `
     select id as "tagId", name as "tagName", color as "tagColor"
     from tags
-    `
+    where user_id = $1
+    `,
+    reqId
   );
 
   getBoard()
@@ -272,8 +276,9 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
             .map(
               `
               select id as "tagId", name as "tagName", color as "tagColor" from tags
+                where user_id = $1
             `,
-              [],
+              [reqId],
               (tag: any) => {
                 return t
                   .any(
@@ -499,7 +504,9 @@ app.get("/calendar", withAuth(), async (req: any, res) => {
     `
     select id as "tagId", name as "tagName", color as "tagColor"
     from tags
-    `
+    where user_id = $1
+    `,
+    userId
   );
 
   getAllTasks()
@@ -595,7 +602,7 @@ app.post("/update-todo-status", withAuth(), async (req, res) => {
   res.send("ok");
 });
 
-app.post("/update-todo", withAuth(), async (req, res) => {
+app.post("/update-todo", withAuth(), async (req: any, res) => {
   const {
     task,
     description,
@@ -689,25 +696,26 @@ app.post("/delete-todo", withAuth(), async (req, res) => {
   res.send("ok");
 });
 
-app.post("/add-tag", withAuth(), async (req, res) => {
+app.post("/add-tag", withAuth(), async (req: any, res) => {
+  const { userId } = req;
   const { tagName, tagColor } = req.body;
 
   const insideTagsArr = await postgresDb.any(
     `
       select name from tags
-      where name = $1
+      where name = $1 and user_id = $2
     `,
-    tagName
+    [tagName, userId]
   );
 
   if (!insideTagsArr.includes(tagName)) {
     await postgresDb.none(
       `
             insert into tags
-              (name, color)
-              values ($1, $2)
+              (name, color, user_id)
+              values ($1, $2, $3)
       `,
-      [tagName, tagColor]
+      [tagName, tagColor, userId]
     );
     res.status(200).send(tagName);
     return;
@@ -729,15 +737,16 @@ app.post("/remove-tag-from-task", withAuth(), async (req, res) => {
   res.send("ok");
 });
 
-app.post("/delete-tag", withAuth(), async (req, res) => {
+app.post("/delete-tag", withAuth(), async (req: any, res) => {
+  const { userId } = req;
   const { tagId } = req.body;
 
   await postgresDb.any(
     `
     delete from tags where
-      id = $1
+      id = $1 and user_id = $2
     `,
-    tagId
+    [tagId, userId]
   );
   res.send("ok");
 });

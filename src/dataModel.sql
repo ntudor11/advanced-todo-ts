@@ -31,14 +31,15 @@ create table todos (
   deadline text,
   priority text,
   status_id integer references status(id),
-  status_since text references status_history(time_stamp),
+  status_since text, -- references status_history(time_stamp),
   user_id integer references users(id)
 );
 
 create table tags (
   id serial not null primary key,
   name text,
-  color text
+  color text,
+  user_id integer references users(id)
 );
 
 create table todos_tags (
@@ -52,7 +53,7 @@ insert into users (
   image
 ) values (
   'abc@abc.com',
-  'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=',
+  '$2b$10$V6MNHFa9SbGW5t/5R8BUIe2o0NuGvphPW9OODkoD5V.qp/wCZQnHO',
   'https://images.generated.photos/iu45sy63UfSD4JqiVrW-LscMCQMYerSlH-BdkX9gfJc/rs:fit:512:512/Z3M6Ly9nZW5lcmF0/ZWQtcGhvdG9zL3Ry/YW5zcGFyZW50X3Yy/L3YyXzA0NjU5MzUu/cG5n.png'
 );
 
@@ -70,7 +71,7 @@ insert into users (
   image
 ) values (
   'ab@ab.com',
-  'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=',
+  '$2b$10$Bvjbn78G099VWWosXddCDelGfmw5Ap7bn.sfwBlgR3SXBgzyEZokO',
   'https://cnaca.ca/wp-content/uploads/2018/10/user-icon-image-placeholder.jpg'
 );
 
@@ -144,19 +145,28 @@ insert into todos (
   1
 );
 
-insert into tags (name, color) values (
+insert into tags (name, color, user_id) values (
   'work',
-  '#9F0500'
+  '#9F0500',
+  1
 );
 
-insert into tags (name, color) values (
+insert into tags (name, color, user_id) values (
   'private',
-  '#808900'
+  '#808900',
+  1
 );
 
-insert into tags (name, color) values (
+insert into tags (name, color, user_id) values (
   'uni',
-  '#0C797D'
+  '#0C797D',
+  1
+);
+
+insert into tags (name, color, user_id) values (
+  'private',
+  '#872f02',
+  2
 );
 
 insert into todos_tags (
@@ -177,7 +187,7 @@ insert into todos_tags (
   todo_id,
   tag_id
 ) values (
-  2, 1
+  2, 4
 );
 
 insert into todos_tags (
