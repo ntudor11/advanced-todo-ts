@@ -22,7 +22,7 @@ create table status (
 --   status_id integer references status(id),
 --   todo_id integer references todos(id),
 --   time_stamp text,
--- ); -- TODO keep timestamps for each status
+-- ); -- TODO keep timestamps for each status - new agg table for todo_id_status_since
 
 create table todos (
   id serial primary key,

@@ -229,6 +229,10 @@ body.dark-mode .table tr:hover {
   color: #ddd;
 }
 
+.fc {
+  margin-bottom: 3em;
+}
+
 body.dark-mode .fc-scrollgrid .fc-daygrid-event-harness {
   color: #17a2b8;
 }

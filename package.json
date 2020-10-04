@@ -1,6 +1,9 @@
 {
   "name": "todo",
   "version": "0.1.0",
+  "engines": {
+    "node": "12.18.3"
+  },
   "type": "module",
   "private": true,
   "dependencies": {
