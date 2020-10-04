@@ -67,7 +67,7 @@
     "use-dark-mode": "^2.3.1"
   },
   "scripts": {
-    "start": "nodemon -r esm src/server.ts & react-scripts start",
+    "start": "ts-node -r esm src/server.ts & react-scripts start",
     "tsc": "tsc src/server.ts",
     "serve": "nodemon -r esm src/server.ts",
     "setup-db": "psql -U todo -d todos_ts -a -f src/dataModel.sql",
