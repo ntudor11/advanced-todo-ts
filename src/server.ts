@@ -10,7 +10,7 @@ const path = require("path");
 const pgPromise = require("pg-promise");
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+export const PORT = process.env.PORT || 8000;
 
 const cn =
   process.env.DATABASE_URL ||
