@@ -4,7 +4,6 @@
   "engines": {
     "node": "12.18.3"
   },
-  "type": "module",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
