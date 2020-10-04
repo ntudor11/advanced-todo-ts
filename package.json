@@ -4,6 +4,7 @@
   "engines": {
     "node": "12.18.3"
   },
+  "type": "module",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
@@ -60,6 +61,7 @@
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
     "typescript": "^4.0.2",
+    "ts-node": "^9.0.0",
     "use-dark-mode": "^2.3.1"
   },
   "scripts": {
@@ -104,8 +106,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^2.0.0",
-    "prettier": "^2.1.1",
-    "ts-node": "^9.0.0"
+    "prettier": "^2.1.1"
   },
   "proxy": "http://localhost:8000/"
 }
