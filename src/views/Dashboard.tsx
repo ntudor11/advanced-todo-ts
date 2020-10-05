@@ -56,7 +56,7 @@ class Dashboard extends Component<IProps, any> {
   };
 
   render() {
-    const { fetchDashboard, tags, columns, todos } = this.props;
+    const { fetchDashboard, tags, columns } = this.props;
     const { showModal, editTodo } = this.state;
 
     const flatTodos =
@@ -125,26 +125,6 @@ class Dashboard extends Component<IProps, any> {
       const testData: any = {
         labels: [],
         datasets: [
-          // {
-          //   label: "",
-          //   data: [],
-          //   backgroundColor: ["rgba(103, 103, 103, 0.25)"],
-          // },
-          // {
-          //   label: "",
-          //   data: [],
-          //   backgroundColor: ["rgba(128, 61, 32, .45)"],
-          // },
-          // {
-          //   label: "",
-          //   data: [],
-          //   backgroundColor: ["rgba(189, 147, 56, .65)"],
-          // },
-          // {
-          //   label: "",
-          //   data: [],
-          //   backgroundColor: ["rgba(31, 149, 103, .85)"],
-          // },
           {
             label: "Backlog",
             data: [20, 15, 24, 30],
@@ -182,8 +162,6 @@ class Dashboard extends Component<IProps, any> {
 
       return testData;
     };
-
-    console.log(todos);
 
     return (
       <Container fluid className="body">
@@ -224,14 +202,6 @@ class Dashboard extends Component<IProps, any> {
                 scales: {
                   yAxes: [
                     {
-                      // ticks: {
-                      //   callback(label) {
-                      //     if (label < 1e3) return label.toFixed(2);
-                      //     if (label >= 1e3 && label < 1e6) return `${+(label / 1e3).toFixed(2)}K`;
-                      //     if (label >= 1e6 && label < 1e9) return `${+(label / 1e6).toFixed(2)}M`;
-                      //     if (label >= 1e9 && label < 1e12) return `${+(label / 1e9).toFixed(2)}B`;
-                      //   },
-                      // },
                       scaleLabel: {
                         display: false,
                         labelString: "1k = 1000",

@@ -299,47 +299,6 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
               }
             )
             .then(t.batch),
-          // t
-          //   .map(
-          //     `
-          //     select s.id, s.name as label
-          //     from status s
-          //   `,
-          //     [],
-          //     (status: any) => {
-          //       return t
-          //         .any(
-          //           `
-          //             select distinct t.status_since from
-          //             todos t
-          //             where user_id = $1
-          //           `,
-          //           reqId
-          //         )
-          //         .then(t.batch)
-          //         .then((res: any) => {
-          //           console.log(res);
-          //           status.data = res;
-          //           return status;
-          //         });
-          //       // return t
-          //       //   .one(
-          //       //     `
-          //       //     select count(t.id) from
-          //       //       todos t
-          //       //       where user_id = $1
-          //       //       and t.status_id = $2
-          //       //   `,
-          //       //     [reqId, status.id]
-          //       //   )
-          //       //   .then((res: any) => {
-          //       //     status.data = res.count;
-          //       //     return status;
-          //       //   });
-          //     }
-          //   )
-          //   .then(t.batch),
-          // t.batch([
           t
             .any(
               `
@@ -373,20 +332,6 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
                     status.data = res[0].dates;
                     return status;
                   });
-
-                // return t
-                //   .one(
-                //     `
-                //     select count(t.id) from todos t
-                //       where t.status_id = $1
-                //       and t.user_id = $2
-                //   `,
-                //     [status.status_id, reqId]
-                //   )
-                //   .then((res: any) => {
-                //     status.data = res.count;
-                //     return status;
-                //   });
               }
             )
             .then(t.batch),
@@ -401,8 +346,7 @@ app.get("/dashboard", withAuth(), async (req: any, res) => {
       res.json({
         columns: data[0],
         tags: data[1],
-        todos: { labels: data[2][0].labels, datasets: data[3] },
-        // data,
+        // todos: { labels: data[2][0].labels, datasets: data[3] },
       });
     })
     .catch((err: any) => {
