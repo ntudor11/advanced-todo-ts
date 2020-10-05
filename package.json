@@ -74,7 +74,12 @@
     "serve": "nodemon -r esm src/server.ts",
     "setup-db": "psql -U todo -d todos_ts -a -f src/dataModel.sql",
     "heroku-postbuild": "npm i && npm run build",
+<<<<<<< HEAD
     "build": "tsc && react-scripts build",
+=======
+    "build": "react-scripts build",
+    "deploy": "git add . && git commit -m Heroku && git push heroku master",
+>>>>>>> parent of d2d75bd... config ts
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --fix --ext .jsx,.js, .ts, .tsx src/"
