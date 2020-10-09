@@ -11,14 +11,21 @@ import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
 
 interface IProps {
-  fetchCalendar: any;
-  statuses: any;
+  fetchCalendar: Function;
+  statuses: string[];
   todos: any;
-  tags: any;
+  tags: string[];
 }
 
-class Calendar extends Component<IProps, any> {
-  constructor(props: any) {
+interface IState {
+  showModal: string | null;
+  editTodo: any;
+  vw: number;
+  currentEvents?: Object;
+}
+
+class Calendar extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       showModal: "",
@@ -71,27 +78,12 @@ class Calendar extends Component<IProps, any> {
           statusId: info.event.extendedProps.status.statusId,
           statusName: info.event.extendedProps.status.statusName,
         },
-        tags: info.event.extendedProps.tags.map((tag: any) => tag),
+        tags: info.event.extendedProps.tags.map((tag: string) => tag),
         deadline: info.event.start && info.event.start.toISOString(),
       },
     });
     this.handleShow(formIds.viewTask);
   };
-
-  handleEvents = (events: any) => {
-    this.setState({
-      currentEvents: events,
-    });
-  };
-
-  renderEventContent(eventInfo: any) {
-    return (
-      <>
-        <b>{eventInfo.timeText}</b>
-        <i>{eventInfo.event.title}</i>
-      </>
-    );
-  }
 
   render() {
     const { todos, statuses, fetchCalendar, tags } = this.props;
@@ -125,9 +117,7 @@ class Calendar extends Component<IProps, any> {
                 fixedWeekCount={false}
                 themeSystem="bootstrap"
                 events={todos}
-                eventContent={this.renderEventContent}
                 eventClick={this.handleEventClick}
-                eventsSet={this.handleEvents}
               />
             ) : (
               <p className="text-left">

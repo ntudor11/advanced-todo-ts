@@ -45,7 +45,6 @@ class Login extends Component<IProps, IState> {
     login(user).then(({ data }: { data: DataProps }) => {
       if (data.success) {
         setLoggedIn(true);
-        alert(data.success);
         history.push("/todos");
       } else {
         this.setState({});
