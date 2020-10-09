@@ -7,8 +7,17 @@ interface IProps {
   setLoggedIn: any;
 }
 
-class Login extends Component<IProps, any> {
-  constructor(props: any) {
+interface IState {
+  email: string;
+  password: string;
+}
+
+type DataProps = {
+  success: boolean;
+};
+
+class Login extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       email: "",
@@ -20,10 +29,12 @@ class Login extends Component<IProps, any> {
   }
 
   onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({
+      [e.currentTarget.name]: e.currentTarget.value,
+    } as { [K in keyof IState]: IState[K] });
   }
 
-  onSubmit(e: React.ChangeEvent<HTMLInputElement>) {
+  onSubmit(e: React.SyntheticEvent<HTMLInputElement>) {
     e.preventDefault();
 
     const { history, setLoggedIn } = this.props;
@@ -31,9 +42,10 @@ class Login extends Component<IProps, any> {
 
     const user = { email, password };
 
-    login(user).then(({ data }: { data: any }) => {
+    login(user).then(({ data }: { data: DataProps }) => {
       if (data.success) {
         setLoggedIn(true);
+        alert(data.success);
         history.push("/todos");
       } else {
         this.setState({});

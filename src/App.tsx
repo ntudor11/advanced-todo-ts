@@ -23,19 +23,6 @@ const App = () => {
     );
   }, []);
 
-  // const PrivateRoute: any = ({ comp: MyComponent, ...rest }: { comp: any }) => (
-  //   <Route
-  //     {...rest}
-  //     render={(props: any) =>
-  //       loggedIn === true ? (
-  //         <MyComponent {...props} />
-  //       ) : (
-  //         <Login {...props} setLoggedIn={setLoggedIn} />
-  //       )
-  //     }
-  //   />
-  // );
-
   const PrivateRoute: any = ({ comp: Component, ...rest }: { comp: any }) => (
     <Route
       {...rest}
