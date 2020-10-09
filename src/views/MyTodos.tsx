@@ -19,14 +19,14 @@ import { ModalNewTag } from "../views/modals/ModalNewTag";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 
 interface IProps {
-  fetchTodos: any;
-  statuses: any;
+  fetchTodos: Function;
+  statuses: Object[];
   todos: any;
-  tags: any;
+  tags: string[];
 }
 
 class MyTodos extends Component<IProps, any> {
-  constructor(props: any) {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       filterStr: "",
@@ -54,7 +54,7 @@ class MyTodos extends Component<IProps, any> {
 
   getDeadlines() {
     const { todos } = this.props;
-    const arr: any = [];
+    const arr: any[] = [];
     todos.forEach((item: any) => {
       arr.push(item.deadline);
     });
@@ -62,12 +62,11 @@ class MyTodos extends Component<IProps, any> {
   }
 
   getMin(arr: any[]) {
-    // return Math.min(...arr);
     if (!arr) {
       return null;
     }
     var minV = arr[0];
-    arr.forEach((a: any) => {
+    arr.forEach((a: number) => {
       if (a < minV) minV = a;
     });
     return minV;
@@ -79,26 +78,13 @@ class MyTodos extends Component<IProps, any> {
       return null;
     }
     var maxV = arr[0];
-    arr.forEach((a: any) => {
+    arr.forEach((a: number) => {
       if (a > maxV) maxV = a;
     });
     return maxV;
   }
 
-  getMinMax(arr: any) {
-    if (!arr) {
-      return null;
-    }
-    var minV = arr[0];
-    var maxV = arr[0];
-    arr.forEach((a: any) => {
-      if (a < minV) minV = a;
-      if (a > maxV) maxV = a;
-    });
-    return { minV, maxV };
-  }
-
-  onChange(e: any) {
+  onChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { target } = e;
     const value =
       target.type === "checkbox" ? (target.checked ? 1 : 0) : target.value;
@@ -237,15 +223,17 @@ class MyTodos extends Component<IProps, any> {
                 onClick={() => {
                   const statusId = item.status.statusId !== 4 ? 4 : 1;
                   const itemId = item.id;
-                  updateTodoStatus({ itemId, statusId }).then((res: any) => {
-                    if (res) {
-                      try {
-                        fetchTodos();
-                      } catch (e) {
-                        console.log(`${e}`);
+                  updateTodoStatus({ itemId, statusId }).then(
+                    (res: boolean) => {
+                      if (res) {
+                        try {
+                          fetchTodos();
+                        } catch (e) {
+                          console.log(`${e}`);
+                        }
                       }
                     }
-                  });
+                  );
                 }}
               />
               <div className="state">
@@ -281,7 +269,7 @@ class MyTodos extends Component<IProps, any> {
                       statusId: item.status.statusId,
                       statusName: item.status.statusName,
                     },
-                    tags: item.tags.map((tag: any) => tag),
+                    tags: item.tags.map((tag: string) => tag),
                     deadline: item.deadline,
                   },
                 });
@@ -319,7 +307,7 @@ class MyTodos extends Component<IProps, any> {
               variant="outline-danger"
               onClick={() => {
                 const itemId = item.id;
-                deleteTodo({ itemId }).then((res: any) => {
+                deleteTodo({ itemId }).then((res: boolean) => {
                   if (res) {
                     try {
                       fetchTodos();

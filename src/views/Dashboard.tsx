@@ -4,17 +4,21 @@ import { Doughnut, Line } from "react-chartjs-2";
 import ButtonsRow, { formIds } from "../components/ButtonsRow";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
-import { deleteTodo } from "../components/Functions";
 
 interface IProps {
-  fetchDashboard: any;
-  columns: any;
-  tags: any;
+  fetchDashboard: Function;
+  columns: Object[];
+  tags: string[];
   todos: any;
 }
 
-class Dashboard extends Component<IProps, any> {
-  constructor(props: any) {
+interface IState {
+  showModal: string | null;
+  editTodo: any;
+}
+
+class Dashboard extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       editTodo: {
@@ -42,19 +46,6 @@ class Dashboard extends Component<IProps, any> {
     });
   }
 
-  onDelete = (itemId: any) => {
-    const { fetchDashboard } = this.props;
-    deleteTodo({ itemId }).then((res: any) => {
-      if (res) {
-        try {
-          fetchDashboard();
-        } catch (e) {
-          console.log(`${e}`);
-        }
-      }
-    });
-  };
-
   render() {
     const { fetchDashboard, tags, columns } = this.props;
     const { showModal, editTodo } = this.state;
@@ -77,7 +68,7 @@ class Dashboard extends Component<IProps, any> {
       "rgba(31, 149, 103, 1)",
     ];
 
-    const pieDataTags = (array: any) => {
+    const pieDataTags = (array: any[]) => {
       const data: any = {
         datasets: [
           {
@@ -90,16 +81,16 @@ class Dashboard extends Component<IProps, any> {
       };
       array.forEach((tag: any) => {
         data.labels.push(tag.tagName);
-        const value: any = tag.todoCount;
+        const value: number = tag.todoCount;
         data.datasets[0].data.push(value);
-        colorsTags.forEach((color: any) =>
+        colorsTags.forEach((color: string) =>
           data.datasets[0].backgroundColor.push(color)
         );
       });
       return data;
     };
 
-    const pieDataCols = (array: any) => {
+    const pieDataCols = (array: any[]) => {
       const data: any = {
         datasets: [
           {
@@ -112,9 +103,9 @@ class Dashboard extends Component<IProps, any> {
       };
       array.forEach((tag: any) => {
         data.labels.push(tag.statusName);
-        const value: any = tag.cardCount;
+        const value: number = tag.cardCount;
         data.datasets[0].data.push(value);
-        colorsCols.forEach((color: any) =>
+        colorsCols.forEach((color: string) =>
           data.datasets[0].backgroundColor.push(color)
         );
       });

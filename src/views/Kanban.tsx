@@ -8,17 +8,21 @@ import Column from "../components/Column";
 import { updateTodoStatus, deleteTodo } from "../components/Functions";
 
 interface IProps {
-  fetchKanban: any;
+  fetchKanban: Function;
   board: any;
-  statuses: any;
-  tags: any;
+  statuses: Object[];
+  tags: string[];
 }
 
-class Kanban extends Component<IProps, any> {
-  constructor(props: any) {
+interface IState {
+  showModal: string | null;
+  editTodo: any;
+}
+
+class Kanban extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
-      boardDemo: {},
       editTodo: {
         tagsArr: [],
         tags: [],
@@ -57,16 +61,16 @@ class Kanban extends Component<IProps, any> {
           statusId: item.status_id,
           // statusName: item.status.statusName,
         },
-        tags: item.tags.map((tag: any) => tag),
+        tags: item.tags.map((tag: string) => tag),
         deadline: item.deadline,
       },
     });
     this.handleShow(formIds.viewTask);
   };
 
-  onDelete = (itemId: any) => {
+  onDelete = (itemId: number) => {
     const { fetchKanban } = this.props;
-    deleteTodo({ itemId }).then((res: any) => {
+    deleteTodo({ itemId }).then((res: boolean) => {
       if (res) {
         try {
           fetchKanban();
@@ -77,11 +81,11 @@ class Kanban extends Component<IProps, any> {
     });
   };
 
-  handleMove = (itemId: any, oldStatus: any, direction: number) => {
+  handleMove = (itemId: number, oldStatus: number, direction: number) => {
     const { fetchKanban } = this.props;
     const statusId = oldStatus + direction;
     console.log(`card ${itemId} in status ${statusId}`);
-    updateTodoStatus({ itemId, statusId }).then((res: any) => {
+    updateTodoStatus({ itemId, statusId }).then((res: boolean) => {
       if (res) {
         try {
           fetchKanban();
@@ -109,19 +113,19 @@ class Kanban extends Component<IProps, any> {
 
         <Row className="flex-row flex-nowrap kanbanContainer">
           {board.columns &&
-            board.columns.map((column: any, columnIndex: any) => (
+            board.columns.map((column: any, columnIndex: number) => (
               <Column
                 column={column}
                 columnIndex={columnIndex}
                 onTitleClick={(card: any) => this.onTitleClick(card)}
-                onMoveLeft={(cardId: any, statusId: any) =>
+                onMoveLeft={(cardId: number, statusId: number) =>
                   this.handleMove(cardId, statusId, DIRECTION_LEFT)
                 }
-                onMoveRight={(cardId: any, statusId: any) =>
+                onMoveRight={(cardId: number, statusId: number) =>
                   this.handleMove(cardId, statusId, DIRECTION_RIGHT)
                 }
                 key={column.id}
-                onDelete={(cardId: any) => this.onDelete(cardId)}
+                onDelete={(cardId: number) => this.onDelete(cardId)}
               />
             ))}
         </Row>
