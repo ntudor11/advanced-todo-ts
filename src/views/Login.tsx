@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import { login } from "./Functions";
+import { login } from "../components/Functions";
 
-class Login extends Component<any, any> {
+interface IProps {
+  history: any;
+  setLoggedIn: any;
+}
+
+class Login extends Component<IProps, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -38,6 +43,8 @@ class Login extends Component<any, any> {
 
   render() {
     const { email, password } = this.state;
+
+    console.log(typeof this.props.history);
 
     return (
       <Container fluid className="body">
