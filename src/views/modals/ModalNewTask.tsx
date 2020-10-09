@@ -4,8 +4,9 @@ import Flatpickr from "react-flatpickr";
 import _ from "lodash";
 import "flatpickr/dist/themes/airbnb.css";
 import { addTodo } from "../../components/Functions";
+import { IModalTaskProps } from "../../components/IModalTaskProps";
 
-export const ModalNewTask = (props: any) => {
+export const ModalNewTask = (props: IModalTaskProps) => {
   const {
     showModal,
     formIds,

@@ -2,7 +2,13 @@ import { connect } from "react-redux";
 import { fetchDashboard } from "../actions";
 import Dashboard from "./Dashboard";
 
-const mapStateToProps = ({ dashboard }: { dashboard: any }) => ({
+type IProps = {
+  todos: any[];
+  columns: any[];
+  tags: any[];
+};
+
+const mapStateToProps = ({ dashboard }: { dashboard: IProps }) => ({
   columns: dashboard.columns,
   tags: dashboard.tags,
   todos: dashboard.todos,

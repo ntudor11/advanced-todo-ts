@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { Button, Modal, Form, Row, Col, Container } from "react-bootstrap";
 import DateTimePicker from "react-datetime-picker";
 import _ from "lodash";
-// import Flatpickr from "react-flatpickr";
-// import "flatpickr/dist/themes/airbnb.css";
 import { updateTodo, deleteTodo } from "../../components/Functions";
+import { IModalTaskProps } from "../../components/IModalTaskProps";
 
-export const ModalEditTask = (props: any) => {
+export const ModalEditTask = (props: IModalTaskProps) => {
   const {
     showModal,
     formIds,

@@ -2,19 +2,16 @@ import { connect } from "react-redux";
 import { fetchTodos } from "../actions";
 import MyTodos from "./MyTodos";
 
-const mapStateToProps = ({
-  todos,
-  auth,
-}: {
-  todos: any;
-  statuses: any;
-  auth: any;
-  tags: any;
-}) => ({
+type IProps = {
+  todos: any[];
+  statuses: any[];
+  tags: any[];
+};
+
+const mapStateToProps = ({ todos }: { todos: IProps }) => ({
   todos: todos.todos,
   statuses: todos.statuses,
   tags: todos.tags,
-  auth,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

@@ -3,7 +3,16 @@ import { Button, Modal, Form, Badge } from "react-bootstrap";
 import { CompactPicker } from "react-color";
 import { addNewTag, removeTag } from "../../components/Functions";
 
-export const ModalNewTag = (props: any) => {
+interface IProps {
+  showModal: string | null;
+  formIds: any;
+  handleClose: Function;
+  tags: any[];
+  todos: any[];
+  fetchTodos: Function;
+}
+
+export const ModalNewTag = (props: IProps) => {
   const { showModal, formIds, handleClose, tags, fetchTodos, todos } = props;
 
   const [newTag, setTag] = useState({ tagName: "", tagColor: "" });
@@ -150,7 +159,7 @@ export const ModalNewTag = (props: any) => {
           variant="dark"
           form="formNewTag"
           type="submit"
-          disabled={showModal && newTag.tagName.length === 0}
+          disabled={showModal !== null && newTag.tagName.length === 0}
         >
           Add Tag
         </Button>

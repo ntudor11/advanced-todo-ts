@@ -210,7 +210,6 @@ class Dashboard extends Component<IProps, IState> {
           formIds={formIds}
           showModal={showModal}
           handleClose={this.handleClose}
-          taskObj={editTodo}
           statuses={columns}
           tags={tags}
           stateEditTodo={editTodo}

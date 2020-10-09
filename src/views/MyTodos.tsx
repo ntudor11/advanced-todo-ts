@@ -21,7 +21,7 @@ import { ModalNewTask } from "../views/modals/ModalNewTask";
 interface IProps {
   fetchTodos: Function;
   statuses: Object[];
-  todos: any;
+  todos: any[];
   tags: string[];
 }
 

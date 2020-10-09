@@ -2,20 +2,19 @@ import { connect } from "react-redux";
 import { fetchCalendar } from "../actions";
 import Calendar from "./Calendar";
 
-const mapStateToProps = ({
-  calendar,
-}: {
-  calendar: any;
-  statuses: any;
-  auth: any;
-  tags: any;
-}) => ({
+type IProps = {
+  todos: any[];
+  statuses: any[];
+  tags: any[];
+};
+
+const mapStateToProps = ({ calendar }: { calendar: IProps }) => ({
   todos: calendar.todos,
   statuses: calendar.statuses,
   tags: calendar.tags,
 });
 
-const mapDispatchToProps = (dispatch: any) => ({
+const mapDispatchToProps = (dispatch: Function) => ({
   fetchCalendar: () => dispatch(fetchCalendar()),
 });
 

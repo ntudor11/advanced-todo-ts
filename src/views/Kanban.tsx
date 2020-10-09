@@ -134,7 +134,6 @@ class Kanban extends Component<IProps, IState> {
           formIds={formIds}
           showModal={showModal}
           handleClose={this.handleClose}
-          taskObj={editTodo}
           statuses={statuses}
           tags={tags}
           stateEditTodo={editTodo}
