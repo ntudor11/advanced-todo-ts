@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
-import { register } from "./Functions";
-import { SAFE_PASS } from "./Constants";
-// import { showAlert } from "./ShowAlert";
+import { register } from "../components/Functions";
+import { SAFE_PASS } from "../components/Constants";
 
 class Register extends Component<any, any> {
   constructor(props: any) {
@@ -18,14 +17,9 @@ class Register extends Component<any, any> {
       isSuccess: null,
       validationErrors: {},
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-    this.showAlert = this.showAlert.bind(this);
-    this.validateAll = this.validateAll.bind(this);
   }
 
-  showAlert(alertText: string, isSuccess: boolean) {
+  showAlert = (alertText: string, isSuccess: boolean) => {
     const { history } = this.props;
 
     this.setState({ showAlert: true, alertText, isSuccess });
@@ -35,17 +29,17 @@ class Register extends Component<any, any> {
         history.push("/login");
       }
     }, 2000);
-  }
+  };
 
-  onChange(e: React.ChangeEvent<HTMLInputElement>) {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ [e.target.name]: e.target.value });
     this.validateAll();
-  }
+  };
 
-  validateAll() {
+  validateAll = () => {
     const { email, name, password, confirm_password } = this.state;
 
-    // enable validation with formik!
+    // TODO enable validation with formik!
     this.setState({
       validationErrors: {
         vEmail:
@@ -58,9 +52,9 @@ class Register extends Component<any, any> {
           password === confirm_password ? null : "The passwords do not match.",
       },
     });
-  }
+  };
 
-  onSubmit(e: React.ChangeEvent<HTMLInputElement>) {
+  onSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const { email, name, password, image } = this.state;
 
@@ -75,7 +69,7 @@ class Register extends Component<any, any> {
         this.setState({});
       }
     });
-  }
+  };
 
   render() {
     const {

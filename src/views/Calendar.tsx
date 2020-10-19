@@ -35,8 +35,6 @@ class Calendar extends Component<IProps, IState> {
       },
       vw: window.innerWidth,
     };
-    this.handleShow = this.handleShow.bind(this);
-    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
@@ -45,7 +43,8 @@ class Calendar extends Component<IProps, IState> {
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
 
-  updateDimensions() {
+  // update window width value on resize
+  updateDimensions = () => {
     const width = window.innerWidth;
     if (window.innerWidth < 476) {
       this.setState({ vw: width });
@@ -53,18 +52,19 @@ class Calendar extends Component<IProps, IState> {
       let update_width = window.innerWidth - 100;
       this.setState({ vw: update_width });
     }
-  }
+  };
 
-  handleShow(id: string) {
+  handleShow = (id: string) => {
     this.setState({ showModal: id });
-  }
+  };
 
-  handleClose() {
+  handleClose = () => {
     this.setState({
       showModal: null,
     });
-  }
+  };
 
+  // set state for clicked event to allow editing
   handleEventClick = (info: any) => {
     const { editTodo } = this.state;
     this.setState({

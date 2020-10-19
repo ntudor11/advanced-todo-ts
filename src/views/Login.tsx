@@ -23,18 +23,15 @@ class Login extends Component<IProps, IState> {
       email: "",
       password: "",
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onChange(e: React.ChangeEvent<HTMLInputElement>) {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       [e.currentTarget.name]: e.currentTarget.value,
     } as { [K in keyof IState]: IState[K] });
-  }
+  };
 
-  onSubmit(e: React.SyntheticEvent<HTMLInputElement>) {
+  onSubmit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     const { history, setLoggedIn } = this.props;
@@ -50,12 +47,10 @@ class Login extends Component<IProps, IState> {
         this.setState({});
       }
     });
-  }
+  };
 
   render() {
     const { email, password } = this.state;
-
-    console.log(typeof this.props.history);
 
     return (
       <Container fluid className="body">

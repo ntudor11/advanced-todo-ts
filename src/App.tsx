@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./views/Login";
-import Register from "./components/Register";
+import Register from "./views/Register";
 import MyTodosContainer from "./views/MyTodosContainer";
 import NavBar from "./components/NavBar";
 import KanbanContainer from "./views/KanbanContainer";

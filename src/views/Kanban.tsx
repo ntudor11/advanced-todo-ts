@@ -29,8 +29,6 @@ class Kanban extends Component<IProps, IState> {
       },
       showModal: "",
     };
-    this.handleShow = this.handleShow.bind(this);
-    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
@@ -38,16 +36,17 @@ class Kanban extends Component<IProps, IState> {
     fetchKanban();
   }
 
-  handleShow(id: string) {
+  handleShow = (id: string) => {
     this.setState({ showModal: id });
-  }
+  };
 
-  handleClose() {
+  handleClose = () => {
     this.setState({
       showModal: null,
     });
-  }
+  };
 
+  // set state for clicked todo to allow editing
   onTitleClick = (item: any) => {
     const { editTodo } = this.state;
     this.setState({
@@ -81,6 +80,7 @@ class Kanban extends Component<IProps, IState> {
     });
   };
 
+  // move todo to left or right by 1
   handleMove = (itemId: number, oldStatus: number, direction: number) => {
     const { fetchKanban } = this.props;
     const statusId = oldStatus + direction;

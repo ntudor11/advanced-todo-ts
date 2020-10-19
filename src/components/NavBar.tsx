@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import { logout } from "./Functions";
 import DarkModeToggle from "./DarkModeToggle";
@@ -62,7 +62,6 @@ class NavBar extends Component<any, any> {
 
     const loginRegLink = (
       <Navbar
-        // fixed="top"
         collapseOnSelect
         id={isScrolled ? "" : "navScrolled"}
         className={isScrolled ? "navUnscrolled" : "navScrolled"}
@@ -70,9 +69,6 @@ class NavBar extends Component<any, any> {
       >
         <Navbar.Brand>
           <DarkModeToggle />
-          <Link to="/">
-            {/* <img src={} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
-          </Link>
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="responsive-navbar-nav"
@@ -88,9 +84,7 @@ class NavBar extends Component<any, any> {
         >
           <Nav className="ml-auto">
             <NavLink
-              // as={Link}
               exact
-              // eventkey="1"
               activeClassName="active"
               to="/"
               className={`ml-auto nav-link underline-from-center ${
@@ -101,11 +95,9 @@ class NavBar extends Component<any, any> {
             </NavLink>
 
             <NavLink
-              // as={Link}
               exact
               activeClassName="active"
               to="/register"
-              // eventkey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
@@ -119,16 +111,12 @@ class NavBar extends Component<any, any> {
 
     const userLink = (
       <Navbar
-        // fixed="top"
         collapseOnSelect
         className={isScrolled ? "navUnscrolled" : "navScrolled"}
         expand="md"
       >
         <Navbar.Brand>
           <DarkModeToggle />
-          <Link to="/">
-            {/* <img src={} className="App-logo" alt="logo" style={{ width: '80px' }} /> */}
-          </Link>
         </Navbar.Brand>
         <Navbar.Toggle
           aria-controls="responsive-navbar-nav"
@@ -144,11 +132,9 @@ class NavBar extends Component<any, any> {
         >
           <Nav className="ml-auto">
             <NavLink
-              // as={Link}
               exact
               activeClassName="active"
               to="/todos"
-              // eventKey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
@@ -157,11 +143,9 @@ class NavBar extends Component<any, any> {
             </NavLink>
 
             <NavLink
-              // as={Link}
               exact
               activeClassName="active"
               to="/kanban"
-              // eventKey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
@@ -170,11 +154,9 @@ class NavBar extends Component<any, any> {
             </NavLink>
 
             <NavLink
-              // as={Link}
               exact
               activeClassName="active"
               to="/calendar"
-              // eventKey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
@@ -183,11 +165,9 @@ class NavBar extends Component<any, any> {
             </NavLink>
 
             <NavLink
-              // as={Link}
               exact
               activeClassName="active"
               to="/dashboard"
-              // eventKey="5"
               className={`ml-auto nav-link underline-from-center ${
                 isScrolled ? "" : "navitem-scroll"
               }`}
@@ -196,7 +176,6 @@ class NavBar extends Component<any, any> {
             </NavLink>
 
             <NavDropdown
-              // eventkey="4"
               title={
                 <div style={{ display: "inline-block" }}>
                   <img src={image} alt="user" className="navbar-usericon" />
@@ -204,9 +183,6 @@ class NavBar extends Component<any, any> {
               }
               id="basic-nav-dropdown"
             >
-              {/* <NavDropdown.Item href={`/user/${loggedInUser}`}>
-                My Profile
-              </NavDropdown.Item> */}
               <NavDropdown.Divider />
               <NavDropdown.Item href="" onClick={this.logOut}>
                 Log Out

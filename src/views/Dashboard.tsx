@@ -27,8 +27,6 @@ class Dashboard extends Component<IProps, IState> {
       },
       showModal: "",
     };
-    this.handleShow = this.handleShow.bind(this);
-    this.handleClose = this.handleClose.bind(this);
   }
 
   componentDidMount() {
@@ -36,15 +34,15 @@ class Dashboard extends Component<IProps, IState> {
     fetchDashboard();
   }
 
-  handleShow(id: string) {
+  handleShow = (id: string) => {
     this.setState({ showModal: id });
-  }
+  };
 
-  handleClose() {
+  handleClose = () => {
     this.setState({
       showModal: null,
     });
-  }
+  };
 
   render() {
     const { fetchDashboard, tags, columns } = this.props;
@@ -68,6 +66,7 @@ class Dashboard extends Component<IProps, IState> {
       "rgba(31, 149, 103, 1)",
     ];
 
+    // categorise todos by tag
     const pieDataTags = (array: any[]) => {
       const data: any = {
         datasets: [
@@ -90,6 +89,7 @@ class Dashboard extends Component<IProps, IState> {
       return data;
     };
 
+    // categorise todos by status
     const pieDataCols = (array: any[]) => {
       const data: any = {
         datasets: [
@@ -112,6 +112,7 @@ class Dashboard extends Component<IProps, IState> {
       return data;
     };
 
+    // TODO add daily status of all todos (eg. todo, doing, done)
     const chartData = () => {
       const testData: any = {
         labels: [],

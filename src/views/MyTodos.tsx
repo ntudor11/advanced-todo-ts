@@ -1,19 +1,11 @@
 import React, { Component } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  Button,
-  Table,
-  Badge,
-} from "react-bootstrap";
+import { Container, Row, Col, Button, Table, Badge } from "react-bootstrap";
 import _ from "lodash";
-import InputRange from "react-input-range";
 import FlipMove from "react-flip-move";
 import "react-input-range/lib/css/index.css";
 import { deleteTodo, updateTodoStatus } from "../components/Functions";
 import ButtonsRow, { formIds } from "../components/ButtonsRow";
+import FilterSearch from "../components/FilterSearch";
 import { ModalEditTask } from "../views/modals/ModalEditTask";
 import { ModalNewTag } from "../views/modals/ModalNewTag";
 import { ModalNewTask } from "../views/modals/ModalNewTask";
@@ -43,25 +35,18 @@ class MyTodos extends Component<IProps, any> {
       },
       newTag: { tagName: "", tagColor: "" },
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.handleShow = this.handleShow.bind(this);
-    this.getDeadlines = this.getDeadlines.bind(this);
-    this.getMin = this.getMin.bind(this);
-    this.getMax = this.getMax.bind(this);
-    this.handleClose = this.handleClose.bind(this);
   }
 
-  getDeadlines() {
+  getDeadlines = () => {
     const { todos } = this.props;
     const arr: any[] = [];
     todos.forEach((item: any) => {
       arr.push(item.deadline);
     });
     return arr;
-  }
+  };
 
-  getMin(arr: any[]) {
+  getMin = (arr: any[]) => {
     if (!arr) {
       return null;
     }
@@ -70,10 +55,9 @@ class MyTodos extends Component<IProps, any> {
       if (a < minV) minV = a;
     });
     return minV;
-  }
+  };
 
-  getMax(arr: any[]) {
-    // return Math.max(...arr);
+  getMax = (arr: any[]) => {
     if (!arr) {
       return null;
     }
@@ -82,24 +66,26 @@ class MyTodos extends Component<IProps, any> {
       if (a > maxV) maxV = a;
     });
     return maxV;
-  }
+  };
 
-  onChange(e: React.ChangeEvent<HTMLInputElement>) {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = e;
     const value =
       target.type === "checkbox" ? (target.checked ? 1 : 0) : target.value;
     this.setState({ [target.name]: value });
-  }
+  };
 
-  handleShow(id: string) {
+  // show specific modal
+  handleShow = (id: string) => {
     this.setState({ showModal: id });
-  }
+  };
 
-  handleClose() {
+  // close specific modal
+  handleClose = () => {
     this.setState({
       showModal: null,
     });
-  }
+  };
 
   componentDidMount() {
     const { fetchTodos } = this.props;
@@ -109,6 +95,7 @@ class MyTodos extends Component<IProps, any> {
   componentDidUpdate() {
     const { range } = this.state;
 
+    // add dynamic values to filter slider if it doesn't have any
     if (range.min === "" || range.max === "") {
       this.setState({
         range: {
@@ -123,8 +110,6 @@ class MyTodos extends Component<IProps, any> {
   render() {
     const { todos, statuses, fetchTodos, tags } = this.props;
 
-    // TODO fix checkmark issue
-
     const {
       filterStr,
       isActive,
@@ -134,6 +119,7 @@ class MyTodos extends Component<IProps, any> {
       showModal,
     } = this.state;
 
+    // real-time filtering (no refresh required)
     const filteredElementsAll =
       todos &&
       todos.filter(
@@ -157,15 +143,6 @@ class MyTodos extends Component<IProps, any> {
           new Date(item.deadline).getTime() >= range.min &&
           new Date(item.deadline).getTime() <= range.max
       );
-
-    // standard sort below
-    // const sortedTodos = (arr: any) =>
-    //   (sortBy === "priority" &&
-    //     arr.sort((a: any, b: any) => a.priority.localeCompare(b.priority))) ||
-    //   (sortBy === "task" &&
-    //     arr.sort((a: any, b: any) => a.task.localeCompare(b.task))) ||
-    //   (sortBy === "date" &&
-    //     arr.sort((a: any, b: any) => a.deadline.localeCompare(b.deadline)));
 
     /* better sort: sorting and leaving to end of array items with statusId === 4 */
     const sortedTodos = (arr: any) =>
@@ -206,16 +183,14 @@ class MyTodos extends Component<IProps, any> {
           ["asc", "asc"]
         ));
 
+    // table row view of each todo
     const todoItem = (array: any) =>
       array.map((item: any) => (
         <tr
           key={item.id}
           className={`todoItem ${item.status.statusId === 4 && `doneItem`}`}
         >
-          <th
-            className="align-middle"
-            // style={{ borderTop: "1px solid #424242" }}
-          >
+          <th className="align-middle">
             <div className="pretty p-icon p-round p-bigger">
               <input
                 type="checkbox"
@@ -333,74 +308,20 @@ class MyTodos extends Component<IProps, any> {
           <Col xs={12} sm={8} md={3} className="asidePanel sticky-top">
             <ButtonsRow handleShow={this.handleShow} colSize={6} />
 
-            <Row>
-              <Col>
-                <h3>Search</h3>
-
-                <Form.Control
-                  style={{ width: "100%" }}
-                  type="text"
-                  className="search-input-left"
-                  value={filterStr}
-                  placeholder="Search here"
-                  onChange={(e) => this.setState({ filterStr: e.target.value })}
-                />
-
-                <h3>Filter</h3>
-
-                <div
-                  className="pretty p-default p-curve"
-                  style={{ marginBottom: "2em" }}
-                >
-                  <input
-                    type="checkbox"
-                    name="isActive"
-                    value={isActive}
-                    onChange={this.onChange}
-                    checked={isActive}
-                  />
-                  <div className="state p-info">
-                    <label>Active</label>
-                  </div>
-                </div>
-
-                <div>
-                  <label>By Date</label>
-                  <InputRange
-                    maxValue={new Date(
-                      this.getMax(this.getDeadlines())
-                    ).getTime()}
-                    minValue={new Date(
-                      this.getMin(this.getDeadlines())
-                    ).getTime()}
-                    formatLabel={(value) =>
-                      new Date(value).toLocaleString().substring(0, 10)
-                    }
-                    allowSameValues={true}
-                    value={this.state.range}
-                    onChange={(range) => this.setState({ range })}
-                  />
-                </div>
-
-                <h3>Sort By</h3>
-
-                <div>
-                  <Form.Control
-                    as="select"
-                    name="sortBy"
-                    value={sortBy}
-                    onChange={this.onChange}
-                  >
-                    <option value="" disabled>
-                      Choose Type
-                    </option>
-                    <option value="priority">Priority</option>
-                    <option value="date">Date</option>
-                    <option value="task">Task</option>
-                  </Form.Control>
-                </div>
-              </Col>
-            </Row>
+            <FilterSearch
+              filterStr={filterStr}
+              setFilterStr={(e: any) =>
+                this.setState({ filterStr: e.target.value })
+              }
+              isActive={isActive}
+              onChange={this.onChange}
+              getMax={this.getMax}
+              getMin={this.getMin}
+              getDeadlines={this.getDeadlines}
+              range={this.state.range}
+              setRange={(range: any) => this.setState({ range })}
+              sortBy={sortBy}
+            />
           </Col>
           <Col xs={{ span: 12 }} md={9}>
             <Row className="justify-content-sm-center">
@@ -439,7 +360,6 @@ class MyTodos extends Component<IProps, any> {
           todos={todos}
           fetchTodos={fetchTodos}
         />
-
         <ModalNewTask
           formIds={formIds}
           showModal={showModal}
@@ -449,7 +369,6 @@ class MyTodos extends Component<IProps, any> {
           stateEditTodo={editTodo}
           fetchTodos={fetchTodos}
         />
-
         <ModalEditTask
           formIds={formIds}
           showModal={showModal}
@@ -463,5 +382,4 @@ class MyTodos extends Component<IProps, any> {
     );
   }
 }
-// TODO change order for "priority - 1, 2, 3 maybe"
 export default MyTodos;
