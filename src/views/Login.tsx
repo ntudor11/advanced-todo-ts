@@ -31,7 +31,7 @@ class Login extends Component<IProps, IState> {
     } as { [K in keyof IState]: IState[K] });
   };
 
-  onSubmit = (e: React.SyntheticEvent<HTMLInputElement>) => {
+  onSubmit = (e: any) => {
     e.preventDefault();
 
     const { history, setLoggedIn } = this.props;

@@ -54,7 +54,7 @@ class Register extends Component<any, any> {
     });
   };
 
-  onSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onSubmit = (e: any) => {
     e.preventDefault();
     const { email, name, password, image } = this.state;
 
