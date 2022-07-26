@@ -6,7 +6,7 @@ import { addNewTag, removeTag } from "../../components/Functions";
 interface IProps {
   showModal: string | null;
   formIds: any;
-  handleClose: Function;
+  handleClose: () => void;
   tags: any[];
   todos: any[];
   fetchTodos: Function;

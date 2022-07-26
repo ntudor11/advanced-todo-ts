@@ -1,7 +1,7 @@
 export interface IModalTaskProps {
   showModal: string | null;
   formIds: any;
-  handleClose: Function;
+  handleClose: () => void;
   statuses: any[];
   tags: any[];
   stateEditTodo: any;
